@@ -1,0 +1,44 @@
+# Build from the repository root. Never copy the host node_modules or .next output.
+# Official Node image index verified with docker buildx imagetools inspect.
+FROM node:24.19.0-bookworm-slim@sha256:a9f5f7c91a432850b2a8a7797adf5eadb6c733ceed61167806cee7ea7fbc29df AS base
+WORKDIR /app
+ENV NEXT_TELEMETRY_DISABLED=1
+
+FROM base AS dependencies
+COPY package.json package-lock.json ./
+COPY apps/frontend/package.json ./apps/frontend/package.json
+RUN test "$(node --version)" = "v24.19.0" \
+    && npm ci --include=dev --no-audit --no-fund
+
+FROM dependencies AS builder
+# Explicit inputs keep environment files, local runtime state and backend data out.
+COPY apps/frontend/app ./apps/frontend/app
+COPY apps/frontend/components ./apps/frontend/components
+COPY apps/frontend/lib ./apps/frontend/lib
+COPY apps/frontend/next.config.ts apps/frontend/next-env.d.ts apps/frontend/tsconfig.json ./apps/frontend/
+COPY scripts/pdf-assets.mjs ./scripts/pdf-assets.mjs
+COPY assets/knowledge/preparation-guide-v2.pdf ./assets/knowledge/preparation-guide-v2.pdf
+# The workspace prebuild self-hosts the PDF.js worker/fonts/cmaps/wasm and sample PDF.
+# next/font/local emits Google Sans Flex under .next/static; it needs no font network call.
+RUN npm run build \
+    && test -s apps/frontend/.next/standalone/apps/frontend/server.js \
+    && test -s apps/frontend/.next/standalone/node_modules/next/package.json \
+    && test -s apps/frontend/public/vendor/pdfjs/pdf.worker.min.mjs \
+    && test -d apps/frontend/public/vendor/pdfjs/standard_fonts \
+    && test -d apps/frontend/public/vendor/pdfjs/cmaps \
+    && test -d apps/frontend/public/vendor/pdfjs/wasm \
+    && test -s apps/frontend/public/samples/preparation-guide-v2.pdf
+
+FROM base AS runtime
+ENV NODE_ENV=production \
+    HOSTNAME=0.0.0.0 \
+    PORT=8080
+# Monorepo tracing preserves apps/frontend below the standalone root.
+COPY --from=builder --chown=node:node /app/apps/frontend/.next/standalone ./
+# Next standalone does not copy these directories automatically.
+COPY --from=builder --chown=node:node /app/apps/frontend/.next/static ./apps/frontend/.next/static
+COPY --from=builder --chown=node:node /app/apps/frontend/public ./apps/frontend/public
+COPY --from=builder --chown=node:node /app/apps/frontend/app/fonts/OFL.txt ./apps/frontend/public/fonts/OFL.txt
+USER node
+EXPOSE 8080
+CMD ["node", "apps/frontend/server.js"]

@@ -1,0 +1,30 @@
+{
+  "name": "projects/REPLACE_PROJECT_ID/locations/REPLACE_REGION/workerPools/REPLACE_DISPATCHER_POOL_NAME",
+  "description": "UNCONFIGURED: continuously billed maintenance and task publication; no CRM execution",
+  "scaling": {"manualInstanceCount": 1},
+  "template": {
+    "serviceAccount": "REPLACE_DISPATCHER_SA@REPLACE_PROJECT_ID.iam.gserviceaccount.com",
+    "containers": [{
+      "name": "dispatcher",
+      "image": "REPLACE_REGION-docker.pkg.dev/REPLACE_PROJECT_ID/REPLACE_REPOSITORY/backend@sha256:REPLACE_BACKEND_IMAGE_DIGEST",
+      "command": ["python", "-m", "choreograph.release"],
+      "args": ["dispatcher"],
+      "resources": {"limits": {"cpu": "1", "memory": "512Mi"}, "cpuIdle": false},
+      "env": [
+        {"name": "CHOREOGRAPH_DISPATCH_HEALTH_PORT", "value": "8080"},
+        {"name": "CHOREOGRAPH_DATABASE_URL", "valueSource": {"secretKeyRef": {"secret": "REPLACE_APPLICATION_DATABASE_URL_SECRET_NAME", "version": "REPLACE_PINNED_APPLICATION_DATABASE_URL_SECRET_VERSION"}}},
+        {"name": "CHOREOGRAPH_TASKS_ENABLED", "value": "true"},
+        {"name": "CHOREOGRAPH_TASK_PROJECT", "value": "REPLACE_PROJECT_ID"},
+        {"name": "CHOREOGRAPH_TASK_REGION", "value": "REPLACE_REGION"},
+        {"name": "CHOREOGRAPH_TASK_QUEUE", "value": "REPLACE_QUEUE_NAME"},
+        {"name": "CHOREOGRAPH_TASK_URL", "value": "https://REPLACE_WORKER_SERVICE_ORIGIN.run.app/internal/tasks/crm"},
+        {"name": "CHOREOGRAPH_TASK_AUDIENCE", "value": "https://REPLACE_WORKER_SERVICE_ORIGIN.run.app"},
+        {"name": "CHOREOGRAPH_TASK_SERVICE_EMAIL", "value": "REPLACE_TASK_DELIVERY_SA@REPLACE_PROJECT_ID.iam.gserviceaccount.com"}
+      ],
+      "volumeMounts": [{"name": "cloudsql", "mountPath": "/cloudsql"}],
+      "startupProbe": {"httpGet": {"path": "/health/ready", "port": 8080}, "periodSeconds": 3, "timeoutSeconds": 1, "failureThreshold": 20},
+      "livenessProbe": {"httpGet": {"path": "/health/live", "port": 8080}, "periodSeconds": 10, "timeoutSeconds": 1, "failureThreshold": 3}
+    }],
+    "volumes": [{"name": "cloudsql", "cloudSqlInstance": {"instances": ["REPLACE_PROJECT_ID:REPLACE_REGION:REPLACE_SQL_INSTANCE"]}}]
+  }
+}

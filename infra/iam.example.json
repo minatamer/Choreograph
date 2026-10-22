@@ -1,0 +1,153 @@
+{
+  "status": "UNCONFIGURED_REVIEW_ONLY",
+  "purpose": "Resource-scoped binding additions for review, not a setIamPolicy request or complete replacement policy.",
+  "notes": [
+    "Replace every REPLACE_* identifier only after separate owner authorization. No IAM operation has run.",
+    "No allUsers or allAuthenticatedUsers binding is included. The fake QA frontend is restricted to a named tester group; only the frontend may later become public after explicit publication approval.",
+    "Keep Cloud Run invoker IAM checks enabled on every service. No frontend, API or task identity receives project Owner/Editor or a broad project Cloud Run Invoker grant.",
+    "The dedicated OIDC delivery service account belongs to the same project as the queue and holds no application data or secret privileges.",
+    "Cloud Tasks normally creates its primary service agent with roles/cloudtasks.serviceAgent when its API is enabled. Verify that existing Google-managed grant; never grant that service-agent role to an application account.",
+    "Project-level Cloud SQL Client authorizes the connector, not SQL privileges. Separately review restricted application SQL grants and migration-only DDL/extension privileges. No SQL roles are provisioned here.",
+    "Control-plane deploy/job-execution permissions and any future unattended maintenance caller remain separately unconfigured. These examples do not grant an unknown caller job execution.",
+    "The dispatcher receives only its application DB secret/Cloud SQL, queue-scoped custom create/get/fullView and actAs on the exact delivery SA. It has no provider/bridge/token-key secret or Run Invoker. API has no queue/actAs grant. WorkerPool count1 is continuously billed; account/IAM creation remains unexecuted."
+  ],
+  "resourcePolicyAdditions": [
+    {
+      "resource": "projects/REPLACE_PROJECT_ID/locations/REPLACE_REGION/services/REPLACE_FRONTEND_SERVICE_NAME",
+      "bindings": [
+        {
+          "role": "roles/run.invoker",
+          "members": [
+            "group:REPLACE_QA_TESTERS_GROUP"
+          ]
+        }
+      ]
+    },
+    {
+      "resource": "projects/REPLACE_PROJECT_ID/locations/REPLACE_REGION/services/REPLACE_API_SERVICE_NAME",
+      "bindings": [
+        {
+          "role": "roles/run.invoker",
+          "members": [
+            "serviceAccount:REPLACE_FRONTEND_SA@REPLACE_PROJECT_ID.iam.gserviceaccount.com"
+          ]
+        }
+      ]
+    },
+    {
+      "resource": "projects/REPLACE_PROJECT_ID/locations/REPLACE_REGION/services/REPLACE_WORKER_SERVICE_NAME",
+      "bindings": [
+        {
+          "role": "roles/run.invoker",
+          "members": [
+            "serviceAccount:REPLACE_TASK_DELIVERY_SA@REPLACE_PROJECT_ID.iam.gserviceaccount.com"
+          ]
+        }
+      ]
+    },
+    {
+      "resource": "projects/REPLACE_PROJECT_ID",
+      "bindings": [
+        {
+          "role": "roles/cloudsql.client",
+          "members": [
+            "serviceAccount:REPLACE_API_SA@REPLACE_PROJECT_ID.iam.gserviceaccount.com",
+            "serviceAccount:REPLACE_WORKER_SA@REPLACE_PROJECT_ID.iam.gserviceaccount.com",
+            "serviceAccount:REPLACE_MIGRATE_SA@REPLACE_PROJECT_ID.iam.gserviceaccount.com",
+            "serviceAccount:REPLACE_DISPATCHER_SA@REPLACE_PROJECT_ID.iam.gserviceaccount.com"
+          ]
+        },
+        {
+          "role": "roles/cloudtasks.serviceAgent",
+          "members": [
+            "serviceAccount:service-REPLACE_PROJECT_NUMBER@gcp-sa-cloudtasks.iam.gserviceaccount.com"
+          ]
+        }
+      ]
+    },
+    {
+      "resource": "projects/REPLACE_PROJECT_ID/locations/REPLACE_REGION/queues/REPLACE_QUEUE_NAME",
+      "bindings": [
+        {
+          "role": "projects/REPLACE_PROJECT_ID/roles/choreographTaskPublisher",
+          "members": [
+            "serviceAccount:REPLACE_DISPATCHER_SA@REPLACE_PROJECT_ID.iam.gserviceaccount.com"
+          ]
+        }
+      ]
+    },
+    {
+      "resource": "projects/REPLACE_PROJECT_ID/serviceAccounts/REPLACE_TASK_DELIVERY_SA@REPLACE_PROJECT_ID.iam.gserviceaccount.com",
+      "bindings": [
+        {
+          "role": "roles/iam.serviceAccountUser",
+          "members": [
+            "serviceAccount:REPLACE_DISPATCHER_SA@REPLACE_PROJECT_ID.iam.gserviceaccount.com"
+          ]
+        }
+      ]
+    },
+    {
+      "resource": "projects/REPLACE_PROJECT_ID/secrets/REPLACE_APPLICATION_DATABASE_URL_SECRET_NAME",
+      "bindings": [
+        {
+          "role": "roles/secretmanager.secretAccessor",
+          "members": [
+            "serviceAccount:REPLACE_API_SA@REPLACE_PROJECT_ID.iam.gserviceaccount.com",
+            "serviceAccount:REPLACE_WORKER_SA@REPLACE_PROJECT_ID.iam.gserviceaccount.com",
+            "serviceAccount:REPLACE_DISPATCHER_SA@REPLACE_PROJECT_ID.iam.gserviceaccount.com"
+          ]
+        }
+      ]
+    },
+    {
+      "resource": "projects/REPLACE_PROJECT_ID/secrets/REPLACE_MIGRATION_DATABASE_URL_SECRET_NAME",
+      "bindings": [
+        {
+          "role": "roles/secretmanager.secretAccessor",
+          "members": [
+            "serviceAccount:REPLACE_MIGRATE_SA@REPLACE_PROJECT_ID.iam.gserviceaccount.com"
+          ]
+        }
+      ]
+    },
+    {
+      "resource": "projects/REPLACE_PROJECT_ID/secrets/REPLACE_BRIDGE_SECRET_NAME",
+      "bindings": [
+        {
+          "role": "roles/secretmanager.secretAccessor",
+          "members": [
+            "serviceAccount:REPLACE_FRONTEND_SA@REPLACE_PROJECT_ID.iam.gserviceaccount.com",
+            "serviceAccount:REPLACE_API_SA@REPLACE_PROJECT_ID.iam.gserviceaccount.com",
+            "serviceAccount:REPLACE_WORKER_SA@REPLACE_PROJECT_ID.iam.gserviceaccount.com"
+          ]
+        }
+      ]
+    },
+    {
+      "resource": "projects/REPLACE_PROJECT_ID/secrets/REPLACE_TOKEN_KEY_SECRET_NAME",
+      "bindings": [
+        {
+          "role": "roles/secretmanager.secretAccessor",
+          "members": [
+            "serviceAccount:REPLACE_API_SA@REPLACE_PROJECT_ID.iam.gserviceaccount.com",
+            "serviceAccount:REPLACE_WORKER_SA@REPLACE_PROJECT_ID.iam.gserviceaccount.com"
+          ]
+        }
+      ]
+    }
+  ],
+  "customRoleProposals": [
+    {
+      "name": "projects/REPLACE_PROJECT_ID/roles/choreographTaskPublisher",
+      "title": "Choreograph task publisher",
+      "description": "Review only: bind on the dedicated queue; UUID payload create/get verification only.",
+      "includedPermissions": [
+        "cloudtasks.tasks.create",
+        "cloudtasks.tasks.get",
+        "cloudtasks.tasks.fullView"
+      ],
+      "stage": "GA"
+    }
+  ]
+}

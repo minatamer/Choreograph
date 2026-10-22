@@ -1,0 +1,83 @@
+{
+  "status": "UNCONFIGURED_REVIEW_ONLY",
+  "notes": [
+    "The queue and createTaskRequest below are separate REST resource/request examples, not one API request. No queue or task was created.",
+    "The composed dispatcher implements create/get with durable publication leases and epochs. Actual Google IAM, queue overrides, OIDC and unattended WorkerPool behavior still need separately authorized hosted acceptance.",
+    "OIDC uses the dedicated task-delivery service account in the queue project. Cloud Tasks generates Authorization: Bearer; never supply a static token or trust X-CloudTasks-* headers as authentication.",
+    "Use the worker's stable Cloud Run origin as the exact audience, without /internal/tasks/crm. The HTTPS target includes that path. Keep these values identical to worker settings.",
+    "The queue-level ALWAYS override fixes the HTTPS host/path/method and OIDC identity/audience for every task; task-level descriptions repeat the same reviewed values.",
+    "Replace body with base64-encoded UTF-8 JSON containing only the actual persisted workspace_id and event_id UUIDs. Do not put contact data, credentials or booking descriptions into the task.",
+    "Queue retry limits bound HTTP deliveries. The database still owns due times, leases, destination/revision fences, reconciliation and the separate five-attempt domain limit. Inspect needs_attention rather than replaying indefinitely.",
+    "Google's retry policy stops failures after both maxAttempts and maxRetryDuration are satisfied. The numbers below are not an either/or hard cap; confirm observed retries on hosted acceptance.",
+    "This finite fake-QA candidate needs deployed IAM, duplicate/retry, late revision and recovery acceptance before release. It adds no provider spending authorization.",
+    "The dispatcher requests FULL task responses to verify exact UUID payload and target; queue-scoped cloudtasks.tasks.fullView is required in addition to create/get. Missing/deleted tasks never prove business completion; current DB work controls a new epoch."
+  ],
+  "queue": {
+    "name": "projects/REPLACE_PROJECT_ID/locations/REPLACE_REGION/queues/REPLACE_QUEUE_NAME",
+    "httpTarget": {
+      "uriOverride": {
+        "scheme": "HTTPS",
+        "host": "REPLACE_WORKER_SERVICE_ORIGIN.run.app",
+        "port": "0",
+        "pathOverride": {
+          "path": "/internal/tasks/crm"
+        },
+        "queryOverride": {
+          "queryParams": ""
+        },
+        "uriOverrideEnforceMode": "ALWAYS"
+      },
+      "httpMethod": "POST",
+      "headerOverrides": [
+        {
+          "header": {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        }
+      ],
+      "oidcToken": {
+        "serviceAccountEmail": "REPLACE_TASK_DELIVERY_SA@REPLACE_PROJECT_ID.iam.gserviceaccount.com",
+        "audience": "https://REPLACE_WORKER_SERVICE_ORIGIN.run.app"
+      }
+    },
+    "rateLimits": {
+      "maxDispatchesPerSecond": 2,
+      "maxConcurrentDispatches": 2
+    },
+    "retryConfig": {
+      "maxAttempts": 20,
+      "maxRetryDuration": "3600s",
+      "minBackoff": "10s",
+      "maxBackoff": "300s",
+      "maxDoublings": 5
+    },
+    "stackdriverLoggingConfig": {
+      "samplingRatio": 0
+    }
+  },
+  "unencodedBodyExample": {
+    "workspace_id": "REPLACE_PERSISTED_WORKSPACE_UUID",
+    "event_id": "REPLACE_PERSISTED_OUTBOX_EVENT_UUID"
+  },
+  "createTaskRequest": {
+    "parent": "projects/REPLACE_PROJECT_ID/locations/REPLACE_REGION/queues/REPLACE_QUEUE_NAME",
+    "task": {
+      "name": "projects/REPLACE_PROJECT_ID/locations/REPLACE_REGION/queues/REPLACE_QUEUE_NAME/tasks/REPLACE_DETERMINISTIC_OPAQUE_TASK_ID",
+      "httpRequest": {
+        "url": "https://REPLACE_WORKER_SERVICE_ORIGIN.run.app/internal/tasks/crm",
+        "httpMethod": "POST",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": "REPLACE_BASE64_OF_WORKSPACE_EVENT_UUID_JSON",
+        "oidcToken": {
+          "serviceAccountEmail": "REPLACE_TASK_DELIVERY_SA@REPLACE_PROJECT_ID.iam.gserviceaccount.com",
+          "audience": "https://REPLACE_WORKER_SERVICE_ORIGIN.run.app"
+        }
+      },
+      "dispatchDeadline": "120s"
+    },
+    "responseView": "FULL"
+  }
+}

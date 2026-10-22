@@ -1,0 +1,155 @@
+name: No-key Linux checks
+
+on:
+  pull_request:
+  push:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: no-key-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      CHOREOGRAPH_PROFILE: fake
+      NEXT_TELEMETRY_DISABLED: "1"
+      PIP_DISABLE_PIP_VERSION_CHECK: "1"
+    services:
+      postgres:
+        # Same PostgreSQL/pgvector digest as the owned local Compose service.
+        image: pgvector/pgvector:0.8.5-pg17-bookworm@sha256:d2ef61f42ef767baa5a1475393303cc235bcd92febd9d7014eddb48b41f3bad0
+        env:
+          POSTGRES_DB: choreograph
+          POSTGRES_USER: choreograph
+          # Disposable fixture credential, never a repository/provider secret.
+          POSTGRES_PASSWORD: ci-only-not-a-secret
+        ports:
+          - "45862:5432"
+        options: >-
+          --health-cmd "pg_isready -U choreograph -d choreograph"
+          --health-interval 3s
+          --health-timeout 3s
+          --health-retries 20
+    steps:
+      # Official action release commits verified 22 October 2026.
+      - name: Check out source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up Node
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "24.19.0"
+          package-manager-cache: false
+      - name: Set up Python
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.11"
+      - name: Install locked dependencies
+        run: |
+          python -m venv .venv
+          .venv/bin/python -m pip install -r apps/backend/requirements.lock.txt
+          .venv/bin/python -m pip check
+          npm ci
+      - name: Check numeric substitution in Cloud Run examples
+        run: |
+          .venv/bin/python - <<'PY'
+          import re
+          from pathlib import Path
+          import yaml
+
+          source = Path("infra/cloud-run.example.yaml").read_text(encoding="utf-8")
+          source = source.replace("REPLACE_PROJECT_NUMBER", "123456789012")
+          source = re.sub(r"REPLACE_PINNED_[A-Z_]+_VERSION", "7", source)
+          resources = list(yaml.safe_load_all(source))
+          assert len(resources) == 6
+          secret_versions = 0
+          for resource in resources:
+              namespace = resource["metadata"]["namespace"]
+              assert isinstance(namespace, str) and namespace == "123456789012"
+              spec = resource["spec"]["template"]["spec"]
+              if resource["kind"] == "Job":
+                  spec = spec["template"]["spec"]
+              for container in spec["containers"]:
+                  for variable in container.get("env", []):
+                      if "valueFrom" in variable:
+                          version = variable["valueFrom"]["secretKeyRef"]["key"]
+                          assert isinstance(version, str) and version == "7"
+                          secret_versions += 1
+          assert secret_versions == 10
+          print("Six namespaces and ten secret versions remain strings after numeric substitution.")
+          import json
+          pool_source = Path("infra/worker-pool.example.json").read_text(encoding="utf-8")
+          pool_source = re.sub(r"REPLACE_PINNED_[A-Z_]+_VERSION", "7", pool_source)
+          pool = json.loads(pool_source)
+          assert pool["scaling"]["manualInstanceCount"] == 1
+          container = pool["template"]["containers"][0]
+          assert container["args"] == ["dispatcher"]
+          assert container["startupProbe"]["httpGet"]["path"] == "/health/ready"
+          assert container["livenessProbe"]["httpGet"]["path"] == "/health/live"
+          secrets = [item for item in container["env"] if "valueSource" in item]
+          assert len(secrets) == 1 and secrets[0]["name"] == "CHOREOGRAPH_DATABASE_URL"
+          assert secrets[0]["valueSource"]["secretKeyRef"]["version"] == "7"
+          assert pool["template"]["volumes"][0]["cloudSqlInstance"]["instances"]
+          print("WorkerPool count, secret version, SQL binding and health-only probes checked locally.")
+          PY
+      - name: Create disposable fake-only configuration
+        run: |
+          test ! -e .env.local
+          git check-ignore --quiet .env.local
+          umask 077
+          .venv/bin/python - <<'PY'
+          import base64
+          import secrets
+          from pathlib import Path
+
+          password = "ci-only-not-a-secret"
+          values = {
+              "CHOREOGRAPH_PROFILE": "fake",
+              "CHOREOGRAPH_DB_PASSWORD": password,
+              "CHOREOGRAPH_DATABASE_URL": f"postgresql+psycopg://choreograph:{password}@127.0.0.1:45862/choreograph",
+              "CHOREOGRAPH_ORIGIN": "http://127.0.0.1:45860",
+              "CHOREOGRAPH_BRIDGE_SECRET": secrets.token_hex(32),
+              "CHOREOGRAPH_TOKEN_KEY": base64.urlsafe_b64encode(secrets.token_bytes(32)).decode(),
+          }
+          with Path(".env.local").open("x", encoding="utf-8") as stream:
+              stream.write("".join(f"{key}={value}\n" for key, value in values.items()))
+          print("Disposable fake configuration created; values omitted.")
+          PY
+      - name: Apply migrations to the disposable service database
+        working-directory: apps/backend
+        run: ../../.venv/bin/python -m choreograph.migrate
+      - name: Check generated API contract freshness
+        run: |
+          node scripts/generate-contracts.mjs
+          git diff --exit-code -- apps/frontend/lib/generated/openapi.json apps/frontend/lib/generated/api.d.ts
+      - name: Check lifecycle ownership and browser bridge boundaries
+        # The Windows hidden-window regression explicitly skips on Linux.
+        run: node --test scripts/local.test.mjs scripts/bridge.test.mjs scripts/private-api.test.mjs scripts/bridge-source.test.mjs scripts/callback-route.test.mjs
+      - name: Run backend and isolated PostgreSQL/pgvector tests
+        # conftest creates/drops a unique choreograph_test_* database on 45862.
+        # This includes extension/vector assertions, migration roundtrip and
+        # concurrent booking, isolation, retrieval and durable-work regressions.
+        run: .venv/bin/python -m pytest apps/backend/tests -q
+      - name: Check the settled Python quality policy
+        run: .venv/bin/python -m ruff check --config apps/backend/pyproject.toml apps/backend scripts
+      - name: Check frontend types and production build
+        run: |
+          npm run typecheck
+          npm run build
+      - name: Build Linux release images locally
+        # Local runner images only: no registry login, push or cloud credentials.
+        run: |
+          docker build --file infra/Dockerfile.backend --tag choreograph-api:ci .
+          docker build --file infra/Dockerfile.frontend --tag choreograph-frontend:ci .
+      - name: Smoke-test isolated Linux release containers
+        # The owned script rebuilds from current inputs (normally cached), uses
+        # disposable PostgreSQL/network resources, and publishes no host ports.
+        run: node scripts/release-smoke.mjs --no-receipt
+

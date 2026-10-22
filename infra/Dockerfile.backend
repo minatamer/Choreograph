@@ -1,0 +1,39 @@
+# Official Python 3.11 security line, verified against Docker's registry manifest.
+# This immutable index includes Linux amd64/arm64; release checks select amd64.
+FROM python:3.11.17-slim-bookworm@sha256:f06d01d4ba3f8ad5af45a3ec87df19c1d317d8e8961edc0fabda61811af6f7cf
+
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    PIP_NO_CACHE_DIR=1 \
+    HOME=/home/choreograph
+
+WORKDIR /app/apps/backend
+
+# Every dependency is pinned in the shared lock. Refuse source compilation or
+# implicit dependency resolution so an unsupported Linux wheel fails the build.
+COPY apps/backend/requirements.lock.txt ./requirements.lock.txt
+RUN python -m pip install --only-binary=:all: --no-deps --no-compile -r requirements.lock.txt \
+    && python -m pip check \
+    && groupadd --gid 10001 choreograph \
+    && useradd --uid 10001 --gid 10001 --create-home --shell /usr/sbin/nologin choreograph
+
+# Preserve the source layout: knowledge.py resolves /app/assets/knowledge, and
+# Alembic resolves the adjacent configuration/migrations. Never copy local env,
+# virtualenvs, runtime receipts, development volumes or the repository wholesale.
+COPY apps/backend/choreograph ./choreograph
+COPY apps/backend/alembic.ini ./alembic.ini
+COPY apps/backend/migrations ./migrations
+COPY assets/knowledge/manifest.json /app/assets/knowledge/manifest.json
+COPY assets/knowledge/*.pdf /app/assets/knowledge/
+COPY assets/knowledge/service-questions.md /app/assets/knowledge/service-questions.md
+COPY assets/knowledge/sources/guides.json /app/assets/knowledge/sources/guides.json
+COPY assets/knowledge/evaluation.json /app/assets/knowledge/evaluation.json
+COPY assets/knowledge/evaluation-adversarial.txt /app/assets/knowledge/evaluation-adversarial.txt
+COPY assets/tokenizers/ /app/assets/tokenizers/
+
+# pypdf's bounded child parser is pure Python; psycopg-binary and the remaining
+# native dependencies use their locked Linux wheels. No PDF toolchain/compiler.
+USER 10001:10001
+EXPOSE 8080
+CMD ["python", "-m", "choreograph.release", "api"]

@@ -1,0 +1,343 @@
+# UNCONFIGURED REVIEW EXAMPLES ONLY. No resource has been provisioned/deployed.
+# Replace every REPLACE_* identifier after owner authorization and cost review.
+# This fake-provider hosted QA profile is not ready for public real-provider use.
+# IAM policy additions are separately described in iam.example.json.
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: REPLACE_FRONTEND_SERVICE_NAME
+  namespace: "REPLACE_PROJECT_NUMBER"
+  labels:
+    cloud.googleapis.com/location: REPLACE_REGION
+  annotations:
+    run.googleapis.com/description: UNCONFIGURED - restricted fake-provider QA frontend
+    run.googleapis.com/ingress: all
+    run.googleapis.com/invoker-iam-disabled: "false"
+    run.googleapis.com/minScale: "0"
+    run.googleapis.com/maxScale: "2"
+spec:
+  template:
+    metadata:
+      annotations:
+        run.googleapis.com/execution-environment: gen2
+    spec:
+      serviceAccountName: REPLACE_FRONTEND_SA@REPLACE_PROJECT_ID.iam.gserviceaccount.com
+      containerConcurrency: 8
+      timeoutSeconds: 90
+      containers:
+        - image: REPLACE_REGION-docker.pkg.dev/REPLACE_PROJECT_ID/REPLACE_REPOSITORY/frontend@sha256:REPLACE_FRONTEND_IMAGE_DIGEST
+          ports:
+            - name: http1
+              containerPort: 8080
+          resources:
+            limits:
+              cpu: "1"
+              memory: 512Mi
+          env:
+            - name: NEXT_TELEMETRY_DISABLED
+              value: "1"
+            - name: CHOREOGRAPH_ORIGIN
+              value: https://REPLACE_FRONTEND_SERVICE_ORIGIN.run.app
+            - name: CHOREOGRAPH_API_URL
+              value: https://REPLACE_API_SERVICE_ORIGIN.run.app
+            - name: CHOREOGRAPH_API_AUTH
+              value: google
+            - name: CHOREOGRAPH_API_AUDIENCE
+              value: https://REPLACE_API_SERVICE_ORIGIN.run.app
+            - name: CHOREOGRAPH_BRIDGE_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: REPLACE_BRIDGE_SECRET_NAME
+                  key: "REPLACE_PINNED_BRIDGE_SECRET_VERSION"
+          startupProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            periodSeconds: 3
+            timeoutSeconds: 1
+            failureThreshold: 20
+  traffic:
+    - latestRevision: true
+      percent: 100
+---
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: REPLACE_API_SERVICE_NAME
+  namespace: "REPLACE_PROJECT_NUMBER"
+  labels:
+    cloud.googleapis.com/location: REPLACE_REGION
+  annotations:
+    run.googleapis.com/description: UNCONFIGURED - private fake-provider guest API
+    # IAM is mandatory. "all" ingress permits authenticated Cloud Run callers
+    # without inventing a VPC/network path; it does not grant public invocation.
+    run.googleapis.com/ingress: all
+    run.googleapis.com/invoker-iam-disabled: "false"
+    run.googleapis.com/minScale: "0"
+    run.googleapis.com/maxScale: "2"
+spec:
+  template:
+    metadata:
+      annotations:
+        run.googleapis.com/execution-environment: gen2
+        run.googleapis.com/cloudsql-instances: REPLACE_PROJECT_ID:REPLACE_REGION:REPLACE_SQL_INSTANCE
+    spec:
+      serviceAccountName: REPLACE_API_SA@REPLACE_PROJECT_ID.iam.gserviceaccount.com
+      containerConcurrency: 8
+      timeoutSeconds: 90
+      containers:
+        - image: REPLACE_REGION-docker.pkg.dev/REPLACE_PROJECT_ID/REPLACE_REPOSITORY/backend@sha256:REPLACE_BACKEND_IMAGE_DIGEST
+          command: [python, -m, choreograph.release]
+          args: [api]
+          ports:
+            - name: http1
+              containerPort: 8080
+          resources:
+            limits:
+              cpu: "1"
+              memory: 512Mi
+          env:
+            - name: CHOREOGRAPH_PROFILE
+              value: fake
+            - name: CHOREOGRAPH_ORIGIN
+              value: https://REPLACE_FRONTEND_SERVICE_ORIGIN.run.app
+            - name: CHOREOGRAPH_DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: REPLACE_APPLICATION_DATABASE_URL_SECRET_NAME
+                  key: "REPLACE_PINNED_APPLICATION_DATABASE_URL_SECRET_VERSION"
+            - name: CHOREOGRAPH_BRIDGE_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: REPLACE_BRIDGE_SECRET_NAME
+                  key: "REPLACE_PINNED_BRIDGE_SECRET_VERSION"
+            - name: CHOREOGRAPH_TOKEN_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: REPLACE_TOKEN_KEY_SECRET_NAME
+                  key: "REPLACE_PINNED_TOKEN_KEY_SECRET_VERSION"
+          startupProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            periodSeconds: 3
+            timeoutSeconds: 1
+            failureThreshold: 20
+  traffic:
+    - latestRevision: true
+      percent: 100
+---
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: REPLACE_WORKER_SERVICE_NAME
+  namespace: "REPLACE_PROJECT_NUMBER"
+  labels:
+    cloud.googleapis.com/location: REPLACE_REGION
+  annotations:
+    run.googleapis.com/description: UNCONFIGURED - private authenticated fake CRM task target
+    run.googleapis.com/ingress: all
+    run.googleapis.com/invoker-iam-disabled: "false"
+    run.googleapis.com/minScale: "0"
+    run.googleapis.com/maxScale: "1"
+spec:
+  template:
+    metadata:
+      annotations:
+        run.googleapis.com/execution-environment: gen2
+        run.googleapis.com/cloudsql-instances: REPLACE_PROJECT_ID:REPLACE_REGION:REPLACE_SQL_INSTANCE
+    spec:
+      serviceAccountName: REPLACE_WORKER_SA@REPLACE_PROJECT_ID.iam.gserviceaccount.com
+      containerConcurrency: 2
+      timeoutSeconds: 120
+      containers:
+        - image: REPLACE_REGION-docker.pkg.dev/REPLACE_PROJECT_ID/REPLACE_REPOSITORY/backend@sha256:REPLACE_BACKEND_IMAGE_DIGEST
+          command: [python, -m, choreograph.release]
+          args: [worker]
+          ports:
+            - name: http1
+              containerPort: 8080
+          resources:
+            limits:
+              cpu: "1"
+              memory: 512Mi
+          env:
+            - name: CHOREOGRAPH_PROFILE
+              value: fake
+            - name: CHOREOGRAPH_ORIGIN
+              value: https://REPLACE_FRONTEND_SERVICE_ORIGIN.run.app
+            - name: CHOREOGRAPH_TASK_URL
+              value: https://REPLACE_WORKER_SERVICE_ORIGIN.run.app/internal/tasks/crm
+            - name: CHOREOGRAPH_TASK_AUDIENCE
+              value: https://REPLACE_WORKER_SERVICE_ORIGIN.run.app
+            - name: CHOREOGRAPH_TASK_SERVICE_EMAIL
+              value: REPLACE_TASK_DELIVERY_SA@REPLACE_PROJECT_ID.iam.gserviceaccount.com
+            - name: CHOREOGRAPH_DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: REPLACE_APPLICATION_DATABASE_URL_SECRET_NAME
+                  key: "REPLACE_PINNED_APPLICATION_DATABASE_URL_SECRET_VERSION"
+            - name: CHOREOGRAPH_BRIDGE_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: REPLACE_BRIDGE_SECRET_NAME
+                  key: "REPLACE_PINNED_BRIDGE_SECRET_VERSION"
+            - name: CHOREOGRAPH_TOKEN_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: REPLACE_TOKEN_KEY_SECRET_NAME
+                  key: "REPLACE_PINNED_TOKEN_KEY_SECRET_VERSION"
+          startupProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            periodSeconds: 3
+            timeoutSeconds: 1
+            failureThreshold: 20
+  traffic:
+    - latestRevision: true
+      percent: 100
+---
+# Separate schema-release identity. Creating this Job would not execute it.
+apiVersion: run.googleapis.com/v1
+kind: Job
+metadata:
+  name: REPLACE_MIGRATE_JOB_NAME
+  namespace: "REPLACE_PROJECT_NUMBER"
+  labels:
+    cloud.googleapis.com/location: REPLACE_REGION
+  annotations:
+    run.googleapis.com/description: UNCONFIGURED - explicitly authorized schema release only
+spec:
+  template:
+    metadata:
+      annotations:
+        run.googleapis.com/cloudsql-instances: REPLACE_PROJECT_ID:REPLACE_REGION:REPLACE_SQL_INSTANCE
+    spec:
+      parallelism: 1
+      taskCount: 1
+      template:
+        spec:
+          maxRetries: 0
+          timeoutSeconds: "300"
+          serviceAccountName: REPLACE_MIGRATE_SA@REPLACE_PROJECT_ID.iam.gserviceaccount.com
+          containers:
+            - image: REPLACE_REGION-docker.pkg.dev/REPLACE_PROJECT_ID/REPLACE_REPOSITORY/backend@sha256:REPLACE_BACKEND_IMAGE_DIGEST
+              command: [python, -m, choreograph.release]
+              args: [migrate]
+              resources:
+                limits:
+                  cpu: "1"
+                  memory: 512Mi
+              env:
+                - name: CHOREOGRAPH_PROFILE
+                  value: fake
+                - name: CHOREOGRAPH_ORIGIN
+                  value: https://REPLACE_FRONTEND_SERVICE_ORIGIN.run.app
+                - name: CHOREOGRAPH_DATABASE_URL
+                  valueFrom:
+                    secretKeyRef:
+                      name: REPLACE_MIGRATION_DATABASE_URL_SECRET_NAME
+                      key: "REPLACE_PINNED_MIGRATION_DATABASE_URL_SECRET_VERSION"
+                # Settings validation needs these fields; migration does not
+                # use guest encryption/signing. Supply valid throwaway values,
+                # not access to the application's guest key/bridge secrets.
+                - name: CHOREOGRAPH_BRIDGE_SECRET
+                  value: REPLACE_THROWAWAY_SETTINGS_ONLY_32_PLUS_CHARACTERS
+                - name: CHOREOGRAPH_TOKEN_KEY
+                  value: REPLACE_THROWAWAY_SETTINGS_ONLY_BASE64URL_32_BYTES
+---
+# Run after migrate, once before admitting guests to a new database. This is
+# fake embedding preparation only; no provider calls or per-visitor re-indexing.
+apiVersion: run.googleapis.com/v1
+kind: Job
+metadata:
+  name: REPLACE_PREPARE_KNOWLEDGE_JOB_NAME
+  namespace: "REPLACE_PROJECT_NUMBER"
+  labels:
+    cloud.googleapis.com/location: REPLACE_REGION
+  annotations:
+    run.googleapis.com/description: UNCONFIGURED - explicitly invoked fake sample preparation
+spec:
+  template:
+    metadata:
+      annotations:
+        run.googleapis.com/cloudsql-instances: REPLACE_PROJECT_ID:REPLACE_REGION:REPLACE_SQL_INSTANCE
+    spec:
+      parallelism: 1
+      taskCount: 1
+      template:
+        spec:
+          maxRetries: 0
+          timeoutSeconds: "300"
+          serviceAccountName: REPLACE_MIGRATE_SA@REPLACE_PROJECT_ID.iam.gserviceaccount.com
+          containers:
+            - image: REPLACE_REGION-docker.pkg.dev/REPLACE_PROJECT_ID/REPLACE_REPOSITORY/backend@sha256:REPLACE_BACKEND_IMAGE_DIGEST
+              command: [python, -m, choreograph.release]
+              args: [prepare-knowledge]
+              resources:
+                limits:
+                  cpu: "1"
+                  memory: 512Mi
+              env:
+                - name: CHOREOGRAPH_PROFILE
+                  value: fake
+                - name: CHOREOGRAPH_ORIGIN
+                  value: https://REPLACE_FRONTEND_SERVICE_ORIGIN.run.app
+                - name: CHOREOGRAPH_DATABASE_URL
+                  valueFrom:
+                    secretKeyRef:
+                      name: REPLACE_MIGRATION_DATABASE_URL_SECRET_NAME
+                      key: "REPLACE_PINNED_MIGRATION_DATABASE_URL_SECRET_VERSION"
+                - name: CHOREOGRAPH_BRIDGE_SECRET
+                  value: REPLACE_THROWAWAY_SETTINGS_ONLY_32_PLUS_CHARACTERS
+                - name: CHOREOGRAPH_TOKEN_KEY
+                  value: REPLACE_THROWAWAY_SETTINGS_ONLY_BASE64URL_32_BYTES
+---
+# Optional SQL-only operator tick; unattended recovery uses worker-pool.example.json.
+apiVersion: run.googleapis.com/v1
+kind: Job
+metadata:
+  name: REPLACE_MAINTENANCE_JOB_NAME
+  namespace: "REPLACE_PROJECT_NUMBER"
+  labels:
+    cloud.googleapis.com/location: REPLACE_REGION
+  annotations:
+    run.googleapis.com/description: UNCONFIGURED - one explicitly invoked SQL-only maintenance tick
+spec:
+  template:
+    metadata:
+      annotations:
+        run.googleapis.com/cloudsql-instances: REPLACE_PROJECT_ID:REPLACE_REGION:REPLACE_SQL_INSTANCE
+    spec:
+      parallelism: 1
+      taskCount: 1
+      template:
+        spec:
+          maxRetries: 0
+          timeoutSeconds: "300"
+          serviceAccountName: REPLACE_DISPATCHER_SA@REPLACE_PROJECT_ID.iam.gserviceaccount.com
+          containers:
+            - image: REPLACE_REGION-docker.pkg.dev/REPLACE_PROJECT_ID/REPLACE_REPOSITORY/backend@sha256:REPLACE_BACKEND_IMAGE_DIGEST
+              command: [python, -m, choreograph.release]
+              args: [maintenance]
+              resources:
+                limits:
+                  cpu: "1"
+                  memory: 512Mi
+              env:
+                - name: CHOREOGRAPH_PROFILE
+                  value: fake
+                - name: CHOREOGRAPH_ORIGIN
+                  value: https://REPLACE_FRONTEND_SERVICE_ORIGIN.run.app
+                - name: CHOREOGRAPH_DATABASE_URL
+                  valueFrom:
+                    secretKeyRef:
+                      name: REPLACE_APPLICATION_DATABASE_URL_SECRET_NAME
+                      key: "REPLACE_PINNED_APPLICATION_DATABASE_URL_SECRET_VERSION"
+                - name: CHOREOGRAPH_CRM_PROVIDER
+                  value: disabled
+                - name: CHOREOGRAPH_BRIDGE_SECRET
+                  value: REPLACE_THROWAWAY_SETTINGS_ONLY_32_PLUS_CHARACTERS
+                - name: CHOREOGRAPH_TOKEN_KEY
+                  value: REPLACE_THROWAWAY_SETTINGS_ONLY_BASE64URL_32_BYTES
