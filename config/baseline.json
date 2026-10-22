@@ -1,0 +1,18 @@
+{
+  "checked": "2026-10-22",
+  "node": "24.19.0",
+  "python": "3.11.9",
+  "postgresImage": "pgvector/pgvector:0.8.5-pg17-bookworm",
+  "postgresLinuxAmd64Digest": "sha256:815bf5378222044da3b34d98e6a5fdac37b15c428b67d09c7c2d90a038e597bf",
+  "versions": "Exact application packages in package-lock.json and apps/backend/requirements.lock.txt; direct selections in package.json and requirements.in.",
+  "sources": [
+    "https://nextjs.org/docs/app/getting-started/installation",
+    "https://registry.npmjs.org/next/16.4.2",
+    "https://pypi.org/pypi/fastapi/0.159.1/json",
+    "https://docs.sqlalchemy.org/en/20/dialects/postgresql.html",
+    "https://docs.cloud.google.com/sql/docs/postgres/extensions",
+    "https://github.com/pgvector/pgvector"
+  ],
+  "providerModel": null,
+  "providerAcceptance": "Not authorized or run; local fake only."
+}

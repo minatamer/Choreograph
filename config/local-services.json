@@ -1,0 +1,6 @@
+{
+  "project": "choreograph-local",
+  "host": "127.0.0.1",
+  "ports": { "frontend": 45860, "api": 45861, "postgres": 45862 },
+  "container": "choreograph-local-postgres-1"
+}

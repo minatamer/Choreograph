@@ -1,0 +1,23 @@
+name: choreograph-local
+services:
+  postgres:
+    image: pgvector/pgvector:0.8.5-pg17-bookworm@sha256:d2ef61f42ef767baa5a1475393303cc235bcd92febd9d7014eddb48b41f3bad0
+    labels:
+      com.choreograph.owner: local
+    environment:
+      POSTGRES_DB: choreograph
+      POSTGRES_USER: choreograph
+      POSTGRES_PASSWORD: ${CHOREOGRAPH_DB_PASSWORD:?Run the local setup first}
+    ports:
+      - "127.0.0.1:45862:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U choreograph -d choreograph"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+volumes:
+  postgres-data:
+    labels:
+      com.choreograph.owner: local

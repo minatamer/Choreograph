@@ -1,0 +1,16 @@
+node_modules/
+apps/frontend/public/vendor/pdfjs/
+apps/frontend/public/samples/
+.next/
+.venv/
+.env.local
+.runtime/
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+*.pyc
+test-results/
+playwright-report/
+apps/backend/*.egg-info/
+*.tsbuildinfo
+dist/

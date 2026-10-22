@@ -1,0 +1,25 @@
+{
+  "name": "@choreograph/frontend",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "predev": "node ../../scripts/pdf-assets.mjs",
+    "prebuild": "node ../../scripts/pdf-assets.mjs",
+    "dev": "next dev --hostname 127.0.0.1 --port 45860",
+    "build": "next build",
+    "start": "next start --hostname 127.0.0.1 --port 45860",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "next": "16.4.2",
+    "pdfjs-dist": "6.4.299",
+    "react": "19.3.1",
+    "react-dom": "19.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "24.19.2",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.2.3",
+    "typescript": "6.0.3"
+  }
+}

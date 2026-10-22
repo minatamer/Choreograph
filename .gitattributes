@@ -1,0 +1,3 @@
+# Keep verified build-input bytes stable across Windows and Linux checkouts.
+# Release receipts hash the source bytes; do not apply automatic CRLF conversion.
+* -text
