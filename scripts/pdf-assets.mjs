@@ -1,0 +1,13 @@
+import {cp,mkdir,readFile} from 'node:fs/promises';
+import path from 'node:path';
+import {fileURLToPath} from 'node:url';
+const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
+const source=path.join(root,'node_modules/pdfjs-dist');
+const target=path.join(root,'apps/frontend/public/vendor/pdfjs');
+await mkdir(target,{recursive:true});
+await cp(path.join(source,'build/pdf.worker.min.mjs'),path.join(target,'pdf.worker.min.mjs'));
+for(const name of ['standard_fonts','cmaps','wasm'])await cp(path.join(source,name),path.join(target,name),{recursive:true});
+await mkdir(path.join(root,'apps/frontend/public/samples'),{recursive:true});
+await cp(path.join(root,'assets/knowledge/preparation-guide-v2.pdf'),path.join(root,'apps/frontend/public/samples/preparation-guide-v2.pdf'));
+const {version}=JSON.parse(await readFile(path.join(source,'package.json'),'utf8'));
+console.log(`Self-hosted PDF.js ${version} assets ready.`);

@@ -1,0 +1,2586 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Choreograph guest API",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/health": {
+      "get": {
+        "summary": "Health",
+        "operationId": "health_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Health"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/session": {
+      "get": {
+        "summary": "Get Session",
+        "operationId": "get_session_v1_session_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionView"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Start Session",
+        "operationId": "start_session_v1_session_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StartSession"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionView"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/reset": {
+      "post": {
+        "summary": "Reset Session",
+        "operationId": "reset_session_v1_reset_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResetSession"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionView"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/availability": {
+      "get": {
+        "summary": "Get Availability",
+        "operationId": "get_availability_v1_availability_get",
+        "parameters": [
+          {
+            "name": "week",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Week"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WeekView"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/draft": {
+      "put": {
+        "summary": "Edit Draft",
+        "operationId": "edit_draft_v1_draft_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DraftCommand"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MutationView"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/requests": {
+      "post": {
+        "summary": "Send Request",
+        "operationId": "send_request_v1_requests_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubmitCommand"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MutationView"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/chat": {
+      "post": {
+        "summary": "Send Chat",
+        "operationId": "send_chat_v1_chat_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChatCommand"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MutationView"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/requests/{request_id}/availability": {
+      "get": {
+        "summary": "Request Availability",
+        "operationId": "request_availability_v1_requests__request_id__availability_get",
+        "parameters": [
+          {
+            "name": "request_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Request Id"
+            }
+          },
+          {
+            "name": "week",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Week"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WeekView"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/requests/{request_id}/{action}": {
+      "post": {
+        "summary": "Update Booking",
+        "operationId": "update_booking_v1_requests__request_id___action__post",
+        "parameters": [
+          {
+            "name": "request_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Request Id"
+            }
+          },
+          {
+            "name": "action",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Action"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BookingCommand"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MutationView"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/documents/{version_id}": {
+      "get": {
+        "summary": "Detail",
+        "operationId": "detail_v1_documents__version_id__get",
+        "parameters": [
+          {
+            "name": "version_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Version Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocumentDetail"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/documents/{version_id}/source": {
+      "get": {
+        "summary": "Original",
+        "operationId": "original_v1_documents__version_id__source_get",
+        "parameters": [
+          {
+            "name": "version_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Version Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/documents/{slot}/replace": {
+      "post": {
+        "summary": "Replacement",
+        "operationId": "replacement_v1_documents__slot__replace_post",
+        "parameters": [
+          {
+            "name": "slot",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slot"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReplaceDocument"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MutationView"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/crm/connect": {
+      "post": {
+        "summary": "Connect",
+        "operationId": "connect_v1_crm_connect_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Command"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MutationView"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/crm/callback": {
+      "post": {
+        "summary": "Callback",
+        "operationId": "callback_v1_crm_callback_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OAuthCallback"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MutationView"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/crm/consent": {
+      "post": {
+        "summary": "Consent",
+        "operationId": "consent_v1_crm_consent_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CRMConsent"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MutationView"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/crm/setup": {
+      "post": {
+        "summary": "Setup",
+        "operationId": "setup_v1_crm_setup_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CRMSetup"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MutationView"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/crm/disconnect": {
+      "post": {
+        "summary": "Skip",
+        "operationId": "skip_v1_crm_disconnect_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Command"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MutationView"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/crm/skip": {
+      "post": {
+        "summary": "Skip",
+        "operationId": "skip_v1_crm_skip_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Command"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MutationView"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/crm/finish": {
+      "post": {
+        "summary": "Finish",
+        "operationId": "finish_v1_crm_finish_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CRMFinish"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MutationView"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ActionReceipt": {
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": [
+              "confirmed",
+              "rescheduled",
+              "cancelled",
+              "completed"
+            ],
+            "title": "Action"
+          },
+          "status": {
+            "type": "string",
+            "const": "accepted",
+            "title": "Status"
+          },
+          "booking_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Booking Id"
+          },
+          "enquiry_revision": {
+            "type": "integer",
+            "title": "Enquiry Revision"
+          },
+          "crm_state": {
+            "type": "string",
+            "title": "Crm State"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "action",
+          "status",
+          "booking_id",
+          "enquiry_revision",
+          "crm_state"
+        ],
+        "title": "ActionReceipt"
+      },
+      "BookingCommand": {
+        "properties": {
+          "generation": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Generation"
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Revision"
+          },
+          "request_revision": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Request Revision"
+          },
+          "confirm": {
+            "type": "boolean",
+            "const": true,
+            "title": "Confirm"
+          },
+          "staff_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "ada",
+                  "noah"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Staff Id"
+          },
+          "preferred_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Preferred At"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "generation",
+          "revision",
+          "request_revision",
+          "confirm"
+        ],
+        "title": "BookingCommand"
+      },
+      "BookingView": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "enquiry_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Enquiry Id"
+          },
+          "staff_id": {
+            "type": "string",
+            "title": "Staff Id"
+          },
+          "starts_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Starts At"
+          },
+          "ends_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Ends At"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "blocked",
+              "confirmed",
+              "completed",
+              "cancelled"
+            ],
+            "title": "State"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "enquiry_id",
+          "staff_id",
+          "starts_at",
+          "ends_at",
+          "state",
+          "label"
+        ],
+        "title": "BookingView"
+      },
+      "CRMConnectionView": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "provider": {
+            "type": "string",
+            "enum": [
+              "fake",
+              "hubspot"
+            ],
+            "title": "Provider"
+          },
+          "state": {
+            "type": "string",
+            "title": "State"
+          },
+          "consented": {
+            "type": "boolean",
+            "title": "Consented"
+          },
+          "can_uninstall": {
+            "type": "boolean",
+            "title": "Can Uninstall"
+          },
+          "contact_name": {
+            "type": "string",
+            "title": "Contact Name"
+          },
+          "contact_email": {
+            "type": "string",
+            "title": "Contact Email"
+          },
+          "cleanup_state": {
+            "type": "string",
+            "title": "Cleanup State",
+            "default": "not_requested"
+          },
+          "uninstall_state": {
+            "type": "string",
+            "title": "Uninstall State",
+            "default": "not_requested"
+          },
+          "destinations": {
+            "items": {
+              "$ref": "#/components/schemas/CRMDestination"
+            },
+            "type": "array",
+            "title": "Destinations"
+          },
+          "destination_label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Destination Label"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "label",
+          "provider",
+          "state",
+          "consented",
+          "can_uninstall",
+          "contact_name",
+          "contact_email",
+          "cleanup_state",
+          "uninstall_state",
+          "destinations",
+          "destination_label"
+        ],
+        "title": "CRMConnectionView"
+      },
+      "CRMConsent": {
+        "properties": {
+          "generation": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Generation"
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Revision"
+          },
+          "connection_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Connection Id"
+          },
+          "confirm": {
+            "type": "boolean",
+            "const": true,
+            "title": "Confirm"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "generation",
+          "revision",
+          "connection_id",
+          "confirm"
+        ],
+        "title": "CRMConsent"
+      },
+      "CRMDestination": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "stages": {
+            "items": {
+              "$ref": "#/components/schemas/CRMStage"
+            },
+            "type": "array",
+            "title": "Stages"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "label",
+          "stages"
+        ],
+        "title": "CRMDestination"
+      },
+      "CRMFinish": {
+        "properties": {
+          "generation": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Generation"
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Revision"
+          },
+          "connection_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Connection Id"
+          },
+          "confirm": {
+            "type": "boolean",
+            "const": true,
+            "title": "Confirm"
+          },
+          "cleanup": {
+            "type": "boolean",
+            "title": "Cleanup",
+            "default": false
+          },
+          "uninstall": {
+            "type": "boolean",
+            "title": "Uninstall",
+            "default": false
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "generation",
+          "revision",
+          "connection_id",
+          "confirm"
+        ],
+        "title": "CRMFinish"
+      },
+      "CRMSetup": {
+        "properties": {
+          "generation": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Generation"
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Revision"
+          },
+          "connection_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Connection Id"
+          },
+          "confirm": {
+            "type": "boolean",
+            "const": true,
+            "title": "Confirm"
+          },
+          "pipeline_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9_-]+$",
+            "title": "Pipeline Id"
+          },
+          "stage_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9_-]+$",
+            "title": "Stage Id"
+          },
+          "allow_schema": {
+            "type": "boolean",
+            "title": "Allow Schema",
+            "default": false
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "generation",
+          "revision",
+          "connection_id",
+          "confirm",
+          "pipeline_id",
+          "stage_id"
+        ],
+        "title": "CRMSetup"
+      },
+      "CRMStage": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "label"
+        ],
+        "title": "CRMStage"
+      },
+      "ChatCommand": {
+        "properties": {
+          "generation": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Generation"
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Revision"
+          },
+          "text": {
+            "type": "string",
+            "maxLength": 1200,
+            "minLength": 1,
+            "title": "Text"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "generation",
+          "revision",
+          "text"
+        ],
+        "title": "ChatCommand"
+      },
+      "ChatMessage": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "user",
+              "assistant"
+            ],
+            "title": "Role"
+          },
+          "text": {
+            "type": "string",
+            "title": "Text"
+          },
+          "claims": {
+            "items": {
+              "$ref": "#/components/schemas/SourceClaim"
+            },
+            "type": "array",
+            "title": "Claims"
+          },
+          "cards": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "services",
+                "clarify",
+                "quote",
+                "week",
+                "review"
+              ]
+            },
+            "type": "array",
+            "title": "Cards"
+          },
+          "suggestions": {
+            "items": {
+              "$ref": "#/components/schemas/Suggestion"
+            },
+            "type": "array",
+            "title": "Suggestions"
+          },
+          "requested_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Requested Date"
+          },
+          "revision": {
+            "type": "integer",
+            "title": "Revision"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "role",
+          "text",
+          "claims",
+          "cards",
+          "suggestions",
+          "requested_date",
+          "revision"
+        ],
+        "title": "ChatMessage"
+      },
+      "Command": {
+        "properties": {
+          "generation": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Generation"
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Revision"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "generation",
+          "revision"
+        ],
+        "title": "Command"
+      },
+      "DayView": {
+        "properties": {
+          "date": {
+            "type": "string",
+            "format": "date",
+            "title": "Date"
+          },
+          "weekday": {
+            "type": "string",
+            "title": "Weekday"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "past",
+              "outside",
+              "closed",
+              "available",
+              "busy"
+            ],
+            "title": "Status"
+          },
+          "slots": {
+            "items": {
+              "$ref": "#/components/schemas/SlotView"
+            },
+            "type": "array",
+            "title": "Slots"
+          },
+          "occupied": {
+            "items": {
+              "$ref": "#/components/schemas/OccupiedView"
+            },
+            "type": "array",
+            "title": "Occupied"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "date",
+          "weekday",
+          "status",
+          "slots",
+          "occupied"
+        ],
+        "title": "DayView"
+      },
+      "DocumentDetail": {
+        "properties": {
+          "document": {
+            "$ref": "#/components/schemas/DocumentView"
+          },
+          "passages": {
+            "items": {
+              "$ref": "#/components/schemas/PassageView"
+            },
+            "type": "array",
+            "title": "Passages"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "document",
+          "passages"
+        ],
+        "title": "DocumentDetail"
+      },
+      "DocumentView": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "slot": {
+            "type": "string",
+            "title": "Slot"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "version": {
+            "type": "string",
+            "title": "Version"
+          },
+          "pages": {
+            "type": "integer",
+            "title": "Pages"
+          },
+          "media_type": {
+            "type": "string",
+            "title": "Media Type"
+          },
+          "private": {
+            "type": "boolean",
+            "title": "Private"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "slot",
+          "title",
+          "version",
+          "pages",
+          "media_type",
+          "private"
+        ],
+        "title": "DocumentView"
+      },
+      "DraftCommand": {
+        "properties": {
+          "generation": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Generation"
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Revision"
+          },
+          "service": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "regular",
+                  "deep",
+                  "move-out"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Service"
+          },
+          "bedrooms": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 3.0,
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bedrooms"
+          },
+          "oven": {
+            "type": "boolean",
+            "title": "Oven",
+            "default": false
+          },
+          "preferred_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Preferred At"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "generation",
+          "revision"
+        ],
+        "title": "DraftCommand"
+      },
+      "DraftView": {
+        "properties": {
+          "service": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "regular",
+                  "deep",
+                  "move-out"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Service"
+          },
+          "bedrooms": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 3.0,
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bedrooms"
+          },
+          "oven": {
+            "type": "boolean",
+            "title": "Oven",
+            "default": false
+          },
+          "preferred_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Preferred At"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "service",
+          "bedrooms",
+          "oven",
+          "preferred_at"
+        ],
+        "title": "DraftView"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "Health": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "const": "ok",
+            "title": "Status",
+            "default": "ok"
+          },
+          "profile": {
+            "type": "string",
+            "enum": [
+              "fake",
+              "live"
+            ],
+            "title": "Profile",
+            "default": "fake"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "status",
+          "profile"
+        ],
+        "title": "Health"
+      },
+      "MutationView": {
+        "properties": {
+          "state": {
+            "$ref": "#/components/schemas/SessionView"
+          },
+          "request_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Request Id"
+          },
+          "applied_revision": {
+            "type": "integer",
+            "title": "Applied Revision"
+          },
+          "replayed": {
+            "type": "boolean",
+            "title": "Replayed"
+          },
+          "receipt": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ActionReceipt"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "document_notice": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ReplacementNotice"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "oauth": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/OAuthChallenge"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "crm_notice": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Crm Notice"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "state",
+          "request_id",
+          "applied_revision",
+          "replayed",
+          "receipt",
+          "document_notice",
+          "oauth",
+          "crm_notice"
+        ],
+        "title": "MutationView"
+      },
+      "OAuthCallback": {
+        "properties": {
+          "generation": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Generation"
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Revision"
+          },
+          "state": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 32,
+            "title": "State"
+          },
+          "code": {
+            "type": "string",
+            "maxLength": 600,
+            "title": "Code",
+            "default": ""
+          },
+          "denied": {
+            "type": "boolean",
+            "title": "Denied",
+            "default": false
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "generation",
+          "revision",
+          "state"
+        ],
+        "title": "OAuthCallback"
+      },
+      "OAuthChallenge": {
+        "properties": {
+          "state": {
+            "type": "string",
+            "title": "State"
+          },
+          "authorize_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Authorize Url"
+          },
+          "simulated": {
+            "type": "boolean",
+            "title": "Simulated"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "state",
+          "authorize_url",
+          "simulated"
+        ],
+        "title": "OAuthChallenge"
+      },
+      "OccupiedView": {
+        "properties": {
+          "start": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Start"
+          },
+          "end": {
+            "type": "string",
+            "format": "date-time",
+            "title": "End"
+          },
+          "staff_id": {
+            "type": "string",
+            "title": "Staff Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "start",
+          "end",
+          "staff_id"
+        ],
+        "title": "OccupiedView"
+      },
+      "PassageView": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "page": {
+            "type": "integer",
+            "title": "Page"
+          },
+          "section": {
+            "type": "string",
+            "title": "Section"
+          },
+          "content": {
+            "type": "string",
+            "title": "Content"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "page",
+          "section",
+          "content"
+        ],
+        "title": "PassageView"
+      },
+      "QuoteItem": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "cents": {
+            "type": "integer",
+            "title": "Cents"
+          },
+          "minutes": {
+            "type": "integer",
+            "title": "Minutes"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "name",
+          "cents",
+          "minutes"
+        ],
+        "title": "QuoteItem"
+      },
+      "QuoteView": {
+        "properties": {
+          "currency": {
+            "type": "string",
+            "const": "USD",
+            "title": "Currency"
+          },
+          "cents": {
+            "type": "integer",
+            "title": "Cents"
+          },
+          "minutes": {
+            "type": "integer",
+            "title": "Minutes"
+          },
+          "revision": {
+            "type": "integer",
+            "title": "Revision"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/QuoteItem"
+            },
+            "type": "array",
+            "title": "Items"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "currency",
+          "cents",
+          "minutes",
+          "revision",
+          "items"
+        ],
+        "title": "QuoteView"
+      },
+      "ReplaceDocument": {
+        "properties": {
+          "generation": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Generation"
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Revision"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "pdf",
+              "text"
+            ],
+            "title": "Kind"
+          },
+          "data": {
+            "type": "string",
+            "maxLength": 2796204,
+            "minLength": 1,
+            "title": "Data"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "generation",
+          "revision",
+          "kind",
+          "data"
+        ],
+        "title": "ReplaceDocument"
+      },
+      "ReplacementNotice": {
+        "properties": {
+          "ready": {
+            "type": "boolean",
+            "title": "Ready"
+          },
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "ready",
+          "code",
+          "message"
+        ],
+        "title": "ReplacementNotice"
+      },
+      "RequestView": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "revision": {
+            "type": "integer",
+            "title": "Revision"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "awaiting_review",
+              "confirmed",
+              "cancelled",
+              "completed"
+            ],
+            "title": "Status"
+          },
+          "fields": {
+            "$ref": "#/components/schemas/DraftView"
+          },
+          "quote": {
+            "$ref": "#/components/schemas/QuoteView"
+          },
+          "preferred_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Preferred At"
+          },
+          "booking": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/BookingView"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "crm_state": {
+            "type": "string",
+            "title": "Crm State",
+            "default": "not_connected"
+          },
+          "crm_links": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Crm Links"
+          },
+          "crm_receipt": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Crm Receipt"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "revision",
+          "status",
+          "fields",
+          "quote",
+          "preferred_at",
+          "booking",
+          "crm_state",
+          "crm_links",
+          "crm_receipt"
+        ],
+        "title": "RequestView"
+      },
+      "ResetSession": {
+        "properties": {
+          "timezone": {
+            "type": "string",
+            "maxLength": 80,
+            "minLength": 1,
+            "title": "Timezone"
+          },
+          "restart": {
+            "type": "boolean",
+            "title": "Restart",
+            "default": false
+          },
+          "generation": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Generation"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "timezone",
+          "generation"
+        ],
+        "title": "ResetSession"
+      },
+      "Scenario": {
+        "properties": {
+          "busy_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Busy Date"
+          },
+          "alternative_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Alternative Date"
+          },
+          "week_start": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Week Start"
+          },
+          "requested_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Requested Date"
+          },
+          "requested_time": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Requested Time"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "busy_date",
+          "alternative_date",
+          "week_start",
+          "requested_date",
+          "requested_time"
+        ],
+        "title": "Scenario"
+      },
+      "SessionView": {
+        "properties": {
+          "workspace_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Workspace Id"
+          },
+          "timezone": {
+            "type": "string",
+            "title": "Timezone"
+          },
+          "expires_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Expires At"
+          },
+          "generation": {
+            "type": "integer",
+            "title": "Generation"
+          },
+          "revision": {
+            "type": "integer",
+            "title": "Revision"
+          },
+          "csrf": {
+            "type": "string",
+            "title": "Csrf"
+          },
+          "profile": {
+            "type": "string",
+            "enum": [
+              "fake",
+              "live"
+            ],
+            "title": "Profile",
+            "default": "fake"
+          },
+          "crm_provider": {
+            "type": "string",
+            "enum": [
+              "fake",
+              "hubspot",
+              "disabled"
+            ],
+            "title": "Crm Provider",
+            "default": "fake"
+          },
+          "crm_mode": {
+            "type": "string",
+            "title": "Crm Mode"
+          },
+          "draft": {
+            "$ref": "#/components/schemas/DraftView"
+          },
+          "messages": {
+            "items": {
+              "$ref": "#/components/schemas/ChatMessage"
+            },
+            "type": "array",
+            "title": "Messages"
+          },
+          "quote": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/QuoteView"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "scenario": {
+            "$ref": "#/components/schemas/Scenario"
+          },
+          "requests": {
+            "items": {
+              "$ref": "#/components/schemas/RequestView"
+            },
+            "type": "array",
+            "title": "Requests"
+          },
+          "calendar": {
+            "items": {
+              "$ref": "#/components/schemas/BookingView"
+            },
+            "type": "array",
+            "title": "Calendar"
+          },
+          "calendar_week_start": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Calendar Week Start"
+          },
+          "calendar_last_week_start": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Calendar Last Week Start"
+          },
+          "summary": {
+            "$ref": "#/components/schemas/Summary"
+          },
+          "documents": {
+            "items": {
+              "$ref": "#/components/schemas/DocumentView"
+            },
+            "type": "array",
+            "title": "Documents"
+          },
+          "replacements_left": {
+            "type": "integer",
+            "title": "Replacements Left",
+            "default": 3
+          },
+          "connection": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CRMConnectionView"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "crm_available": {
+            "type": "boolean",
+            "title": "Crm Available",
+            "default": true
+          },
+          "crm_schema_setup_allowed": {
+            "type": "boolean",
+            "title": "Crm Schema Setup Allowed",
+            "default": false
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "workspace_id",
+          "timezone",
+          "expires_at",
+          "generation",
+          "revision",
+          "csrf",
+          "profile",
+          "crm_provider",
+          "crm_mode",
+          "draft",
+          "messages",
+          "quote",
+          "scenario",
+          "requests",
+          "calendar",
+          "calendar_week_start",
+          "calendar_last_week_start",
+          "summary",
+          "documents",
+          "replacements_left",
+          "connection",
+          "crm_available",
+          "crm_schema_setup_allowed"
+        ],
+        "title": "SessionView"
+      },
+      "SlotView": {
+        "properties": {
+          "start": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Start"
+          },
+          "end": {
+            "type": "string",
+            "format": "date-time",
+            "title": "End"
+          },
+          "staff_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Staff Ids"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "start",
+          "end",
+          "staff_ids"
+        ],
+        "title": "SlotView"
+      },
+      "SourceClaim": {
+        "properties": {
+          "version_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Version Id"
+          },
+          "passage_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Passage Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "version": {
+            "type": "string",
+            "title": "Version"
+          },
+          "page": {
+            "type": "integer",
+            "title": "Page"
+          },
+          "section": {
+            "type": "string",
+            "title": "Section"
+          },
+          "media_type": {
+            "type": "string",
+            "title": "Media Type"
+          },
+          "excerpt": {
+            "type": "string",
+            "title": "Excerpt"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "version_id",
+          "passage_id",
+          "title",
+          "version",
+          "page",
+          "section",
+          "media_type",
+          "excerpt"
+        ],
+        "title": "SourceClaim"
+      },
+      "StartSession": {
+        "properties": {
+          "timezone": {
+            "type": "string",
+            "maxLength": 80,
+            "minLength": 1,
+            "title": "Timezone"
+          },
+          "restart": {
+            "type": "boolean",
+            "title": "Restart",
+            "default": false
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "timezone"
+        ],
+        "title": "StartSession"
+      },
+      "SubmitCommand": {
+        "properties": {
+          "generation": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Generation"
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Revision"
+          },
+          "accept_quote": {
+            "type": "boolean",
+            "const": true,
+            "title": "Accept Quote"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "generation",
+          "revision",
+          "accept_quote"
+        ],
+        "title": "SubmitCommand"
+      },
+      "Suggestion": {
+        "properties": {
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "text": {
+            "type": "string",
+            "title": "Text"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "label",
+          "text"
+        ],
+        "title": "Suggestion"
+      },
+      "Summary": {
+        "properties": {
+          "requests_count": {
+            "type": "integer",
+            "title": "Requests Count",
+            "default": 0
+          },
+          "awaiting_count": {
+            "type": "integer",
+            "title": "Awaiting Count",
+            "default": 0
+          },
+          "confirmed_count": {
+            "type": "integer",
+            "title": "Confirmed Count",
+            "default": 0
+          },
+          "booked_cents": {
+            "type": "integer",
+            "title": "Booked Cents",
+            "default": 0
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "requests_count",
+          "awaiting_count",
+          "confirmed_count",
+          "booked_cents"
+        ],
+        "title": "Summary"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      },
+      "WeekView": {
+        "properties": {
+          "week_start": {
+            "type": "string",
+            "format": "date",
+            "title": "Week Start"
+          },
+          "timezone": {
+            "type": "string",
+            "title": "Timezone"
+          },
+          "minutes": {
+            "type": "integer",
+            "title": "Minutes"
+          },
+          "days": {
+            "items": {
+              "$ref": "#/components/schemas/DayView"
+            },
+            "type": "array",
+            "title": "Days"
+          },
+          "can_previous": {
+            "type": "boolean",
+            "title": "Can Previous"
+          },
+          "can_next": {
+            "type": "boolean",
+            "title": "Can Next"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "week_start",
+          "timezone",
+          "minutes",
+          "days",
+          "can_previous",
+          "can_next"
+        ],
+        "title": "WeekView"
+      }
+    }
+  }
+}

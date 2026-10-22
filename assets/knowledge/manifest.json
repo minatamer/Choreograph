@@ -1,0 +1,65 @@
+[
+  {
+    "slot": "service",
+    "title": "Service Guide",
+    "version": "1.0",
+    "file": "service-guide.pdf",
+    "pages": 2,
+    "replacement": false,
+    "sha256": "1f65e213d4a666acab0f8e04074be6acd978eba3c1a4e2cd273e6169d77df0fd"
+  },
+  {
+    "slot": "preparation",
+    "title": "Preparation Guide",
+    "version": "1.0",
+    "file": "preparation-guide.pdf",
+    "pages": 1,
+    "replacement": false,
+    "sha256": "7a5a8140022290aab7cd103bef2c9d66a933025eb46bcaa77dfcd615fc40cc90"
+  },
+  {
+    "slot": "access",
+    "title": "Access and Arrival",
+    "version": "1.0",
+    "file": "access-and-arrival.pdf",
+    "pages": 1,
+    "replacement": false,
+    "sha256": "0e842e302350061b42e3c73cfc7d6007a87539f0485cd8ba3e398f0cd8d4e069"
+  },
+  {
+    "slot": "changes",
+    "title": "Changes and Cancellations",
+    "version": "1.0",
+    "file": "changes-and-cancellations.pdf",
+    "pages": 1,
+    "replacement": false,
+    "sha256": "c2bd1d940a7d954667aac2b7bb0be722e37c26067abbbf3685e95c7716360c1d"
+  },
+  {
+    "slot": "safety",
+    "title": "Safety and Exclusions",
+    "version": "1.0",
+    "file": "safety-and-exclusions.pdf",
+    "pages": 1,
+    "replacement": false,
+    "sha256": "22c5f3cb9a7d3fccdf341e3af7a319ce93e4e351cba54c21452c0386de88083d"
+  },
+  {
+    "slot": "preparation",
+    "title": "Preparation Guide",
+    "version": "2.0",
+    "file": "preparation-guide-v2.pdf",
+    "pages": 1,
+    "replacement": true,
+    "sha256": "3dc134462862011dd2e3b6e405d2b88defdd85dd8b9d78047565ee906f07aead"
+  },
+  {
+    "slot": "questions",
+    "title": "Service Questions",
+    "version": "1.0",
+    "file": "service-questions.md",
+    "pages": 1,
+    "replacement": false,
+    "sha256": "f185dac621b034171442abdc533d2c05a93ae0a59d3444f00c797bb19bae17a8"
+  }
+]

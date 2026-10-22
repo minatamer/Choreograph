@@ -1,0 +1,41 @@
+/* Generated from the approved Figma foundations. Edit design/figma/tokens.json. */
+:root {
+  --neutral-950: #202124;
+  --neutral-600: #5F6368;
+  --neutral-300: #BDC1C6;
+  --neutral-150: #DADCE0;
+  --canvas-50: #F5F6F8;
+  --white-0: #FFFFFF;
+  --blue-200: #D2E3FC;
+  --amber-100: #FEF7E0;
+  --blue-700: #1967D2;
+  --blue-800: #185ABC;
+  --blue-100: #E8F0FE;
+  --red-700: #B3261E;
+  --red-100: #FCE8E6;
+  --green-700: #137333;
+  --green-100: #E6F4EA;
+  --glass-surface: #FFFFFFBD;
+  --glass-edge: #FFFFFFE6;
+  --color-background-page: var(--canvas-50);
+  --color-background-surface: var(--white-0);
+  --color-background-subtle: var(--blue-100);
+  --color-background-ink: var(--neutral-950);
+  --color-selection-surface: var(--blue-200);
+  --color-status-pending-surface: var(--amber-100);
+  --color-text-primary: var(--neutral-950);
+  --color-text-secondary: var(--neutral-600);
+  --color-text-on-dark: var(--white-0);
+  --color-text-brand: var(--blue-700);
+  --color-border-default: var(--neutral-150);
+  --color-border-strong: var(--neutral-300);
+  --color-action-primary: var(--blue-700);
+  --color-action-hover: var(--blue-800);
+  --color-action-subtle: var(--blue-100);
+  --color-status-occupied: var(--red-700);
+  --color-status-occupied-surface: var(--red-100);
+  --color-status-confirmed: var(--green-700);
+  --color-status-confirmed-surface: var(--green-100);
+  --color-surface-glass: var(--glass-surface);
+  --color-border-glass: var(--glass-edge);
+}

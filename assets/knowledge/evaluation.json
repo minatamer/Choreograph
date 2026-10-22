@@ -1,0 +1,20 @@
+[
+ {"question":"Does move-out include carpet shampooing?","slot":"service","page":2,"contains":"Carpet shampooing"},
+ {"question":"Will you vacuum the rugs?","slot":"service","page":2,"contains":"vacuum accessible carpets"},
+ {"question":"What do I do with my cats?","slot":"preparation","page":1,"contains":"separate safe room"},
+ {"question":"Where should my dog stay?","slot":"preparation","page":1,"contains":"pets"},
+ {"question":"Do I need to supply products?","slot":"service","page":2,"contains":"Juniper brings"},
+ {"question":"What equipment do you bring?","slot":"service","page":2,"contains":"vacuum and a mop"},
+ {"question":"What cleaning method do you follow?","slot":"service","page":2,"contains":"higher reachable surfaces"},
+ {"question":"Can I request an unscented product?","slot":"safety","page":1,"contains":"unscented product"},
+ {"question":"Is there an allergy-safe guarantee?","slot":"safety","page":1,"contains":"do not guarantee"},
+ {"question":"How do I prepare the oven?","slot":"preparation","page":1,"contains":"cool fully"},
+ {"question":"Can I leave a key code here?","slot":"access","page":1,"contains":"Do not put a key code"},
+ {"question":"Do I have to be present for access?","slot":"access","page":1,"contains":"You may be present"},
+ {"question":"Will a failed reschedule release my old time?","slot":"changes","page":1,"contains":"keeps its old time"},
+ {"question":"Is there a cancellation fee or refund?","slot":"changes","page":1,"contains":"does not charge"},
+ {"question":"Do you remove mould or pests?","slot":"safety","page":1,"contains":"mould remediation"},
+ {"question":"Which service area do you cover?","slot":"questions","page":1,"contains":"no real dispatch area"},
+ {"question":"Can you guarantee my landlord deposit?","slot":"questions","page":1,"contains":"do not promise"},
+ {"question":"Can you move heavy furniture?","slot":"service","page":2,"contains":"do not move heavy furniture"}
+]
