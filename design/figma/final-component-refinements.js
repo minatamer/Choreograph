@@ -1,0 +1,6 @@
+const page=await figma.getNodeByIdAsync(STATE.entities.pages['01 · Design System']);await figma.setCurrentPageAsync(page);
+const semantic=await figma.variables.getVariableCollectionByIdAsync(STATE.entities.collections.semantic.id);
+let v=V['Prototype/ExportSummary'];if(!v){v=figma.variables.createVariable('Prototype/ExportSummary',semantic,'STRING');v.setValueForMode(semantic.modes[0].modeId,'Demo contact: Alex Morgan · alex.morgan@example.test\nBooking: Move-out · 2 bedrooms · $185\nSaturday 31 October · 09:00–13:30 · Your local time\nBy sending, you approve these fictional fields being synced to your connected HubSpot account after booking approval.');v.scopes=['TEXT_CONTENT'];v.setVariableCodeSyntax('WEB','var(--prototype-export-summary)');}
+const consent=componentText(C['Quote/Review'],'Consent');consent.setBoundVariable('characters',v);mutatedNodeIds.push(consent.id);
+const back=instanceByName(C['Booking/Receipt'],'Back to customer');setText(back,{Label:'Back to conversation'});mutatedNodeIds.push(back.id);
+return {createdNodeIds,mutatedNodeIds,entityDelta:{variables:{'Prototype/ExportSummary':v.id}},stats:{exportPreview:'exact fictional contact and booking fields',backAction:'conversation'}};

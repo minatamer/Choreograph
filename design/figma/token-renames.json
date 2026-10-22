@@ -1,0 +1,17 @@
+{
+  "Primitive/Graphite/950": "Primitive/Neutral/950",
+  "Primitive/Graphite/600": "Primitive/Neutral/600",
+  "Primitive/Graphite/300": "Primitive/Neutral/300",
+  "Primitive/Graphite/150": "Primitive/Neutral/150",
+  "Primitive/Saffron/400": "Primitive/Blue/200",
+  "Primitive/Saffron/100": "Primitive/Amber/100",
+  "Primitive/Violet/700": "Primitive/Blue/700",
+  "Primitive/Violet/800": "Primitive/Blue/800",
+  "Primitive/Violet/100": "Primitive/Blue/100",
+  "Primitive/Occupied/700": "Primitive/Red/700",
+  "Primitive/Occupied/100": "Primitive/Red/100",
+  "Primitive/Positive/700": "Primitive/Green/700",
+  "Primitive/Positive/100": "Primitive/Green/100",
+  "Color/Brand/Canvas": "Color/Selection/Surface",
+  "Color/Brand/Soft": "Color/Status/PendingSurface"
+}

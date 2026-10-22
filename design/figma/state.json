@@ -1,0 +1,519 @@
+{
+  "runId": "choreograph-compact-2026-10-22",
+  "fileKey": "NuFBHKBp3L62zya96K7PGQ",
+  "fileUrl": "https://www.figma.com/design/NuFBHKBp3L62zya96K7PGQ",
+  "scope": "Six desktop key frames, one mobile landing, reusable design system and two scheduling paths; connected CRM outcome separately reviewable.",
+  "step": "owner-approved-build-authorized",
+  "entities": {
+    "pages": {
+      "01 · Design System": "15:2",
+      "02 · Key Screens": "15:3"
+    },
+    "collections": {
+      "primitives": {
+        "id": "VariableCollectionId:15:4",
+        "mode": "15:0"
+      },
+      "semantic": {
+        "id": "VariableCollectionId:15:5",
+        "mode": "15:1"
+      }
+    },
+    "variables": {
+      "Primitive/Neutral/950": "VariableID:15:6",
+      "Primitive/Neutral/600": "VariableID:15:7",
+      "Primitive/Neutral/300": "VariableID:15:8",
+      "Primitive/Neutral/150": "VariableID:15:9",
+      "Primitive/Canvas/50": "VariableID:15:10",
+      "Primitive/White/0": "VariableID:15:11",
+      "Primitive/Blue/200": "VariableID:15:12",
+      "Primitive/Amber/100": "VariableID:15:13",
+      "Primitive/Blue/700": "VariableID:15:14",
+      "Primitive/Blue/800": "VariableID:15:15",
+      "Primitive/Blue/100": "VariableID:15:16",
+      "Primitive/Red/700": "VariableID:15:17",
+      "Primitive/Red/100": "VariableID:15:18",
+      "Primitive/Green/700": "VariableID:15:19",
+      "Primitive/Green/100": "VariableID:15:20",
+      "Color/Background/Page": "VariableID:15:21",
+      "Color/Background/Surface": "VariableID:15:22",
+      "Color/Background/Subtle": "VariableID:15:23",
+      "Color/Background/Ink": "VariableID:15:24",
+      "Color/Selection/Surface": "VariableID:15:25",
+      "Color/Status/PendingSurface": "VariableID:15:26",
+      "Color/Text/Primary": "VariableID:15:27",
+      "Color/Text/Secondary": "VariableID:15:28",
+      "Color/Text/OnDark": "VariableID:15:29",
+      "Color/Text/Brand": "VariableID:15:30",
+      "Color/Border/Default": "VariableID:15:31",
+      "Color/Border/Strong": "VariableID:15:32",
+      "Color/Action/Primary": "VariableID:15:33",
+      "Color/Action/Hover": "VariableID:15:34",
+      "Color/Action/Subtle": "VariableID:15:35",
+      "Color/Status/Occupied": "VariableID:15:36",
+      "Color/Status/OccupiedSurface": "VariableID:15:37",
+      "Color/Status/Confirmed": "VariableID:15:38",
+      "Color/Status/ConfirmedSurface": "VariableID:15:39",
+      "Space/0": "VariableID:15:40",
+      "Space/4": "VariableID:15:41",
+      "Space/8": "VariableID:15:42",
+      "Space/12": "VariableID:15:43",
+      "Space/16": "VariableID:15:44",
+      "Space/20": "VariableID:15:45",
+      "Space/24": "VariableID:15:46",
+      "Space/32": "VariableID:15:47",
+      "Space/40": "VariableID:15:48",
+      "Space/48": "VariableID:15:49",
+      "Space/64": "VariableID:15:50",
+      "Space/80": "VariableID:15:51",
+      "Radius/0": "VariableID:15:52",
+      "Radius/4": "VariableID:15:53",
+      "Radius/8": "VariableID:15:54",
+      "Radius/12": "VariableID:15:55",
+      "Radius/16": "VariableID:15:56",
+      "Radius/24": "VariableID:15:57",
+      "Radius/Full": "VariableID:15:58",
+      "Sample/ExportSummary": "VariableID:25:348",
+      "Primitive/Glass/Surface": "VariableID:39:348",
+      "Primitive/Glass/Edge": "VariableID:39:349",
+      "Color/Surface/Glass": "VariableID:39:350",
+      "Color/Border/Glass": "VariableID:39:351"
+    },
+    "styles": {
+      "Type/Display/L": "S:a003c5b2a2f6908d133eba96e039bcb316b22cc1,",
+      "Type/Display/M": "S:b3a8456de1d9b11b970206c4a124c0ed154c7370,",
+      "Type/Title/L": "S:5057951427ce593b42aabfc2390f1c5459216c8e,",
+      "Type/Title/M": "S:766e16a14ca3db059a6c5e295e82c2c5042c065b,",
+      "Type/Title/S": "S:89a5393b9e2a48c8c82d8d826c80ee4ea975b4a3,",
+      "Type/Body/L": "S:c1f14bd46e397e91e58bb4e738e12dbb810067d6,",
+      "Type/Body/M": "S:badaa1f891024c3c65ff24ac9a02b95a20f0dc07,",
+      "Type/Body/S": "S:f0fe4f49b8791e5bf9e70fb3ea999c7f0e02b382,",
+      "Type/Label/M": "S:edcd457efb4d59762d24d3a7cb8a0900a162a8b0,",
+      "Type/Label/S": "S:24f85bbd5ada5a12b9fc0f3600fbd7af32a9bfc4,",
+      "Type/Caption": "S:d4a89900213695e667e72478b5c90eb4ca94c90e,"
+    },
+    "components": {
+      "Icon/ArrowRight": "16:2",
+      "Icon/Chevron": "16:5",
+      "Icon/Calendar": "16:8",
+      "Icon/Document": "16:12",
+      "Icon/Check": "16:16",
+      "Icon/Plus": "16:19",
+      "Icon/Mark": "16:25",
+      "Icon/Back": "16:28",
+      "Brand/Wordmark": "16:31",
+      "Control/Button": "16:45",
+      "Control/Chip": "16:86",
+      "Status/Badge": "16:95",
+      "Navigation/LandingRail": "16:100",
+      "Navigation/AppHeader": "16:114",
+      "Chat/Composer": "16:129",
+      "Service/Card": "17:38",
+      "Calendar/Day": "17:69",
+      "Calendar/Week": "17:86",
+      "Request/Summary": "17:136",
+      "Quote/Review": "17:148",
+      "Knowledge/SourcePreview": "17:172",
+      "Calendar/StaffDay": "17:190",
+      "Booking/Receipt": "17:205",
+      "Integration/Status": "17:227",
+      "Landing/WeekScore": "18:101",
+      "Landing/Step": "20:351",
+      "Chat/UserMessage": "20:355",
+      "Chat/StartChoice": "20:365",
+      "Navigation/DemoSidebar": "20:372",
+      "Workspace/CustomerState": "40:2454",
+      "Chat/Answer": "17:42",
+      "Service/Checklist": "17:60",
+      "Chat/Reply": "20:358"
+    },
+    "frames": {
+      "K01 · Landing": "17:238",
+      "K02 · Demo entry": "17:239",
+      "K03 · Customer workspace": "17:240",
+      "K04 · Business review": "17:246",
+      "K06 · Booking · HubSpot": "17:247",
+      "K05 · Booking · No CRM": "17:248",
+      "M01 · Landing": "17:249",
+      "Foundations": "18:153",
+      "Library": "18:209",
+      "LandingContent": "21:2",
+      "MobileLandingContent": "21:164"
+    },
+    "hotspots": {
+      "landing-try": "21:35",
+      "landing-footer-try": "21:150",
+      "mobile-try": "21:179",
+      "mobile-footer-try": "21:215",
+      "entry-connect": "21:255",
+      "entry-skip": "21:263",
+      "business-documents": "23:918",
+      "business-approve": "23:938",
+      "connected-finish": "I23:981;17:222",
+      "connected-back": "I23:981;17:217",
+      "skipped-finish": "I23:1070;17:222",
+      "skipped-back": "I23:1070;17:217"
+    },
+    "effects": {
+      "Material/Glass": "S:9a313a61f97919415c4c9076c1d925eaaa80475d,",
+      "Surface/Soft backdrop": "S:143504d13cc7dc08da713457e9de84a40c87fc84,"
+    },
+    "customerStateSet": "40:2454",
+    "customerStates": {
+      "Start": "40:1945",
+      "OpenDraft": "40:2024",
+      "Source": "40:2096",
+      "BusyWeek": "40:2173",
+      "OpenWeek": "40:2281",
+      "Quote": "40:2388"
+    },
+    "customerInstance": "40:2455"
+  },
+  "preservedNodes": [
+    "4:2"
+  ],
+  "completedSteps": [
+    "sibling-source-inspection",
+    "file-and-library-discovery",
+    "typography-availability",
+    "documented-direction",
+    "foundations/created",
+    "controls/created",
+    "product-components/created",
+    "screen-wrappers/created",
+    "library-showcase/created",
+    "support-components/created",
+    "public-screens/created",
+    "workspace-screens/created",
+    "prototype/native-wired",
+    "screen-structure/verified",
+    "global-propagation/verified-restored",
+    "native-routes/verified",
+    "visual-review/agent-passed"
+  ],
+  "pendingValidations": [],
+  "ownerHandsOnEdits": "Not performed/verified; owner explicitly authorized build continuation after visual approval.",
+  "ownerVisualAcceptance": {
+    "status": "approved",
+    "quote": "FIGMA DESIGN APPROVED",
+    "source": "Direct owner message, 22 October 2026, same chat",
+    "scope": "Revised neutral/blue glass key frames; explicitly authorized finishing and proceeding with AFK build."
+  },
+  "sharingPrivacy": "unverified; no sharing mutation requested",
+  "foundationStats": {
+    "variableCount": 58,
+    "textStyles": 11,
+    "fontFamilies": [
+      "Google Sans Flex"
+    ]
+  },
+  "apiNotes": [
+    "Starter: native single-action navigation and Change to, no advanced prototype variables or conditional routing.",
+    "Glass uses shared effect/surface/edge definitions. Native Apple refraction is not simulated."
+  ],
+  "controlStats": {
+    "components": 16,
+    "buttonVariants": 9,
+    "fonts": [
+      "Bricolage Grotesque",
+      "Albert Sans"
+    ],
+    "mainComponentsX": 2040
+  },
+  "productStats": {
+    "productComponents": 11,
+    "dayVariants": 4,
+    "weekDays": 7,
+    "allNativeText": true
+  },
+  "showcaseStats": {
+    "foundationBounds": {
+      "width": 1600,
+      "height": 1274
+    },
+    "libraryBounds": {
+      "width": 1600,
+      "height": 1925
+    },
+    "showcaseInstances": 69,
+    "nativeText": 306,
+    "noImageNodes": true
+  },
+  "publicStats": {
+    "publicScreens": 3,
+    "fullLandingContent": {
+      "id": "21:2",
+      "width": 1440,
+      "height": 1688
+    },
+    "mobileContent": {
+      "id": "21:164",
+      "width": 390,
+      "height": 1889
+    },
+    "imageFilledNodes": 0,
+    "fonts": [
+      "Bricolage Grotesque",
+      "Albert Sans"
+    ]
+  },
+  "workspaceStats": {
+    "workspaceFrames": 9,
+    "textFamilies": [
+      "Bricolage Grotesque",
+      "Albert Sans"
+    ],
+    "nodeTypes": {
+      "FRAME": 244,
+      "INSTANCE": 289,
+      "VECTOR": 64,
+      "TEXT": 505,
+      "RECTANGLE": 10
+    },
+    "imageNodes": [],
+    "textNodesWithBindingsAtConstruction": 505
+  },
+  "prototype": {
+    "plan": "Starter; native Change to and navigation",
+    "startingPoints": [
+      {
+        "nodeId": "17:238",
+        "name": "Booking demo · Two scheduling paths"
+      },
+      {
+        "nodeId": "17:247",
+        "name": "Connected HubSpot outcome"
+      }
+    ],
+    "links": [
+      {
+        "source": "40:1932",
+        "target": "40:2024",
+        "kind": "CHANGE_TO"
+      },
+      {
+        "source": "40:1937",
+        "target": "40:2024",
+        "kind": "CHANGE_TO"
+      },
+      {
+        "source": "40:2010",
+        "target": "40:1945",
+        "kind": "CHANGE_TO"
+      },
+      {
+        "source": "I40:1939;16:135",
+        "target": "40:2096",
+        "kind": "CHANGE_TO"
+      },
+      {
+        "source": "I40:2018;16:135",
+        "target": "40:2281",
+        "kind": "CHANGE_TO"
+      },
+      {
+        "source": "I40:2088;17:56",
+        "target": "40:2173",
+        "kind": "CHANGE_TO"
+      },
+      {
+        "source": "40:2090",
+        "target": "40:2281",
+        "kind": "CHANGE_TO"
+      },
+      {
+        "source": "I40:2168;17:131",
+        "target": "40:2388",
+        "kind": "CHANGE_TO"
+      },
+      {
+        "source": "I40:2168;17:118",
+        "target": "40:2388",
+        "kind": "CHANGE_TO"
+      },
+      {
+        "source": "I40:2276;17:131",
+        "target": "40:2388",
+        "kind": "CHANGE_TO"
+      },
+      {
+        "source": "I40:2276;17:118",
+        "target": "40:2388",
+        "kind": "CHANGE_TO"
+      },
+      {
+        "source": "I40:2383;17:166",
+        "target": "17:246",
+        "kind": "NAVIGATE"
+      },
+      {
+        "source": "I40:2002;20:379",
+        "target": "40:1945",
+        "kind": "CHANGE_TO"
+      },
+      {
+        "source": "I40:2081;20:379",
+        "target": "40:1945",
+        "kind": "CHANGE_TO"
+      },
+      {
+        "source": "I40:2160;20:379",
+        "target": "40:1945",
+        "kind": "CHANGE_TO"
+      },
+      {
+        "source": "I40:2268;20:379",
+        "target": "40:1945",
+        "kind": "CHANGE_TO"
+      },
+      {
+        "source": "I40:2376;20:379",
+        "target": "40:1945",
+        "kind": "CHANGE_TO"
+      },
+      {
+        "source": "21:263",
+        "target": "17:240",
+        "kind": "NAVIGATE"
+      },
+      {
+        "source": "23:938",
+        "target": "17:248",
+        "kind": "NAVIGATE"
+      },
+      {
+        "source": "I23:981;17:222",
+        "target": "17:239",
+        "kind": "NAVIGATE"
+      },
+      {
+        "source": "I23:981;17:217",
+        "target": "17:240",
+        "kind": "NAVIGATE"
+      },
+      {
+        "source": "I23:1070;17:222",
+        "target": "17:239",
+        "kind": "NAVIGATE"
+      },
+      {
+        "source": "I23:1070;17:217",
+        "target": "17:240",
+        "kind": "NAVIGATE"
+      },
+      {
+        "source": "I23:190;16:124",
+        "target": "17:246",
+        "kind": "NAVIGATE"
+      },
+      {
+        "source": "I23:944;16:124",
+        "target": "17:246",
+        "kind": "NAVIGATE"
+      },
+      {
+        "source": "I23:1033;16:124",
+        "target": "17:246",
+        "kind": "NAVIGATE"
+      }
+    ],
+    "scope": "Both scheduling paths through no-CRM booking. Connected outcome is a separate key-frame review; OAuth is not executed."
+  },
+  "prototypeStats": {
+    "desktopKeyFrames": 6,
+    "mobileLandingFrames": 1,
+    "conversationStates": 6,
+    "routingCopies": 0,
+    "componentFamilies": 33
+  },
+  "validationReceipt": "design/figma/validation.json",
+  "links": {
+    "designSystem": "https://www.figma.com/design/NuFBHKBp3L62zya96K7PGQ?node-id=18-153",
+    "componentLibrary": "https://www.figma.com/design/NuFBHKBp3L62zya96K7PGQ?node-id=18-209",
+    "keyScreens": "https://www.figma.com/design/NuFBHKBp3L62zya96K7PGQ?node-id=15-3",
+    "landing": "https://www.figma.com/design/NuFBHKBp3L62zya96K7PGQ?node-id=17-238",
+    "prototype": "https://www.figma.com/proto/NuFBHKBp3L62zya96K7PGQ?node-id=17-238&starting-point-node-id=17%3A238&scaling=min-zoom&content-scaling=fixed"
+  },
+  "firstDraft": {
+    "desktopStates": 21,
+    "mobileStates": 1,
+    "routingCopies": 8,
+    "supersededBy": "owner Google/Apple glass + key-frame revision"
+  },
+  "retiredUnusedVariables": [
+    {
+      "id": "VariableID:15:59",
+      "name": "Prototype/CRMConnected"
+    },
+    {
+      "id": "VariableID:15:60",
+      "name": "Prototype/CRMNotConnected"
+    },
+    {
+      "id": "VariableID:20:338",
+      "name": "Prototype/Draft"
+    },
+    {
+      "id": "VariableID:20:339",
+      "name": "Prototype/PathOpenWeek"
+    },
+    {
+      "id": "VariableID:20:340",
+      "name": "Prototype/Service"
+    },
+    {
+      "id": "VariableID:20:341",
+      "name": "Prototype/Details"
+    },
+    {
+      "id": "VariableID:20:342",
+      "name": "Prototype/BasePrice"
+    },
+    {
+      "id": "VariableID:20:343",
+      "name": "Prototype/AddonLabel"
+    },
+    {
+      "id": "VariableID:20:344",
+      "name": "Prototype/AddonPrice"
+    },
+    {
+      "id": "VariableID:20:345",
+      "name": "Prototype/Total"
+    },
+    {
+      "id": "VariableID:20:346",
+      "name": "Prototype/Duration"
+    },
+    {
+      "id": "VariableID:20:347",
+      "name": "Prototype/CalendarContext"
+    },
+    {
+      "id": "VariableID:20:348",
+      "name": "Prototype/Slot"
+    },
+    {
+      "id": "VariableID:20:349",
+      "name": "Prototype/Time"
+    },
+    {
+      "id": "VariableID:20:350",
+      "name": "Prototype/ReceiptSummary"
+    },
+    {
+      "id": "VariableID:22:347",
+      "name": "Prototype/Date"
+    },
+    {
+      "id": "VariableID:24:347",
+      "name": "Prototype/DraftReady"
+    },
+    {
+      "id": "VariableID:24:348",
+      "name": "Prototype/DraftEmpty"
+    }
+  ],
+  "ownerFeedback": "Owner requested neutral Google/Apple theme, glass/bubbles, plain product copy and key frames only. No personal approval of the revised result recorded.",
+  "toolLimit": "Starter MCP quota reached on a final repeated state audit after construction, render review and passing state/route/propagation checks; no upgrade purchased."
+}

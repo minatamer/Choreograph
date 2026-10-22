@@ -1,0 +1,834 @@
+{
+  "checkedOn": "2026-10-22",
+  "revision": "Google / Apple glass; key frames only",
+  "keyFrameAudit": {
+    "stats": [
+      {
+        "name": "K01 · Landing",
+        "id": "17:238",
+        "width": 1440,
+        "height": 1000,
+        "fonts": [
+          "Google Sans Flex"
+        ],
+        "unstyledText": 0,
+        "images": [],
+        "overflow": []
+      },
+      {
+        "name": "K02 · Demo entry",
+        "id": "17:239",
+        "width": 1440,
+        "height": 1000,
+        "fonts": [
+          "Google Sans Flex"
+        ],
+        "unstyledText": 0,
+        "images": [],
+        "overflow": []
+      },
+      {
+        "name": "K03 · Customer workspace",
+        "id": "17:240",
+        "width": 1440,
+        "height": 1000,
+        "fonts": [
+          "Google Sans Flex"
+        ],
+        "unstyledText": 0,
+        "images": [],
+        "overflow": []
+      },
+      {
+        "name": "K04 · Business review",
+        "id": "17:246",
+        "width": 1440,
+        "height": 1000,
+        "fonts": [
+          "Google Sans Flex"
+        ],
+        "unstyledText": 0,
+        "images": [],
+        "overflow": []
+      },
+      {
+        "name": "K06 · Booking · HubSpot",
+        "id": "17:247",
+        "width": 1440,
+        "height": 1000,
+        "fonts": [
+          "Google Sans Flex"
+        ],
+        "unstyledText": 0,
+        "images": [],
+        "overflow": []
+      },
+      {
+        "name": "K05 · Booking · No CRM",
+        "id": "17:248",
+        "width": 1440,
+        "height": 1000,
+        "fonts": [
+          "Google Sans Flex"
+        ],
+        "unstyledText": 0,
+        "images": [],
+        "overflow": []
+      },
+      {
+        "name": "M01 · Landing",
+        "id": "17:249",
+        "width": 390,
+        "height": 844,
+        "fonts": [
+          "Google Sans Flex"
+        ],
+        "unstyledText": 0,
+        "images": [],
+        "overflow": []
+      }
+    ],
+    "edges": [
+      {
+        "source": "17:238",
+        "hotspot": "I21:4;16:110",
+        "name": "Rail · Try demo",
+        "target": "17:239",
+        "navigation": "NAVIGATE"
+      },
+      {
+        "source": "17:238",
+        "hotspot": "21:35",
+        "name": "Try demo",
+        "target": "17:239",
+        "navigation": "NAVIGATE"
+      },
+      {
+        "source": "17:238",
+        "hotspot": "21:150",
+        "name": "Explore the demo",
+        "target": "17:239",
+        "navigation": "NAVIGATE"
+      },
+      {
+        "source": "17:239",
+        "hotspot": "21:263",
+        "name": "Continue without CRM",
+        "target": "17:240",
+        "navigation": "NAVIGATE"
+      },
+      {
+        "source": "17:240",
+        "hotspot": "I23:190;16:124",
+        "name": "Switch perspective",
+        "target": "17:246",
+        "navigation": "NAVIGATE"
+      },
+      {
+        "source": "17:240",
+        "hotspot": "I40:2455;40:1932",
+        "name": "Starter · open week",
+        "target": "40:2024",
+        "navigation": "CHANGE_TO"
+      },
+      {
+        "source": "17:240",
+        "hotspot": "I40:2455;40:1937",
+        "name": "Quick week",
+        "target": "40:2024",
+        "navigation": "CHANGE_TO"
+      },
+      {
+        "source": "17:240",
+        "hotspot": "I40:2455;40:1939;16:135",
+        "name": "Send",
+        "target": "40:2096",
+        "navigation": "CHANGE_TO"
+      },
+      {
+        "source": "17:246",
+        "hotspot": "23:938",
+        "name": "Confirm booking",
+        "target": "17:248",
+        "navigation": "NAVIGATE"
+      },
+      {
+        "source": "17:247",
+        "hotspot": "I23:944;16:124",
+        "name": "Switch perspective",
+        "target": "17:246",
+        "navigation": "NAVIGATE"
+      },
+      {
+        "source": "17:247",
+        "hotspot": "I23:981;17:217",
+        "name": "Back to customer",
+        "target": "17:240",
+        "navigation": "NAVIGATE"
+      },
+      {
+        "source": "17:247",
+        "hotspot": "I23:981;17:222",
+        "name": "Finish demo",
+        "target": "17:239",
+        "navigation": "NAVIGATE"
+      },
+      {
+        "source": "17:248",
+        "hotspot": "I23:1033;16:124",
+        "name": "Switch perspective",
+        "target": "17:246",
+        "navigation": "NAVIGATE"
+      },
+      {
+        "source": "17:248",
+        "hotspot": "I23:1070;17:217",
+        "name": "Back to customer",
+        "target": "17:240",
+        "navigation": "NAVIGATE"
+      },
+      {
+        "source": "17:248",
+        "hotspot": "I23:1070;17:222",
+        "name": "Finish demo",
+        "target": "17:239",
+        "navigation": "NAVIGATE"
+      },
+      {
+        "source": "17:249",
+        "hotspot": "21:179",
+        "name": "Try demo",
+        "target": "17:239",
+        "navigation": "NAVIGATE"
+      },
+      {
+        "source": "17:249",
+        "hotspot": "21:215",
+        "name": "Explore the demo",
+        "target": "17:239",
+        "navigation": "NAVIGATE"
+      }
+    ],
+    "issues": [],
+    "instances": 142,
+    "missingMain": [],
+    "variableCount": 58,
+    "semanticColoursAliased": true,
+    "scopesSpecific": true,
+    "startingPoints": [
+      {
+        "nodeId": "17:238",
+        "name": "Booking demo · Two scheduling paths"
+      },
+      {
+        "nodeId": "17:247",
+        "name": "Connected HubSpot outcome"
+      }
+    ],
+    "visibleTopLevel": [
+      {
+        "id": "17:238",
+        "name": "K01 · Landing",
+        "type": "FRAME"
+      },
+      {
+        "id": "17:239",
+        "name": "K02 · Demo entry",
+        "type": "FRAME"
+      },
+      {
+        "id": "17:240",
+        "name": "K03 · Customer workspace",
+        "type": "FRAME"
+      },
+      {
+        "id": "17:246",
+        "name": "K04 · Business review",
+        "type": "FRAME"
+      },
+      {
+        "id": "17:247",
+        "name": "K06 · Booking · HubSpot",
+        "type": "FRAME"
+      },
+      {
+        "id": "17:248",
+        "name": "K05 · Booking · No CRM",
+        "type": "FRAME"
+      },
+      {
+        "id": "17:249",
+        "name": "M01 · Landing",
+        "type": "FRAME"
+      }
+    ],
+    "forbiddenCopy": []
+  },
+  "conversationStateAudit": {
+    "stats": [
+      {
+        "name": "Start",
+        "id": "40:1945",
+        "width": 1440,
+        "height": 912,
+        "fonts": [
+          "Google Sans Flex"
+        ],
+        "unstyledText": 0,
+        "images": [],
+        "overflow": []
+      },
+      {
+        "name": "OpenDraft",
+        "id": "40:2024",
+        "width": 1440,
+        "height": 912,
+        "fonts": [
+          "Google Sans Flex"
+        ],
+        "unstyledText": 0,
+        "images": [],
+        "overflow": []
+      },
+      {
+        "name": "Source",
+        "id": "40:2096",
+        "width": 1440,
+        "height": 912,
+        "fonts": [
+          "Google Sans Flex"
+        ],
+        "unstyledText": 0,
+        "images": [],
+        "overflow": []
+      },
+      {
+        "name": "BusyWeek",
+        "id": "40:2173",
+        "width": 1440,
+        "height": 912,
+        "fonts": [
+          "Google Sans Flex"
+        ],
+        "unstyledText": 0,
+        "images": [],
+        "overflow": []
+      },
+      {
+        "name": "OpenWeek",
+        "id": "40:2281",
+        "width": 1440,
+        "height": 912,
+        "fonts": [
+          "Google Sans Flex"
+        ],
+        "unstyledText": 0,
+        "images": [],
+        "overflow": []
+      },
+      {
+        "name": "Quote",
+        "id": "40:2388",
+        "width": 1440,
+        "height": 912,
+        "fonts": [
+          "Google Sans Flex"
+        ],
+        "unstyledText": 0,
+        "images": [],
+        "overflow": []
+      }
+    ],
+    "edges": [
+      {
+        "source": "40:1945",
+        "hotspot": "40:1932",
+        "name": "Starter · open week",
+        "target": "40:2024",
+        "navigation": "CHANGE_TO"
+      },
+      {
+        "source": "40:1945",
+        "hotspot": "40:1937",
+        "name": "Quick week",
+        "target": "40:2024",
+        "navigation": "CHANGE_TO"
+      },
+      {
+        "source": "40:1945",
+        "hotspot": "I40:1939;16:135",
+        "name": "Send",
+        "target": "40:2096",
+        "navigation": "CHANGE_TO"
+      },
+      {
+        "source": "40:2024",
+        "hotspot": "I40:2002;20:379",
+        "name": "Questions to try",
+        "target": "40:1945",
+        "navigation": "CHANGE_TO"
+      },
+      {
+        "source": "40:2024",
+        "hotspot": "40:2010",
+        "name": "Starter · busy first choice",
+        "target": "40:1945",
+        "navigation": "CHANGE_TO"
+      },
+      {
+        "source": "40:2024",
+        "hotspot": "I40:2018;16:135",
+        "name": "Send",
+        "target": "40:2281",
+        "navigation": "CHANGE_TO"
+      },
+      {
+        "source": "40:2096",
+        "hotspot": "I40:2081;20:379",
+        "name": "Questions to try",
+        "target": "40:1945",
+        "navigation": "CHANGE_TO"
+      },
+      {
+        "source": "40:2096",
+        "hotspot": "I40:2088;17:56",
+        "name": "Show the week",
+        "target": "40:2173",
+        "navigation": "CHANGE_TO"
+      },
+      {
+        "source": "40:2096",
+        "hotspot": "40:2090",
+        "name": "When is it free this week?",
+        "target": "40:2281",
+        "navigation": "CHANGE_TO"
+      },
+      {
+        "source": "40:2173",
+        "hotspot": "I40:2160;20:379",
+        "name": "Questions to try",
+        "target": "40:1945",
+        "navigation": "CHANGE_TO"
+      },
+      {
+        "source": "40:2173",
+        "hotspot": "I40:2168;17:118",
+        "name": "Day/SAT",
+        "target": "40:2388",
+        "navigation": "CHANGE_TO"
+      },
+      {
+        "source": "40:2173",
+        "hotspot": "I40:2168;17:131",
+        "name": "Use time",
+        "target": "40:2388",
+        "navigation": "CHANGE_TO"
+      },
+      {
+        "source": "40:2281",
+        "hotspot": "I40:2268;20:379",
+        "name": "Questions to try",
+        "target": "40:1945",
+        "navigation": "CHANGE_TO"
+      },
+      {
+        "source": "40:2281",
+        "hotspot": "I40:2276;17:118",
+        "name": "Day/SAT",
+        "target": "40:2388",
+        "navigation": "CHANGE_TO"
+      },
+      {
+        "source": "40:2281",
+        "hotspot": "I40:2276;17:131",
+        "name": "Use time",
+        "target": "40:2388",
+        "navigation": "CHANGE_TO"
+      },
+      {
+        "source": "40:2388",
+        "hotspot": "I40:2376;20:379",
+        "name": "Questions to try",
+        "target": "40:1945",
+        "navigation": "CHANGE_TO"
+      },
+      {
+        "source": "40:2388",
+        "hotspot": "I40:2383;17:166",
+        "name": "Send request",
+        "target": "17:246",
+        "navigation": "NAVIGATE"
+      }
+    ],
+    "issues": [],
+    "instances": 263,
+    "missingMain": [],
+    "variableCount": 58,
+    "semanticColoursAliased": true,
+    "scopesSpecific": true,
+    "startingPoints": [],
+    "visibleTopLevel": [
+      {
+        "id": "16:2",
+        "name": "Icon/ArrowRight",
+        "type": "COMPONENT"
+      },
+      {
+        "id": "16:5",
+        "name": "Icon/Chevron",
+        "type": "COMPONENT"
+      },
+      {
+        "id": "16:8",
+        "name": "Icon/Calendar",
+        "type": "COMPONENT"
+      },
+      {
+        "id": "16:12",
+        "name": "Icon/Document",
+        "type": "COMPONENT"
+      },
+      {
+        "id": "16:16",
+        "name": "Icon/Check",
+        "type": "COMPONENT"
+      },
+      {
+        "id": "16:19",
+        "name": "Icon/Plus",
+        "type": "COMPONENT"
+      },
+      {
+        "id": "16:22",
+        "name": "Icon/Spark",
+        "type": "COMPONENT"
+      },
+      {
+        "id": "16:25",
+        "name": "Icon/Mark",
+        "type": "COMPONENT"
+      },
+      {
+        "id": "16:28",
+        "name": "Icon/Back",
+        "type": "COMPONENT"
+      },
+      {
+        "id": "16:31",
+        "name": "Brand/Wordmark",
+        "type": "COMPONENT"
+      },
+      {
+        "id": "16:45",
+        "name": "Control/Button",
+        "type": "COMPONENT_SET"
+      },
+      {
+        "id": "16:86",
+        "name": "Control/Chip",
+        "type": "COMPONENT_SET"
+      },
+      {
+        "id": "16:95",
+        "name": "Status/Badge",
+        "type": "COMPONENT_SET"
+      },
+      {
+        "id": "16:100",
+        "name": "Navigation/LandingRail",
+        "type": "COMPONENT"
+      },
+      {
+        "id": "16:114",
+        "name": "Navigation/AppHeader",
+        "type": "COMPONENT"
+      },
+      {
+        "id": "16:129",
+        "name": "Chat/Composer",
+        "type": "COMPONENT"
+      },
+      {
+        "id": "17:38",
+        "name": "Service/Card",
+        "type": "COMPONENT"
+      },
+      {
+        "id": "17:42",
+        "name": "Chat/Answer",
+        "type": "COMPONENT"
+      },
+      {
+        "id": "17:60",
+        "name": "Service/Checklist",
+        "type": "COMPONENT"
+      },
+      {
+        "id": "17:69",
+        "name": "Calendar/Day",
+        "type": "COMPONENT_SET"
+      },
+      {
+        "id": "17:86",
+        "name": "Calendar/Week",
+        "type": "COMPONENT"
+      },
+      {
+        "id": "17:136",
+        "name": "Request/Summary",
+        "type": "COMPONENT"
+      },
+      {
+        "id": "17:148",
+        "name": "Quote/Review",
+        "type": "COMPONENT"
+      },
+      {
+        "id": "17:172",
+        "name": "Knowledge/SourcePreview",
+        "type": "COMPONENT"
+      },
+      {
+        "id": "17:190",
+        "name": "Calendar/StaffDay",
+        "type": "COMPONENT"
+      },
+      {
+        "id": "17:205",
+        "name": "Booking/Receipt",
+        "type": "COMPONENT"
+      },
+      {
+        "id": "17:227",
+        "name": "Integration/Status",
+        "type": "COMPONENT"
+      },
+      {
+        "id": "18:101",
+        "name": "Landing/WeekScore",
+        "type": "COMPONENT"
+      },
+      {
+        "id": "18:153",
+        "name": "Foundations · Start here",
+        "type": "FRAME"
+      },
+      {
+        "id": "18:209",
+        "name": "Library · Reusable instances",
+        "type": "FRAME"
+      },
+      {
+        "id": "18:466",
+        "name": "Main component heading",
+        "type": "TEXT"
+      },
+      {
+        "id": "18:467",
+        "name": "Main component guidance",
+        "type": "TEXT"
+      },
+      {
+        "id": "20:351",
+        "name": "Landing/Step",
+        "type": "COMPONENT"
+      },
+      {
+        "id": "20:355",
+        "name": "Chat/UserMessage",
+        "type": "COMPONENT"
+      },
+      {
+        "id": "20:358",
+        "name": "Chat/Reply",
+        "type": "COMPONENT"
+      },
+      {
+        "id": "20:365",
+        "name": "Chat/StartChoice",
+        "type": "COMPONENT"
+      },
+      {
+        "id": "20:372",
+        "name": "Navigation/DemoSidebar",
+        "type": "COMPONENT"
+      },
+      {
+        "id": "40:2454",
+        "name": "Workspace/CustomerState",
+        "type": "COMPONENT_SET"
+      }
+    ],
+    "forbiddenCopy": []
+  },
+  "propagation": {
+    "colourPass": true,
+    "componentPass": true,
+    "restoredOriginals": true,
+    "before": [
+      {
+        "id": "16:36",
+        "value": {
+          "r": 0.09803921729326248,
+          "g": 0.40392157435417175,
+          "b": 0.8235294222831726,
+          "a": 1
+        },
+        "binding": "VariableID:15:33"
+      },
+      {
+        "id": "21:35",
+        "value": {
+          "r": 0.09803921729326248,
+          "g": 0.40392157435417175,
+          "b": 0.8235294222831726,
+          "a": 1
+        },
+        "binding": "VariableID:15:33"
+      },
+      {
+        "id": "21:179",
+        "value": {
+          "r": 0.09803921729326248,
+          "g": 0.40392157435417175,
+          "b": 0.8235294222831726,
+          "a": 1
+        },
+        "binding": "VariableID:15:33"
+      },
+      {
+        "id": "I40:2168;17:131",
+        "value": {
+          "r": 0.09803921729326248,
+          "g": 0.40392157435417175,
+          "b": 0.8235294222831726,
+          "a": 1
+        },
+        "binding": "VariableID:15:33"
+      }
+    ],
+    "during": [
+      {
+        "id": "16:36",
+        "value": {
+          "r": 0.07999999821186066,
+          "g": 0.4300000071525574,
+          "b": 0.3199999928474426,
+          "a": 1
+        },
+        "binding": "VariableID:15:33"
+      },
+      {
+        "id": "21:35",
+        "value": {
+          "r": 0.07999999821186066,
+          "g": 0.4300000071525574,
+          "b": 0.3199999928474426,
+          "a": 1
+        },
+        "binding": "VariableID:15:33"
+      },
+      {
+        "id": "21:179",
+        "value": {
+          "r": 0.07999999821186066,
+          "g": 0.4300000071525574,
+          "b": 0.3199999928474426,
+          "a": 1
+        },
+        "binding": "VariableID:15:33"
+      },
+      {
+        "id": "I40:2168;17:131",
+        "value": {
+          "r": 0.07999999821186066,
+          "g": 0.4300000071525574,
+          "b": 0.3199999928474426,
+          "a": 1
+        },
+        "binding": "VariableID:15:33"
+      }
+    ],
+    "after": [
+      {
+        "id": "16:36",
+        "value": {
+          "r": 0.09803921729326248,
+          "g": 0.40392157435417175,
+          "b": 0.8235294222831726,
+          "a": 1
+        },
+        "binding": "VariableID:15:33"
+      },
+      {
+        "id": "21:35",
+        "value": {
+          "r": 0.09803921729326248,
+          "g": 0.40392157435417175,
+          "b": 0.8235294222831726,
+          "a": 1
+        },
+        "binding": "VariableID:15:33"
+      },
+      {
+        "id": "21:179",
+        "value": {
+          "r": 0.09803921729326248,
+          "g": 0.40392157435417175,
+          "b": 0.8235294222831726,
+          "a": 1
+        },
+        "binding": "VariableID:15:33"
+      },
+      {
+        "id": "I40:2168;17:131",
+        "value": {
+          "r": 0.09803921729326248,
+          "g": 0.40392157435417175,
+          "b": 0.8235294222831726,
+          "a": 1
+        },
+        "binding": "VariableID:15:33"
+      }
+    ],
+    "wordmarkConsumers": [
+      "I21:22;16:35",
+      "I21:167;16:35",
+      "I23:190;16:115;16:35"
+    ]
+  },
+  "visualReview": "Connector renders inspected for changed key-frame/component compositions; final landing/outcome checks pending.",
+  "prototypeGraph": {
+    "schedulingPathsPassed": 2,
+    "paths": [
+      [
+        "Start",
+        "Source",
+        "BusyWeek",
+        "Quote"
+      ],
+      [
+        "Start",
+        "OpenDraft",
+        "OpenWeek",
+        "Quote"
+      ]
+    ],
+    "entryToCustomerDefaultState": "Start",
+    "connectedOutcome": "separate starting point; OAuth not executed",
+    "humanViewerAcceptance": "pending"
+  },
+  "ownerApproval": {
+    "status": "approved",
+    "quote": "FIGMA DESIGN APPROVED",
+    "source": "Direct owner message, 22 October 2026, same chat",
+    "scope": "Revised neutral/blue glass key frames; explicitly authorized finishing and proceeding with AFK build."
+  },
+  "documentationChecks": {
+    "balancedHtml": true,
+    "uniqueIds": 64,
+    "fragmentAndLabelTargets": true,
+    "inlineWalkthroughScriptUnchanged": true
+  },
+  "toolLimit": "Starter MCP quota reached on a final repeated state audit after construction, render review and passing state/route/propagation checks; no upgrade purchased."
+}
