@@ -24,6 +24,11 @@ from .models import (
 
 
 def ensure_seeded(db, workspace: Workspace, now: datetime):
+    _seed_working_calendar(db, workspace, now)
+    _seed_calendar_history(db, workspace, now)
+
+
+def _seed_working_calendar(db, workspace: Workspace, now: datetime):
     if workspace.seeded:
         return
     if db.scalar(select(func.count()).select_from(Reservation).where(Reservation.workspace_id == workspace.id)):
@@ -54,6 +59,63 @@ def ensure_seeded(db, workspace: Workspace, now: datetime):
                                state='blocked', label='Existing appointment'))
     workspace.seeded = True
     db.flush()
+
+
+def _seed_calendar_history(db, workspace: Workspace, now: datetime):
+    """Add examples once, including to guests whose working calendar is already exposed.
+
+    Callers hold the workspace lock. Never move a blocker or infer that a real
+    booking completed; these are separate historical Juniper appointments.
+    """
+    if db.scalar(select(Activity.id).where(Activity.workspace_id==workspace.id,
+                                         Activity.kind=='calendar_examples_v1').limit(1)):
+        return
+    today=now.astimezone(ZoneInfo(workspace.timezone)).date()
+    completed=0
+    for offset in range(1,15):
+        day=today-timedelta(days=offset)
+        if day.weekday()==6:
+            continue
+        start=domain.local_to_utc(datetime.combine(day,time(9)),workspace.timezone)
+        end=domain.local_to_utc(datetime.combine(day,time(11)),workspace.timezone)
+        for staff in (('ada','noah') if completed==0 else ('noah','ada')):
+            occupied=db.scalar(select(Reservation.id).where(Reservation.workspace_id==workspace.id,
+                Reservation.staff_id==staff,Reservation.state!='cancelled',
+                Reservation.starts_at<end,Reservation.ends_at>start).limit(1))
+            if occupied:
+                continue
+            db.add(Reservation(workspace_id=workspace.id,staff_id=staff,starts_at=start,ends_at=end,
+                               state='completed',label='Home clean'))
+            db.flush()
+            completed+=1
+            break
+        if completed==2:
+            break
+    week=domain.week_start(today)
+    for offset,staff,hour,label in [(1,'noah',13,'Deep clean'),(3,'ada',15,'Home clean')]:
+        day=week+timedelta(days=offset)
+        db.add(Reservation(workspace_id=workspace.id,staff_id=staff,
+            starts_at=domain.local_to_utc(datetime.combine(day,time(hour)),workspace.timezone),
+            ends_at=domain.local_to_utc(datetime.combine(day,time(hour+2)),workspace.timezone),
+            state='cancelled',label=label))
+    db.add(Activity(workspace_id=workspace.id,kind='calendar_examples_v1',created_at=now,reference='juniper-v1'))
+    workspace.revision+=1
+    db.flush()
+
+
+def clear_calendar_entry(db, workspace, booking_id, revision, now):
+    require_revision(workspace,revision)
+    reservation=db.get(Reservation,(workspace.id,booking_id),with_for_update=True)
+    if reservation is None:
+        raise DomainError('APPOINTMENT_UNAVAILABLE','That appointment is unavailable.',404)
+    if reservation.state!='cancelled':
+        raise DomainError('APPOINTMENT_NOT_CANCELLED','Only cancelled appointments can be removed from the calendar.')
+    cleared=db.scalar(select(Activity.id).where(Activity.workspace_id==workspace.id,
+        Activity.kind=='calendar_cleared',Activity.reference==str(booking_id)).limit(1))
+    if not cleared:
+        db.add(Activity(workspace_id=workspace.id,kind='calendar_cleared',created_at=now,reference=str(booking_id)))
+        workspace.revision+=1
+    return {'request_id':None}
 
 
 def current_quote(workspace):

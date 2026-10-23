@@ -3,7 +3,7 @@ export function approvedRoute(method: string, segments: string[]) {
   const uuid = '[0-9a-f-]{36}';
   const rules: Record<string, RegExp[]> = {
     GET: [/^session$/, /^availability$/, new RegExp(`^documents/${uuid}$`), new RegExp(`^documents/${uuid}/source$`),new RegExp(`^requests/${uuid}/availability$`)],
-    POST: [/^session$/, /^reset$/, /^chat$/, /^requests$/, /^documents\/(service|preparation|access|changes|safety|questions)\/replace$/, /^crm\/(connect|callback|setup|skip|consent|disconnect|finish)$/, new RegExp(`^requests/${uuid}/(approve|cancel|complete|reschedule)$`)],
+    POST: [/^session$/, /^reset$/, /^chat$/, /^requests$/, /^documents\/(service|preparation|access|changes|safety|questions)\/replace$/, /^crm\/(connect|callback|setup|skip|consent|disconnect|finish)$/, new RegExp(`^requests/${uuid}/(approve|cancel|complete|reschedule)$`), new RegExp(`^calendar/${uuid}/clear$`)],
     PUT: [/^draft$/, new RegExp(`^documents/${uuid}$`)],
   };
   return (rules[method] ?? []).some(rule => rule.test(route));

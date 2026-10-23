@@ -276,6 +276,56 @@
         }
       }
     },
+    "/v1/calendar/{booking_id}/clear": {
+      "post": {
+        "summary": "Clear Calendar",
+        "operationId": "clear_calendar_v1_calendar__booking_id__clear_post",
+        "parameters": [
+          {
+            "name": "booking_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Booking Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Command"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MutationView"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/requests/{request_id}/availability": {
       "get": {
         "summary": "Request Availability",
@@ -2241,6 +2291,18 @@
             ],
             "title": "Calendar Week Start"
           },
+          "calendar_first_week_start": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Calendar First Week Start"
+          },
           "calendar_last_week_start": {
             "anyOf": [
               {
@@ -2308,6 +2370,7 @@
           "requests",
           "calendar",
           "calendar_week_start",
+          "calendar_first_week_start",
           "calendar_last_week_start",
           "summary",
           "documents",

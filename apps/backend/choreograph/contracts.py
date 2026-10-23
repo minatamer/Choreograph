@@ -187,6 +187,7 @@ class SessionView(Contract):
     requests: list[RequestView] = Field(default_factory=list)
     calendar: list[BookingView] = Field(default_factory=list)
     calendar_week_start: date | None = None
+    calendar_first_week_start: date | None = None
     calendar_last_week_start: date | None = None
     summary: Summary = Field(default_factory=Summary)
     documents: list[DocumentView] = Field(default_factory=list)

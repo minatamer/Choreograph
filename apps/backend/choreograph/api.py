@@ -19,6 +19,7 @@ from .contracts import (
     BookingCommand,
     BookingView,
     ChatCommand,
+    Command,
     DraftCommand,
     Health,
     MutationView,
@@ -31,7 +32,7 @@ from .contracts import (
     WeekView,
 )
 from .errors import DomainError
-from .models import Enquiry, Outbox, Reservation
+from .models import Activity, Enquiry, Outbox, Reservation
 from .sessions import (
     COOKIE,
     create_workspace,
@@ -183,14 +184,21 @@ def create_app(settings: Settings, engine=None, clock=None,assistant_provider=No
         state.connection=CRMConnectionView(**connection) if connection else None
         state.crm_available=crm.available(db,app.state.crm,app.state.clock())
         rows=list(db.scalars(select(Reservation).where(Reservation.workspace_id==workspace.id).order_by(Reservation.starts_at)))
-        state.calendar=[BookingView(id=row.id,enquiry_id=row.enquiry_id,staff_id=row.staff_id,starts_at=row.starts_at,
-                                    ends_at=row.ends_at,state=row.state,label=row.label) for row in rows]
-        bookings={row.enquiry_id:row for row in state.calendar if row.enquiry_id}
+        all_bookings=[BookingView(id=row.id,enquiry_id=row.enquiry_id,staff_id=row.staff_id,starts_at=row.starts_at,
+                                 ends_at=row.ends_at,state=row.state,label=row.label) for row in rows]
+        cleared=set(db.scalars(select(Activity.reference).where(Activity.workspace_id==workspace.id,
+                                                                Activity.kind=='calendar_cleared')))
+        state.calendar=[row for row in all_bookings if row.state!='cancelled' or str(row.id) not in cleared]
+        bookings={row.enquiry_id:row for row in all_bookings if row.enquiry_id}
         state.requests=[RequestView(id=row.id,revision=row.revision,status=row.status,fields=row.fields,
                                     quote=row.quote,preferred_at=row.preferred_at,booking=bookings.get(row.id))
                         for row in db.scalars(select(Enquiry).where(Enquiry.workspace_id==workspace.id).order_by(
                             Enquiry.created_at,Enquiry.quote['revision'].as_integer(),Enquiry.id))]
         state.calendar_week_start=domain.week_start(app.state.clock().astimezone(ZoneInfo(workspace.timezone)).date())
+        state.calendar_first_week_start=state.calendar_week_start
+        if state.calendar:
+            state.calendar_first_week_start=min(state.calendar_week_start,domain.week_start(min(
+                row.starts_at.astimezone(ZoneInfo(workspace.timezone)).date() for row in state.calendar)))
         state.calendar_last_week_start=domain.week_start(app.state.clock().astimezone(ZoneInfo(workspace.timezone)).date()+timedelta(days=29))
         state.summary=Summary(requests_count=len(state.requests),awaiting_count=sum(row.status=='awaiting_review' for row in state.requests),
                               confirmed_count=sum(row.status=='confirmed' for row in state.requests),
@@ -298,6 +306,14 @@ def create_app(settings: Settings, engine=None, clock=None,assistant_provider=No
     def send_chat(body:ChatCommand,request:Request):
         from .interactions import chat
         return chat(app,request,body)
+
+    @app.post('/v1/calendar/{booking_id}/clear',response_model=MutationView)
+    def clear_calendar(booking_id:UUID,body:Command,request:Request,db=Depends(unit_of_work,scope='function')):
+        workspace,token=authorize(request,db,body)
+        payload={**body.model_dump(mode='json'),'booking_id':str(booking_id)}
+        result=service.idempotent(db,workspace,request.headers.get('idempotency-key'),'calendar_clear',payload,
+            lambda:service.clear_calendar_entry(db,workspace,booking_id,body.revision,app.state.clock()))
+        return MutationView(state=full_view(db,workspace,token),**result)
 
     @app.get('/v1/requests/{request_id}/availability',response_model=WeekView)
     def request_availability(request_id:UUID,request:Request,week:date|None=None,db=Depends(unit_of_work,scope='function')):

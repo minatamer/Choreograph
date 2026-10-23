@@ -124,6 +124,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/calendar/{booking_id}/clear": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Clear Calendar */
+        post: operations["clear_calendar_v1_calendar__booking_id__clear_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/requests/{request_id}/availability": {
         parameters: {
             query?: never;
@@ -887,6 +904,8 @@ export interface components {
             calendar: components["schemas"]["BookingView"][];
             /** Calendar Week Start */
             calendar_week_start: string | null;
+            /** Calendar First Week Start */
+            calendar_first_week_start: string | null;
             /** Calendar Last Week Start */
             calendar_last_week_start: string | null;
             summary: components["schemas"]["Summary"];
@@ -1254,6 +1273,41 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": components["schemas"]["ChatCommand"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MutationView"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    clear_calendar_v1_calendar__booking_id__clear_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                booking_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Command"];
             };
         };
         responses: {
