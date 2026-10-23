@@ -15,6 +15,16 @@ test('local app configuration is explicit and displays the OAuth origin',()=>{
   assert.throws(()=>localEnvironment({},'CHOREOGRAPH_ORIGIN=https://elsewhere.example'),/Local origin/);
 });
 
+test('frontend loads only its app-local bridge settings and drops inherited backend credentials',()=>{
+  const source='CHOREOGRAPH_BRIDGE_SECRET='+'x'.repeat(40)+'\nCHOREOGRAPH_API_URL=http://127.0.0.1:45861\n';
+  const env=localEnvironment({PATH:'retained',CHOREOGRAPH_DATABASE_URL:'private-db',CHOREOGRAPH_OPENAI_API_KEY:'private-ai',CHOREOGRAPH_PROFILE:'live'},source,'frontend');
+  assert.equal(env.PATH,'retained');assert.equal(env.CHOREOGRAPH_API_URL,'http://127.0.0.1:45861');
+  assert.equal(env.CHOREOGRAPH_DATABASE_URL,undefined);assert.equal(env.CHOREOGRAPH_OPENAI_API_KEY,undefined);
+  assert.equal(env.CHOREOGRAPH_PROFILE,undefined);
+  assert.throws(()=>localEnvironment({},source+'CHOREOGRAPH_DATABASE_URL=private\n','frontend'),/only server bridge settings/);
+  assert.throws(()=>localEnvironment({},'','frontend'),/bridge secret/);
+});
+
 test('an unrelated listener is refused and remains reachable', async () => {
   const server = createServer();
   await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));

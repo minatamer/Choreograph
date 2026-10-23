@@ -13,8 +13,13 @@ const windows = process.platform === 'win32';
 const python = path.join(root, '.venv', windows ? 'Scripts/python.exe' : 'bin/python');
 const receiptPath = path.join(runtime, 'services.json');
 
-export function localEnvironment(ambient, source) {
+export function localEnvironment(ambient, source, service='api') {
   const explicit=parseEnv(source);
+  if(service==='frontend'){
+    const allowed=new Set(['CHOREOGRAPH_API_URL','CHOREOGRAPH_API_AUTH','CHOREOGRAPH_API_AUDIENCE','CHOREOGRAPH_ORIGIN','CHOREOGRAPH_BRIDGE_SECRET']);
+    if(Object.keys(explicit).some(key=>!allowed.has(key)))throw new Error('Frontend configuration accepts only server bridge settings.');
+    if((explicit.CHOREOGRAPH_BRIDGE_SECRET??'').length<32)throw new Error('Frontend bridge secret is missing or invalid. Run the local setup.');
+  }
   const origin=explicit.CHOREOGRAPH_ORIGIN??'http://127.0.0.1:45860';
   if(!['http://localhost:45860','http://127.0.0.1:45860'].includes(origin))throw new Error('Local origin must use the repository frontend port.');
   const inherited=Object.fromEntries(Object.entries(ambient).filter(([key])=>!/^CHOREOGRAPH_|^OPENAI_|^HUBSPOT_/i.test(key)));
@@ -33,7 +38,7 @@ function run(command, args, options = {}) {
   if (result.error || result.status !== 0) throw new Error('Local command failed. Inspect its fixed diagnostic.');
 }
 function compose(args) {
-  run('docker', ['compose', '--project-name', services.project, '--env-file', '.env.local', '-f', 'compose.yaml', ...args]);
+  run('docker', ['compose', '--project-name', services.project, '--env-file', 'apps/backend/.env.local', '-f', 'compose.yaml', ...args]);
 }
 function readReceipts() {
   return existsSync(receiptPath) ? JSON.parse(readFileSync(receiptPath, 'utf8')) : {};
@@ -103,17 +108,22 @@ async function start(target) {
   if(!target||target==='api')await assertFree(services.ports.api);
   if(!target||target==='frontend')run(process.execPath,[path.join(root,'scripts/pdf-assets.mjs')]);
   mkdirSync(runtime, { recursive: true });
-  const env = localEnvironment(process.env,readFileSync(path.join(root,'.env.local'),'utf8'));
   const definitions = [
     ['api', python, ['-m', 'choreograph.server'], path.join(root, 'apps/backend'), `http://127.0.0.1:${services.ports.api}/health`],
     ['runner', python, ['-m', 'choreograph.runner'], path.join(root, 'apps/backend'), null],
     ['frontend', process.execPath, [path.join(root, 'node_modules/next/dist/bin/next'), 'dev', '--hostname', services.host, '--port', String(services.ports.frontend)], path.join(root, 'apps/frontend'), `http://127.0.0.1:${services.ports.frontend}`],
   ];
+  const environments=Object.fromEntries(definitions.filter(([name])=>!target||name===target).map(([name,,,cwd])=>
+    [name,localEnvironment(process.env,readFileSync(path.join(cwd,'.env.local'),'utf8'),name)]));
+  if(!target&&['CHOREOGRAPH_ORIGIN','CHOREOGRAPH_BRIDGE_SECRET'].some(key=>environments.api[key]!==environments.frontend[key])){
+    throw new Error('App-local origin and bridge settings must match. No service was started.');
+  }
   const started = {...receipts};
   const launched=[];
   try {
   for (const [name, command, args, cwd, url] of definitions) {
     if(target&&name!==target)continue;
+    const env=environments[name];
     const instance=name==='runner'?randomUUID():null;
     const log = path.join(runtime, `${name}-${randomUUID()}.log`);
     const child = await launchBackground(command, args, { cwd, env:instance?{...env,CHOREOGRAPH_RUNNER_INSTANCE:instance}:env, log });
@@ -139,7 +149,7 @@ async function start(target) {
     for(const name of launched.reverse())await stop(name);
     throw error;
   }
-  console.log(`Choreograph is ready at ${env.CHOREOGRAPH_ORIGIN}`);
+  console.log(`Choreograph is ready at ${Object.values(environments)[0].CHOREOGRAPH_ORIGIN}`);
 }
 async function stop(target) {
   const receipts = readReceipts();

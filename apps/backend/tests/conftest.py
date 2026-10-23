@@ -1,9 +1,11 @@
 """Actual isolated PostgreSQL. No live flags, provider keys or production database are inherited."""
 import base64
+from io import StringIO
 from pathlib import Path
 from uuid import uuid4
 
 import pytest
+from dotenv import dotenv_values
 from sqlalchemy import create_engine
 from sqlalchemy.engine import make_url
 from sqlalchemy.exc import ArgumentError
@@ -17,10 +19,10 @@ from choreograph.settings import Settings
 def database():
     root = Path(__file__).resolve().parents[3]
     # Read only the local DB setting, never model/account configuration.
-    line = next(line for line in (root / '.env.local').read_text().splitlines()
+    line = next(line for line in (root / 'apps/backend/.env.local').read_text().splitlines()
                 if line.startswith('CHOREOGRAPH_DATABASE_URL='))
     try:
-        source = make_url(line.split('=', 1)[1])
+        source = make_url(dotenv_values(stream=StringIO(line), interpolate=False)['CHOREOGRAPH_DATABASE_URL'])
     except (ArgumentError, ValueError):
         raise RuntimeError('OWNED_LOCAL_POSTGRES_REQUIRED') from None
     # libpq query parameters override authority fields. Validate before even

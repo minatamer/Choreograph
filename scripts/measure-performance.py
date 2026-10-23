@@ -94,9 +94,12 @@ def measure(name, concurrency, operation, statements, samples=SAMPLES):
 def main():
     global stage
     # Validate routing before reusing the fixture's CREATE/DROP database path.
-    with (ROOT / '.env.local').open(encoding='utf-8') as stream:
+    with (ROOT / 'apps/backend/.env.local').open(encoding='utf-8') as stream:
         line = next(line for line in stream if line.startswith('CHOREOGRAPH_DATABASE_URL='))
-    source_url = make_url(line.split('=', 1)[1].strip())
+    from io import StringIO
+
+    from dotenv import dotenv_values
+    source_url = make_url(dotenv_values(stream=StringIO(line), interpolate=False)['CHOREOGRAPH_DATABASE_URL'])
     if (source_url.host not in {'127.0.0.1', 'localhost'} or source_url.port != 45862 or
             source_url.database != 'choreograph' or source_url.query):
         raise RuntimeError('OWNED_LOCAL_POSTGRES_REQUIRED')

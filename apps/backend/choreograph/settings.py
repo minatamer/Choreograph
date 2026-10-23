@@ -20,7 +20,7 @@ class Settings:
     profile: str = "fake"
     testing: bool = False
     live_ai: LiveAIConfig | None = field(default=None, repr=False)
-    crm_provider: str = 'fake'
+    crm_provider: str = 'disabled'
     live_crm: LiveCRMConfig | None = field(default=None, repr=False)
 
     @classmethod
@@ -59,7 +59,7 @@ class Settings:
             valid_key = False
         if len(secret) < 32 or not valid_key:
             raise ValueError("SERVER_SECRET_CONFIGURATION_INVALID")
-        crm_provider=values.get('CHOREOGRAPH_CRM_PROVIDER','fake')
+        crm_provider=values.get('CHOREOGRAPH_CRM_PROVIDER','fake' if testing else 'disabled')
         if crm_provider not in {'fake','hubspot','disabled'}:raise ValueError('CRM_CONFIGURATION_INVALID')
         if testing and crm_provider=='hubspot':raise ValueError('TEST_PROVIDER_FORBIDDEN')
         live_ai = parse_live_ai(values) if profile == 'live' else None
@@ -69,8 +69,8 @@ class Settings:
 
 def load_local() -> Settings:
     from dotenv import dotenv_values
-    repo = Path(__file__).resolve().parents[3]
-    values = {key: value for key, value in dotenv_values(repo / ".env.local",interpolate=False).items() if value is not None}
+    backend = Path(__file__).resolve().parents[1]
+    values = {key: value for key, value in dotenv_values(backend / ".env.local",interpolate=False).items() if value is not None}
     settings=Settings.parse(values)
     from sqlalchemy.engine import make_url
     url=make_url(settings.database_url)

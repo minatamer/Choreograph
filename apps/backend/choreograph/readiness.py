@@ -94,7 +94,7 @@ def report(values,*,engine=None):
 def main():
     from dotenv import dotenv_values
     parser=argparse.ArgumentParser(description='Offline by default; never constructs a provider client.')
-    parser.add_argument('--env-file',type=Path,default=ROOT/'.env.example')
+    parser.add_argument('--env-file',type=Path,default=ROOT/'apps/backend/.env.example')
     parser.add_argument('--database',action='store_true',help='Explicit read-only SQL check')
     parser.add_argument('--require-ready',action='store_true')
     args=parser.parse_args();values={key:value for key,value in dotenv_values(args.env_file,interpolate=False).items() if value is not None}

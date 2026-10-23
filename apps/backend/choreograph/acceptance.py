@@ -356,7 +356,7 @@ def main():
     parser=argparse.ArgumentParser(description='Prepare a finite plan; real execution requires later owner authorization.')
     parser.add_argument('lane',choices=['ai','crm']);parser.add_argument('step',choices=['init-db','prepare','evaluate','sync','cleanup'])
     parser.add_argument('--execute',action='store_true');parser.add_argument('--run-id',type=UUID)
-    parser.add_argument('--env-file',type=Path,default=ROOT/'.env.local');parser.add_argument('--database-name')
+    parser.add_argument('--env-file',type=Path,default=ROOT/'apps/backend/.env.local');parser.add_argument('--database-name')
     parser.add_argument('--max-cost-micros',type=int);parser.add_argument('--workspace-id',type=UUID)
     parser.add_argument('--account-id');parser.add_argument('--uninstall',action='store_true')
     args=parser.parse_args()
