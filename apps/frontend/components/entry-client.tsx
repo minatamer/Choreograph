@@ -22,7 +22,7 @@ export function EntryClient({resumeSetup=false}:{resumeSetup?:boolean}){
  return <><AppHeader/><AnimatePresence mode="wait" initial={false}>{started?
   <motion.div key="setup" initial={{opacity:0,y:12}} animate={{opacity:1,y:0}} transition={{duration:.3}}><EntrySetup/></motion.div>:
   <motion.main key="welcome" id="main" className="entry-page entry-welcome" exit={{opacity:0,y:-12}} transition={{duration:.2}} aria-labelledby="demo-welcome-title">
-   <span className="eyebrow blue-text">Your front desk</span><h1 id="demo-welcome-title">Meet Juniper Cleaning.</h1><p className="entry-intro">A fictional home-cleaning company. You’ll try its front desk, with a ready-made schedule and business guides.</p>
+   <span className="eyebrow blue-text">Your front desk</span><h1 id="demo-welcome-title">Meet Juniper Cleaning.</h1><p className="entry-intro">A fictional home-cleaning company. You’ll try its front desk, with a ready-made schedule and business documents.</p>
    <div className="entry-choices">
     <motion.article className="intro-guides" initial={{opacity:0,y:16}} animate={{opacity:1,y:0}} transition={{duration:.5,ease:[.16,1,.3,1]}}><SampleGuideIntro/></motion.article>
     <article className="subtle intro-next"><h2>Try the front desk.</h2>
@@ -49,7 +49,7 @@ function EntrySetup(){
  useEffect(()=>{const value=new URL(window.location.href).searchParams.get('crm');if(value==='unavailable')setNotice('The HubSpot connection could not be completed. You can continue without HubSpot.');if(value==='cancelled')setNotice('Connection cancelled. No HubSpot records were sent.');window.history.replaceState(null,'','/demo');window.scrollTo(0,0);heading.current?.focus({preventScroll:true});router.prefetch('/demo/workspace');},[router]);
  function proceed(){if(busy)return;setDestination('connected');startNavigation(()=>router.push('/demo/workspace'));}
  function skip(){if(busy)return;setDestination('skip');startNavigation(async()=>{const result=await guest.mutate('crm/skip',{});if(result)startNavigation(()=>router.push('/demo/workspace'));});}
- return <main id="main" className="entry-page"><span className="eyebrow blue-text">Juniper Cleaning</span><h1 ref={heading} tabIndex={-1}>Same Juniper. Your choice.</h1><p className="entry-intro">Both paths use Juniper’s guides, assistant and schedule. Connect your HubSpot to follow approved bookings in your own account.</p>
+ return <main id="main" className="entry-page"><span className="eyebrow blue-text">Juniper Cleaning</span><h1 ref={heading} tabIndex={-1}>Same Juniper. Your choice.</h1><p className="entry-intro">Both paths use Juniper’s documents, assistant and schedule. Connect your HubSpot to follow approved bookings in your own account.</p>
   {error&&<p role="alert">{error.message}</p>}{notice&&<p role="status">{notice}</p>}
   <div className="entry-choices"><article>{state&&<CRMControls state={state} pending={busy} mutate={guest.mutate} onContinue={proceed} continuing={navigating&&destination==='connected'} onOpeningChange={setOpeningHubSpot}/>}</article><article className="subtle"><Badge tone="neutral">No connection needed</Badge><h2>Continue without HubSpot</h2><p>The complete Juniper experience: questions with sources, a quote, a time and a reviewed booking. Nothing is sent to HubSpot.</p><Button kind="secondary" disabled={!state||busy} busy={navigating&&destination==='skip'} onClick={skip}>Continue without HubSpot</Button></article></div><p className="entry-note">Scheduling uses your local timezone.</p></main>;
 }
