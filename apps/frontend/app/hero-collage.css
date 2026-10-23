@@ -1,0 +1,29 @@
+/* Shared decorative film layer for the landing and faded Customer workspace. */
+.hero-collage{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none;background:#eaf0f7;contain:paint;will-change:opacity}
+.hero-collage::after{content:'';position:absolute;inset:0;z-index:1;background:radial-gradient(ellipse 42% 44% at 50% 53%,#f5f8fcfc 8%,#f5f8fcf5 38%,#f5f8fcbd 68%,#f5f8fc24 100%),linear-gradient(#f5f8fc9c,transparent 22%,transparent 80%,#f5f8fc96)}
+.collage-strips{position:absolute;z-index:0;inset:0 -48px;max-width:1920px;margin-inline:auto}
+.collage-strip{min-width:0;padding-inline:12px;background:#dce5ef70;border-inline:1px solid #ffffffb8;display:flex;flex-direction:column;gap:24px;position:relative}
+.collage-track{position:relative;animation:collage-roll 70s linear infinite;will-change:transform}
+.collage-strip::before,.collage-strip::after{content:'';position:absolute;top:0;bottom:0;width:5px;background:repeating-linear-gradient(to bottom,#a9bbce55 0 8px,transparent 8px 24px)}
+.collage-strip::before{left:3px}.collage-strip::after{right:3px}
+.strip-1{top:-140px}.strip-2{top:-290px}.strip-3{top:-80px}
+.hero-collage[data-moving="false"] .collage-track{animation-play-state:paused}
+.collage-reel{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:24px;padding-bottom:24px}
+.collage-frame{height:clamp(260px,42dvh,620px);border:1px solid #ffffffdb;border-radius:20px;overflow:hidden;background:#fff;box-shadow:0 5px 18px -8px #2b466a2b;flex-shrink:0}
+.collage-frame>img{width:100%;height:100%;object-fit:cover;display:block}
+.frame-planner>img{object-position:62% center}
+.collage-window-title{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:500;white-space:nowrap;margin-bottom:22px}
+.collage-window-title svg{width:18px;height:18px;flex-shrink:0}
+.collage-calendar,.collage-chat{height:100%;padding:20px 16px;color:#304259;background:linear-gradient(145deg,#fff,#f5f8fe)}
+.collage-week-labels{display:grid;grid-template-columns:repeat(5,1fr);font-size:10px;text-align:center;color:#687a90;margin-bottom:18px}
+.collage-week-labels strong{display:block;font-size:20px;font-weight:400;color:#334967;margin-top:6px}
+.collage-week-grid{display:grid;grid-template-columns:repeat(5,1fr);height:calc(100% - 103px);background:repeating-linear-gradient(transparent 0,transparent calc(25% - 1px),#dfe7f1 calc(25% - 1px),#dfe7f1 25%)}
+.collage-week-grid>div{border-left:1px solid #dfe7f1;padding:5px;display:flex;flex-direction:column;gap:20px}
+.collage-week-grid i{display:block;height:32%;background:#d2e3fc;border-radius:6px}
+.collage-week-grid>div:nth-child(even){padding-top:42px}.collage-week-grid>div:nth-child(2) i{background:#d4e9db}.collage-week-grid>div:nth-child(3) i:last-child{background:#f8dedc}.collage-week-grid>div:nth-child(4) i{background:#e4e9f1}
+.collage-day-title{display:flex;align-items:center;gap:12px;font-size:13px;margin-bottom:20px}.collage-day-title strong{font-size:28px;line-height:44px;width:44px;border-radius:50%;color:#fff;background:#1967d2;text-align:center;font-weight:500}
+.collage-agenda{display:grid;grid-template-columns:38px 1fr;align-items:start;gap:14px 8px;font-size:10px}.collage-agenda>span{padding-top:8px;color:#8392a5}.collage-agenda p{background:#e8f0fe;border-radius:8px;border-left:2px solid #6399e3;padding:10px;font-size:12px;min-height:44px}.collage-agenda p:last-child{background:#e6f4ea;border-color:#6fa080}
+.collage-chat{display:flex;flex-direction:column;gap:14px}.collage-chat .collage-window-title{margin-bottom:4px}.collage-chat p{padding:10px 12px;font-size:12px;line-height:18px;max-width:92%;border-radius:16px}.collage-chat-question{align-self:flex-end;background:#e8f0fe;border-bottom-right-radius:4px!important}.collage-chat-answer{background:#f0f3f8;align-self:flex-start;border-bottom-left-radius:4px!important}
+.collage-chat-booking{align-self:flex-start;display:flex;flex-direction:column;gap:10px;width:88%;padding:14px;border-radius:14px;background:#1967d2;color:#fff;font-size:11px}.collage-chat-booking strong{font-size:24px;font-weight:500}.collage-chat-booking strong span{font-size:15px;font-weight:400;opacity:.8}.collage-chat-booking i,.collage-agenda i{float:right;font-style:normal}
+@keyframes collage-roll{from{transform:translate3d(0,0,0)}to{transform:translate3d(0,-50%,0)}}
+@media(max-width:600px){.collage-reel{grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.collage-strips{width:740px;left:50%;right:auto;margin-left:-370px;gap:16px}.collage-strip{padding-inline:10px}.strip-3{display:none}.hero-collage::after{background:radial-gradient(ellipse 95% 35% at 50% 55%,#f5f8fcfc 5%,#f5f8fcf2 38%,#f5f8fca8 76%,#f5f8fc20 100%),linear-gradient(#f5f8fca3,transparent 25%,transparent 80%,#f5f8fc96)}}

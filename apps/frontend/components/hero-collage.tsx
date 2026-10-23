@@ -4,6 +4,7 @@ import Image from 'next/image';
 import {useEffect,useState} from 'react';
 import {motion,useMotionValue,useScroll,useTransform} from 'motion/react';
 import {Mark} from './ui';
+import '@/app/hero-collage.css';
 
 // Decorative, fictional interface panels mixed with licensed photography.
 // Photo sources and licence are recorded in SBS-008.
@@ -28,7 +29,7 @@ function FilmFrame({kind}:{kind:Frame}){
   return <div className={`collage-frame frame-${kind}`}>{kind==='week'||kind==='day'?<CalendarFrame day={kind==='day'}/>:kind==='chat'?<ChatFrame/>:<Image src={`/illustrations/collage/${kind}.jpg`} alt="" width={1000} height={750} sizes="(max-width:600px) 240px, (max-width:1100px) 300px, 440px" quality={75} loading="eager"/>}</div>;
 }
 
-export function HeroCollage(){
+export function HeroCollage({faded=false}:{faded?:boolean}){
   const [moving,setMoving]=useState(true);
   const viewportHeight=useMotionValue(900);
   const {scrollY}=useScroll();
@@ -43,5 +44,5 @@ export function HeroCollage(){
     update();
     return ()=>{document.removeEventListener('visibilitychange',update);window.removeEventListener('resize',resize);};
   },[viewportHeight]);
-  return <motion.div className="hero-collage" data-moving={moving} aria-hidden="true" style={{opacity}}><div className="collage-strips"><div className="collage-track">{[0,1].map(copy=><div className="collage-reel" key={copy}>{strips.map((frames,index)=><div className={`collage-strip strip-${index}`} key={index}>{frames.map((kind,frame)=><FilmFrame kind={kind} key={frame}/>)}</div>)}</div>)}</div></div></motion.div>;
+  return <motion.div className="hero-collage" data-moving={moving} aria-hidden="true" style={{opacity:faded ? .18 : opacity}}><div className="collage-strips"><div className="collage-track">{[0,1].map(copy=><div className="collage-reel" key={copy}>{strips.map((frames,index)=><div className={`collage-strip strip-${index}`} key={index}>{frames.map((kind,frame)=><FilmFrame kind={kind} key={frame}/>)}</div>)}</div>)}</div></div></motion.div>;
 }

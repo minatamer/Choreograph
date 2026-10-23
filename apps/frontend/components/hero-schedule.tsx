@@ -3,6 +3,7 @@
 import {useEffect,useId,useRef,useState,type ReactNode} from 'react';
 import {AnimatePresence,LayoutGroup,animate,motion} from 'motion/react';
 import {Mark} from './ui';
+import {ReplyText} from './reply-text';
 
 type Beat = 'question' | 'suggestion' | 'clarification' | 'review' | 'approved' | 'booked' | 'change-request' | 'change-review' | 'change-approved' | 'rescheduled';
 const story: {beat:Beat;at:number}[] = [
@@ -40,7 +41,7 @@ function Check({draw=false}:{draw?:boolean}){
   return <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><motion.path d="m5 12 4 4L19 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" initial={draw?{pathLength:0}:false} animate={{pathLength:1}} transition={{duration:.4,delay:.25}}/></svg>;
 }
 function Question({children}:{children:ReactNode}){
-  return <motion.div layout="position" className="schedule-question" initial={{opacity:0,x:10}} animate={{opacity:1,x:0}} transition={spring}>{children}</motion.div>;
+  return <motion.div layout="position" className="schedule-question" initial={{opacity:0,y:6,scale:.98}} animate={{opacity:1,y:0,scale:1}} transition={{duration:.28,ease:[.2,.8,.2,1]}}>{children}</motion.div>;
 }
 function Reply({children}:{children:ReactNode}){
   return <motion.div layout="position" className="schedule-reply" initial={{opacity:0,y:8}} animate={{opacity:1,y:0}} transition={spring}><div className="schedule-assistant"><Mark/></div><motion.div layout="size" className="schedule-reply-content" style={{borderRadius:'6px 20px 20px 20px'}} transition={spring}>{children}</motion.div></motion.div>;
@@ -118,16 +119,16 @@ export function HeroSchedule(){
             <div className="schedule-chat" key={cycle}>
               <Question>Could you do Friday morning?</Question>
               {phase===0&&<Thinking/>}
-              {phase>=1&&<Reply><p>Friday’s full. Let’s find a better fit. How does Saturday at 10 am sound?</p></Reply>}
+              {phase>=1&&<Reply><p><ReplyText text="Friday’s full. Let’s find a better fit. How does Saturday at 10 am sound?" animate/></p></Reply>}
               {phase>=2&&<Question>I can’t do Saturday morning. Is the afternoon available?</Question>}
               {phase===2&&<Thinking/>}
-              {phase>=3&&<Reply><p>Absolutely. Saturday at 1:30 pm gives us time for the whole clean.</p>
+              {phase>=3&&<Reply><p><ReplyText text="Absolutely. Saturday at 1:30 pm gives us time for the whole clean." animate/></p>
                 {(phase===3||phase===4)&&<Proposal approved={phase===4}/>}
                 <AnimatePresence>{booked&&(phase>5||landed)&&<Confirmation/>}</AnimatePresence>
               </Reply>}
               {changing&&<Question>Could we move Saturday’s clean to Monday instead?</Question>}
               {phase===6&&<Thinking/>}
-              {nextWeek&&<Reply><p>Of course. Monday at 1:30 pm is free. Shall we move it?</p>
+              {nextWeek&&<Reply><p><ReplyText text="Of course. Monday at 1:30 pm is free. Shall we move it?" animate/></p>
                 {!changed&&<Proposal change approved={phase===8}/>}
                 <AnimatePresence>{changed&&landed&&<Confirmation changed/>}</AnimatePresence>
               </Reply>}

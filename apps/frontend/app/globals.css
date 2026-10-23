@@ -54,3 +54,8 @@
 
 @media(max-width:1099px){.business-metrics{padding:28px}.business-stat{padding-inline:20px}.business-stat h3{font-size:21px}}
 @media(max-width:740px){.business-evidence{padding:40px var(--landing-gutter)}.business-evidence-intro{gap:14px;margin-bottom:28px}.business-evidence-intro>p{font-size:16px;line-height:25px}.business-metrics{grid-template-columns:1fr;padding:26px;border-radius:24px}.business-stat,.business-stat:first-child,.business-stat:last-child{padding:26px 0;gap:12px}.business-stat:first-child{padding-top:0}.business-stat:last-child{padding-bottom:0}.business-stat:not(:last-child){border-right:0;border-bottom:1px solid var(--color-border-default)}.business-stat-value{font-size:68px}.business-stat-source{padding-top:8px;min-height:32px}.business-evidence-note{line-height:20px;margin-top:16px}}
+
+/* Shared by the real assistant and the landing illustration. */
+.typed-reply{display:grid}
+.typed-reply>span:not(.sr-only){grid-area:1/1}
+.reply-measure{visibility:hidden;pointer-events:none;user-select:none}
