@@ -1,0 +1,24 @@
+/* Availability changes inside a stable card; they do not resize the chat history. */
+.calendar-card .availability-heading{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;column-gap:12px;row-gap:4px}
+.calendar-card .availability-heading small{grid-column:1/-1;line-height:1.5;min-height:1.5em}
+.calendar-card .calendar-days{grid-template-columns:repeat(7,minmax(0,1fr))}
+.calendar-card .calendar-day{height:96px;min-height:96px;max-height:96px;flex-direction:column;align-items:center;justify-content:flex-start;gap:5px;padding:10px 4px}
+.calendar-card .calendar-day>span:first-child{width:auto}
+.calendar-card .calendar-day small{flex:none;line-height:14px}
+.calendar-week-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:38px;margin:12px 0}
+.calendar-week-heading .week-label{margin:0;flex-shrink:0}
+.calendar-load-status{font-size:11px;line-height:1.4;color:#63758c;text-align:right}
+.calendar-load-status[role="alert"]{color:#b3261e}
+.calendar-load-status button{border:0;padding:0;background:none;color:#1967d2;text-decoration:underline;cursor:pointer;font:inherit}
+.calendar-card .calendar-days{animation:availability-reveal .2s ease both}
+.calendar-card .calendar-day small{max-width:100%}
+.calendar-card .calendar-day:disabled{opacity:1;cursor:progress}
+.calendar-card .calendar-placeholder{opacity:.45}
+.calendar-card .day-options{box-sizing:border-box;height:182px;min-height:182px;display:grid;grid-template-rows:auto minmax(0,1fr);align-content:start;gap:12px;overflow:hidden}
+.calendar-card .day-options>div:first-child{min-height:24px;flex-wrap:wrap}
+.calendar-card .day-options>p{margin:0;line-height:1.6;animation:availability-reveal .18s ease both}
+.calendar-card .time-options{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));align-content:start;gap:8px;min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-gutter:stable;padding:2px 5px 4px 2px;animation:availability-reveal .18s ease both}
+.calendar-card .time-options button{min-width:0;min-height:44px;flex:none;padding:8px 10px}
+.customer-workspace .chat-review{animation:availability-reveal .2s ease both}
+@keyframes availability-reveal{from{opacity:.35}to{opacity:1}}
+@media(max-width:600px){.calendar-card .calendar-days{grid-template-columns:repeat(4,minmax(0,1fr))}.calendar-card .availability-heading small{min-height:3em}.calendar-week-heading{align-items:flex-start;min-height:32px}.calendar-load-status{max-width:170px}.calendar-card .time-options{grid-template-columns:repeat(2,minmax(0,1fr))}.calendar-card .day-options{height:194px;min-height:194px}.calendar-card .time-options button{font-size:11px}}
