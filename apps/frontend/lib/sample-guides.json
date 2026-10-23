@@ -1,0 +1,98 @@
+[
+  {
+    "slot": "service",
+    "title": "Service Guide",
+    "version": "1.0",
+    "file": "service-guide.pdf",
+    "pages": 2,
+    "sha256": "1f65e213d4a666acab0f8e04074be6acd978eba3c1a4e2cd273e6169d77df0fd",
+    "previews": [
+      {
+        "file": "service-1.webp",
+        "width": 800,
+        "height": 1132,
+        "sha256": "eba52a49fba697ddbf5762985634e6625d4b333998c338f6ef07ad0df5064f68"
+      },
+      {
+        "file": "service-2.webp",
+        "width": 800,
+        "height": 1132,
+        "sha256": "76f042c9ce26be27a1b594011fa8caad0564bf0663be71ad74e0cf4bf5d93b1d"
+      }
+    ]
+  },
+  {
+    "slot": "preparation",
+    "title": "Preparation Guide",
+    "version": "1.0",
+    "file": "preparation-guide.pdf",
+    "pages": 1,
+    "sha256": "7a5a8140022290aab7cd103bef2c9d66a933025eb46bcaa77dfcd615fc40cc90",
+    "previews": [
+      {
+        "file": "preparation-1.webp",
+        "width": 800,
+        "height": 1132,
+        "sha256": "0c9b3f8ed8390b8a81bc81101e79c49302f201b1d41085191889ac6c444c0c27"
+      }
+    ]
+  },
+  {
+    "slot": "access",
+    "title": "Access and Arrival",
+    "version": "1.0",
+    "file": "access-and-arrival.pdf",
+    "pages": 1,
+    "sha256": "0e842e302350061b42e3c73cfc7d6007a87539f0485cd8ba3e398f0cd8d4e069",
+    "previews": [
+      {
+        "file": "access-1.webp",
+        "width": 800,
+        "height": 1132,
+        "sha256": "c5059985c7d31d5149e9452889e97253c89257491df69e8b91ce1788aca6d0c4"
+      }
+    ]
+  },
+  {
+    "slot": "changes",
+    "title": "Changes and Cancellations",
+    "version": "1.0",
+    "file": "changes-and-cancellations.pdf",
+    "pages": 1,
+    "sha256": "c2bd1d940a7d954667aac2b7bb0be722e37c26067abbbf3685e95c7716360c1d",
+    "previews": [
+      {
+        "file": "changes-1.webp",
+        "width": 800,
+        "height": 1132,
+        "sha256": "c9afebcd847cb3b5bc76d9c74d5af898d8422a9d2622e882093994292b15309f"
+      }
+    ]
+  },
+  {
+    "slot": "safety",
+    "title": "Safety and Exclusions",
+    "version": "1.0",
+    "file": "safety-and-exclusions.pdf",
+    "pages": 1,
+    "sha256": "22c5f3cb9a7d3fccdf341e3af7a319ce93e4e351cba54c21452c0386de88083d",
+    "previews": [
+      {
+        "file": "safety-1.webp",
+        "width": 800,
+        "height": 1132,
+        "sha256": "aec8769adbb9038021ccb559bacd4c221905e8cb8b38834c70d9c8abaff8abe0"
+      }
+    ]
+  },
+  {
+    "slot": "questions",
+    "title": "Service Questions",
+    "version": "1.0",
+    "file": "service-questions.md",
+    "pages": 1,
+    "sha256": "f185dac621b034171442abdc533d2c05a93ae0a59d3444f00c797bb19bae17a8",
+    "previews": [],
+    "text": "# Service Questions\n\nJuniper Cleaning - fictional demo company\nVersion 1.0 | Effective 22 October 2026\n\n## Service area\nThis demonstration accepts fictional homes in the visitor's selected local timezone. It has no real dispatch area, postcode eligibility check or travel charge. Do not enter a real address. The coordinator view represents a fictional cleaning business.\n\n## Supplies\nJuniper brings ordinary products, cloths, a vacuum and a mop. Ask the coordinator before requesting a particular product or equipment change. The Service Guide and Safety and Exclusions describe the limits of those requests.\n\n## Results and guarantees\nThe guides do not promise a landlord deposit return or a property inspection result. They describe the agreed cleaning scope. Ask for a coordinator review if a requirement goes beyond that scope.\n\n## Booking and CRM\nA submitted request is awaiting review until a coordinator approves it. HubSpot sharing is optional and separate from the reservation. Continuing without CRM creates no CRM records. This is a fictional demonstration; it does not send staff, emails or text messages.\n"
+  }
+]
