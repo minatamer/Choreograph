@@ -1,11 +1,16 @@
 'use client';
-import {useEffect,useRef,useState} from 'react';
+import {useEffect,useId,useRef,useState} from 'react';
 import {type SessionState,type Mutation} from '@/lib/api';
 import {Button,Badge} from './ui';
-import {SourceReader,type SourceSelection} from './source-reader';
+import type {SourceSelection} from './source-reader';
+import {GuideReaderDialog} from './guide-reader-dialog';
+import {cardSpring} from './expanding-dialog';
+import {GuidePaper} from './guide-papers';
+import {AnimatePresence,LayoutGroup,motion} from 'motion/react';
 type Props={state:SessionState;pending:boolean;onReplace:(slot:string,fields:Record<string,unknown>)=>Promise<Mutation|SessionState|null>};
 type UploadScope={epoch:number;workspace:string};
 export function Documents({state,pending,onReplace}:Props){
+  const group=useId();const opener=useRef<HTMLElement|null>(null);
   const [selection,setSelection]=useState<SourceSelection|null>(null);const [notice,setNotice]=useState('');
   const lifetime=useRef({epoch:0,mounted:false,workspace:state.workspace_id});
   const sample=useRef<AbortController|null>(null);
@@ -40,10 +45,10 @@ export function Documents({state,pending,onReplace}:Props){
     }catch{if(active(token,controller.signal))setNotice('The sample could not be opened. Try again.');}
     finally{if(sample.current===controller)sample.current=null;}
   }
-  return <section className="documents-area"><div className="section-heading"><div><h2>Documents</h2><p>Juniper’s service and preparation guides.</p></div><Badge tone="neutral">{state.replacements_left} replacements left</Badge></div>
+  return <LayoutGroup id={group}><section className="documents-area" data-tour="documents"><div className="section-heading"><div><span className="eyebrow blue-text">The knowledge behind the conversation</span><h2>Juniper’s guides.</h2><p>Already uploaded. Ready for questions. Open a guide to see what the front desk can use.</p></div><Badge tone="blue">{state.documents.length} ready guides</Badge></div>
     {notice&&<p role="status" className="document-notice">{notice}</p>}
-    <div className="document-grid">{state.documents.map(doc=><article className="document-card" key={doc.id}><div className="document-icon" aria-hidden="true">↗</div><div><h3>{doc.title}</h3><small>Version {doc.version} · {doc.media_type==='application/pdf'?`${doc.pages} ${doc.pages===1?'page':'pages'}`:'Text'} · {doc.private?'Your replacement':'Sample'}</small></div><div className="document-actions"><Button kind="secondary" onClick={()=>setSelection({version_id:doc.id})}>Read guide</Button><label className={`file-button ${pending||!state.replacements_left?'disabled':''}`}>Replace<span className="sr-only"> {doc.title}</span><input type="file" accept=".pdf,.txt,.md" disabled={pending||!state.replacements_left} onChange={event=>{void upload(doc.slot,event.target.files?.[0]);event.target.value='';}}/></label></div></article>)}</div>
-    <div className="document-example"><p>Try a different pet instruction, then ask the front desk again.</p><Button kind="quiet" disabled={pending||!state.replacements_left} onClick={()=>void revised()}>Use revised preparation guide</Button></div><small>PDF, TXT or Markdown · 2 MiB · Up to 10 PDF pages. Failed files use one replacement attempt.</small>
-    {selected&&<SourceReader key={selected.version_id} selection={selected} onClose={()=>setSelection(null)}/>}
-  </section>;
+    <div className="document-grid paper-document-grid">{state.documents.map((doc,index)=><motion.article className="document-card paper-document-card" key={doc.id} initial={{opacity:0,y:26,rotate:-4}} whileInView={{opacity:1,y:0,rotate:0}} viewport={{once:true,amount:.1}} transition={{duration:.6,delay:index*.065,ease:[.2,.8,.2,1]}}><motion.button layoutId={doc.id} style={{borderRadius:3}} transition={cardSpring} className="document-preview-button" type="button" onClick={event=>{opener.current=event.currentTarget;setSelection({version_id:doc.id});}} aria-label={'Read '+doc.title}><GuidePaper slot={doc.slot} current={!doc.private&&doc.version==='1.0'}/></motion.button><div><h3>{doc.title}</h3><small>Version {doc.version} · {doc.media_type==='application/pdf'?`${doc.pages} ${doc.pages===1?'page':'pages'}`:'Text'} · {doc.private?'Your replacement':'Juniper guide'}</small></div><div className="document-actions"><Button kind="secondary" onClick={event=>{opener.current=event.currentTarget;setSelection({version_id:doc.id});}} aria-label={'Open '+doc.title}>Read guide</Button><label className={`file-button ${pending||!state.replacements_left?'disabled':''}`}>Replace<span className="sr-only"> {doc.title}</span><input type="file" accept=".pdf,.txt,.md" disabled={pending||!state.replacements_left} onChange={event=>{void upload(doc.slot,event.target.files?.[0]);event.target.value='';}}/></label></div></motion.article>)}</div>
+    <div className="document-example"><p>Try a different pet instruction, then ask the front desk again.</p><Button kind="quiet" disabled={pending||!state.replacements_left} onClick={()=>void revised()}>Use revised preparation guide</Button></div><small>{state.replacements_left} replacements left · PDF, TXT or Markdown · 2 MiB · Up to 10 PDF pages. Failed files use one replacement attempt.</small>
+    <AnimatePresence>{selected&&<GuideReaderDialog key={selected.version_id} selection={selected} opener={opener.current} onClose={()=>setSelection(null)}/>}</AnimatePresence>
+  </section></LayoutGroup>;
 }
