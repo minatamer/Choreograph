@@ -182,7 +182,8 @@ body::before {
 .landing .demo-workspace {background: linear-gradient(145deg,#ffffffc7,#ffffff8c); border-color: #ffffffdb; box-shadow: 0 18px 50px -24px #2c4a7c40, 0 0 0 1px #9cafc229, var(--material-rim); -webkit-backdrop-filter: none; backdrop-filter: none}
 .landing .schedule-stage {border-radius: 0 28px 28px 0}
 .landing .schedule-topline {border-bottom: 1px solid #c0cfdf59}
-.landing .schedule-question, .landing .schedule-reply-content {background: linear-gradient(145deg,#fffffff0,#ffffffc7); border-color: #fffffff2; box-shadow: 0 8px 26px -10px #2c4a7c33, 0 0 0 1px #9cafc22e, var(--material-rim)}
+.landing .schedule-question {background:#1967d2;color:#fff;border:0;box-shadow:0 4px 12px -9px #1967d28c}
+.landing .schedule-reply-content {background:transparent;border:0;box-shadow:none}
 .landing .schedule-proposal, .landing .schedule-booking {background: var(--material-blue); box-shadow: inset 0 1px 1px #ffffff70, inset 1px 0 1px #ffffff40, inset 0 -2px 3px #10459026, 0 6px 20px #1967d229; border: 1px solid #ffffff70}
 .landing .schedule-assistant {background: linear-gradient(145deg,#fffffff0,#cde2ff99); border-color: #fff; box-shadow: var(--material-rim), 0 4px 12px #325c9526}
 .landing .landing-lead .button {box-shadow: 0 6px 18px #1967d233, inset 0 1px 1px #ffffff70, inset 0 -2px 3px #10459026}
@@ -190,7 +191,7 @@ body::before {
 .view-switch {position: relative; display: flex; align-items: center; gap: 2px; padding: 4px; border: 1px solid #ffffffb3; border-radius: 999px; background: #c6d5ea33; box-shadow: inset 0 1px 3px #5678a114, inset 0 -1px 1px #ffffffb3}
 .view-switch button {position: relative; isolation: isolate; min-height: 38px; min-width: 118px; padding: 8px 12px; border: 0; border-radius: 999px; color: #53657b; background: transparent; font-size: 12px; font-weight: 500; white-space: nowrap}
 .view-switch button[aria-pressed=true] {color: var(--color-action-primary)}
-.view-switch button>span:last-child {position: relative; z-index: 1}
+.view-switch button>.view-switch-label {position: relative; z-index: 1}
 .view-switch-selection {position: absolute; inset: 0; background: linear-gradient(155deg,#ffffffeb,#ffffff80); border: 1px solid #ffffffeb; border-radius: 999px; box-shadow: 0 3px 9px #2d507c1a, var(--material-rim)}
 
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
