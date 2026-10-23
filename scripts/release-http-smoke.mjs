@@ -99,7 +99,10 @@ try {
   const seeded=calendarFingerprint(initial.calendar);
   checked('isolatedFakeSession',first.cookies.has('choreograph_guest')&&initial.requests.length===0&&
     initial.connection===null&&initial.documents.length===6&&initial.calendar.length>0&&
-    initial.calendar.every(row=>row.state==='blocked'));
+    initial.calendar.some(row=>row.state==='blocked'));
+  checked('persistedCalendarHistory',initial.calendar.filter(row=>row.state==='completed').length===2&&
+    initial.calendar.filter(row=>row.state==='cancelled').length===2&&
+    initial.calendar.filter(row=>row.state==='completed').every(row=>instant(row.ends_at)<Date.now()));
   stage='crm-skip';
   await command(first,'crm/skip');
   checked('explicitCRMSkip',first.state.crm_mode==='skipped'&&first.state.connection===null);
@@ -204,12 +207,33 @@ try {
   checked('manifestAndGuestIsolation',retired.code==='SOURCE_UNAVAILABLE'&&denied.code==='SOURCE_UNAVAILABLE'&&
     deniedDetail.code==='SOURCE_UNAVAILABLE'&&!other.state.documents.some(document=>document.id===privateDocument.id));
 
+  stage='calendar-clear';
+  const cancelled=first.state.calendar.find(row=>row.state==='cancelled');
+  const requestsBeforeClear=JSON.stringify(first.state.requests);
+  const keptCalendar=calendarFingerprint(first.state.calendar.filter(row=>row.id!==cancelled.id));
+  const foreignClear=await json(other,`/api/demo/calendar/${cancelled.id}/clear`,{method:'POST',command:true,status:404,
+    body:{generation:other.state.generation,revision:other.state.revision}});
+  assert(foreignClear.code==='APPOINTMENT_UNAVAILABLE');
+  await command(first,`calendar/${cancelled.id}/clear`);
+  state(first,await json(first,'/api/demo/session'));
+  checked('calendarClearPersistsWithoutChangingBookings',calendarFingerprint(first.state.calendar)===keptCalendar&&
+    JSON.stringify(first.state.requests)===requestsBeforeClear);
+
   stage='static-assets';
   const worker=await request(null,'/vendor/pdfjs/pdf.worker.min.mjs',{max:3_145_728});
   const sample=await request(null,'/samples/preparation-guide-v2.pdf',{max:2_097_152});
   checked('selfHostedPDFAssets',/javascript/.test(worker.response.headers.get('content-type')??'')&&worker.bytes.length>1000&&
     /pdfjs|PDF\.js/.test(worker.bytes.subarray(0,131_072).toString())&&
     sample.response.headers.get('content-type')?.includes('application/pdf')&&sample.bytes.subarray(0,5).toString()==='%PDF-');
+  for(const path of ['/favicon.ico','/icon.png','/icon.svg','/apple-touch-icon.png','/brand/mark.svg',
+    '/brand/icon-192.png','/brand/icon-512.png','/brand/hubspot-logo.svg',
+    '/illustrations/collage/meeting.jpg','/illustrations/collage/planner.jpg','/illustrations/collage/team.jpg',
+    '/guide-previews/access-1.webp','/guide-previews/changes-1.webp','/guide-previews/preparation-1.webp',
+    '/guide-previews/safety-1.webp','/guide-previews/service-1.webp','/guide-previews/service-2.webp']){
+    const asset=await request(null,path,{max:3_145_728});
+    assert(asset.response.headers.get('content-type')?.startsWith('image/')&&asset.bytes.length>20);
+  }
+  checked('brandCollageAndGuideAssetsPackaged',true);
   stage='bridge-allowlist';
   const arbitrary=await json(first,'/api/demo/not-an-approved-command',{status:404});
   const internal=await json(first,'/api/demo/internal/maintenance',{method:'POST',body:{},status:404});

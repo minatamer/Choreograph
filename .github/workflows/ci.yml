@@ -101,8 +101,8 @@ jobs:
           PY
       - name: Create disposable fake-only configuration
         run: |
-          test ! -e .env.local
-          git check-ignore --quiet .env.local
+          test ! -e apps/backend/.env.local
+          git check-ignore --quiet apps/backend/.env.local
           umask 077
           .venv/bin/python - <<'PY'
           import base64
@@ -118,7 +118,7 @@ jobs:
               "CHOREOGRAPH_BRIDGE_SECRET": secrets.token_hex(32),
               "CHOREOGRAPH_TOKEN_KEY": base64.urlsafe_b64encode(secrets.token_bytes(32)).decode(),
           }
-          with Path(".env.local").open("x", encoding="utf-8") as stream:
+          with Path("apps/backend/.env.local").open("x", encoding="utf-8") as stream:
               stream.write("".join(f"{key}={value}\n" for key, value in values.items()))
           print("Disposable fake configuration created; values omitted.")
           PY
@@ -131,7 +131,7 @@ jobs:
           git diff --exit-code -- apps/frontend/lib/generated/openapi.json apps/frontend/lib/generated/api.d.ts
       - name: Check lifecycle ownership and browser bridge boundaries
         # The Windows hidden-window regression explicitly skips on Linux.
-        run: node --test scripts/local.test.mjs scripts/bridge.test.mjs scripts/private-api.test.mjs scripts/bridge-source.test.mjs scripts/callback-route.test.mjs
+        run: node --test scripts/*.test.mjs
       - name: Run backend and isolated PostgreSQL/pgvector tests
         # conftest creates/drops a unique choreograph_test_* database on 45862.
         # This includes extension/vector assertions, migration roundtrip and
