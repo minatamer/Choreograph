@@ -495,3 +495,32 @@ Finish with cross-ticket product authority and the execution ledger; preserve hi
 - `docs/tickets/SBS-016-guided-workspace.md`
 
 Execution: stage only each listed set via literal NUL-delimited pathspecs, verify the staged names and CRLF-aware whitespace, and commit in order. Exclude ignored runtime/provider environment files, generated vendor/sample caches, development data and sibling files. Verify the final tree is clean, contracts regenerate without a diff, release fingerprint still matches and commit subjects/file allocations match this plan. Record actual hashes/checks after execution; do not push.
+
+### Local checkpoint execution
+The first21 planned commits were created in order after the settled CI checks. Each staged set and resulting commit was checked against its exact allocation; no unexpected files were included. The first staged whitespace check caught two Markdown hard-break spaces in this new ticket; they were replaced with paragraph breaks before commit01. No implementation or test gate was weakened.
+| Step | Commit | Subject |
+| --- | --- | --- |
+| 01 | `78f8563b10` | SBS-016: Document the file-level checkpoint commit plan |
+| 02 | `4d4e2890b9` | SBS-000: Separate backend and frontend local configuration |
+| 03 | `7cadedcce6` | SBS-008: Add motion dependency and shared glass materials |
+| 04 | `bd0d7e964f` | SBS-008: Unify the brand mark and browser icons |
+| 05 | `27ed2d04c6` | SBS-008: Add smooth scroll controls and accessible page metadata |
+| 06 | `ae776dce0d` | SBS-008: Build the full-screen scrolling hero collage |
+| 07 | `bb1abf4de4` | SBS-008: Animate the unified scheduling and workflow stories |
+| 08 | `8c49d780cc` | SBS-008: Assemble the landing page and compact research visuals |
+| 09 | `9aae6dc5b6` | SBS-016: Add verified previews of the six Juniper guides |
+| 10 | `997371680d` | SBS-016: Add the shared expanding dialog and focus lifecycle |
+| 11 | `cc237e184f` | SBS-016: Expand guide papers into authorized document readers |
+| 12 | `2924c943e9` | SBS-016: Clarify availability labels and numeric UTC offsets |
+| 13 | `b492c358e3` | SBS-016: Derive calendar metrics and unify appointment statuses |
+| 14 | `330a961db2` | SBS-016: Stabilize inline availability and booking review cards |
+| 15 | `312ec133ef` | SBS-016: Add contextual question shortcuts and the guide library |
+| 16 | `bf1932b48b` | SBS-016: Preserve chat bubble identity and smooth history following |
+| 17 | `3454656632` | SBS-016: Add the responsive guided tour and perspective switch |
+| 18 | `f5893deb8e` | SBS-016: Persist calendar history and safely clear cancelled cards |
+| 19 | `b9b398d2bc` | SBS-013: Explain real HubSpot connection choices and free test setup |
+| 20 | `288473b13d` | SBS-016: Assemble the screen-fitting conversational workspace |
+| 21 | `7208cf8baf` | SBS-010: Package public assets and refresh complete Linux CI acceptance |
+| 22 | This documentation commit | SBS-016: Reconcile product guidance and record the committed checkpoint |
+
+Before the final authority commit, only AGENTS.md and this blueprint remained from the planned124-path source set. Contract outputs matched their generated source, and the release fingerprint still verified840299fdfc344b8e459357d42c1f1a765e4b8ade3d11553e347539ee0caa3673 against166 inputs. The final commit adds this execution record to the initial plan; its own hash is discoverable through Git history. Subsequent handoff checks verify22 subjects/allocations, a clean index/worktree, fresh contract generation and the same release fingerprint. GitHub-hosted execution remains unrun until a separately authorized push. No push, deployment, provider operation, database reset, sibling change or new host listener occurred.
