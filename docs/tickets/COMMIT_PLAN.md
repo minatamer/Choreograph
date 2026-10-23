@@ -301,3 +301,70 @@ Preceding commit hashes are recorded here before the final documentation commit.
 |5|Final documentation commit: its own hash is in `git log -1`|SBS-011: Record build, security and external acceptance handoff|
 
 Staged review: every staged blob matches the reviewed worktree bytes; no credential candidates were found in included text. Ignored secret/runtime/dependency/build paths were verified absent. Git whitespace diagnostics were reviewed: Markdown hard breaks, generated SQL/license spacing, PDF cross-reference spaces and one existing CI EOF blank line were retained without changing verified code/assets. Current release source remains `c803fbcd8d491d794dc3504bd08d0da056f5521363fcdd8e1fdaa73f7c7251b4`; no test or hosted result is invented by committing. Final clean-tree, committed-blob, source-freshness and five-subject checks run after the last commit. No remote push is included.
+
+
+## Owner-authorized workspace checkpoint —23 October2026
+
+The owner directly requested a file-level plan, many meaningful ticket-prefixed commits, and staging/committing. This authorizes the following complete local checkpoint on the existing main branch from 3d81c44eddc93125c71138d0f0c031efa52b532a. It supersedes earlier no-new-Git-action statements for these SBS-017/018 changes only. No push, remote publication, deployment, paid provider/account operation or sibling change is included.
+
+There are20 commits covering53 unique files. Each file is assigned once. Dependency helpers, optional-compatible controls and new components land before their integration. The nine integration files in commit13 stay together because they change required props and relocate the calendar/review/overview; splitting them would break intermediate TypeScript builds. This records the final implemented snapshot, including later owner corrections, rather than reconstructing abandoned designs.
+
+Before staging: refresh full fake/isolated backend and Node checks, Python quality/dependency integrity, contracts/types, production Linux images and owned-container release smoke. Preserve existing hot reload and all development data. Stage only each explicit allocation, verify staged paths/blob bytes and whitespace, reject secret/runtime/dependency/build artifacts, and commit normally without bypassing hooks. Record actual results and hashes before the final documentation commit; verify clean tree and release fingerprint afterward. Historical receipts remain readable and do not become hosted GitHub Actions evidence.
+
+| # | Exact commit subject | Exact files |
+|---|---|---|
+|1|SBS-017: Delay hero discovery until five idle seconds|`apps/frontend/components/hero-scroll-cue.tsx`|
+|2|SBS-017: Share the landing collage and conversation motion|`apps/frontend/components/hero-collage.tsx`<br>`apps/frontend/app/hero-collage.css`<br>`apps/frontend/app/landing-hero.css`<br>`apps/frontend/components/hero-schedule.tsx`<br>`apps/frontend/app/globals.css`|
+|3|SBS-017: Make every source discoverable in the intro carousel|`apps/frontend/components/guide-papers.tsx`<br>`apps/frontend/app/demo/welcome.css`<br>`apps/frontend/app/demo/guides.css`|
+|4|SBS-017: Validate and preserve workspace destinations|`apps/frontend/lib/workspace-navigation.ts`<br>`scripts/workspace-navigation.test.mjs`|
+|5|SBS-017: Support compact perspective controls on primary blue|`apps/frontend/components/view-switch.tsx`<br>`apps/frontend/app/materials.css`|
+|6|SBS-017: Add shared reset and powered-by workspace controls|`apps/frontend/components/workspace-controls.tsx`|
+|7|SBS-017: Add the full-height blue business sidebar and drawer|`apps/frontend/components/business-sidebar.tsx`<br>`apps/frontend/app/demo/workspace-shell.css`|
+|8|SBS-017: Add the glass appointment-filter dropdown|`apps/frontend/components/calendar-filters.tsx`|
+|9|SBS-018: Preserve calendar detail origins across overview cards|`apps/frontend/components/calendar-event-dialog.tsx`|
+|10|SBS-018: Derive truthful overview and day metrics from shared records|`apps/frontend/lib/calendar-metrics.ts`<br>`apps/frontend/lib/business-overview-data.ts`<br>`scripts/business-overview.test.mjs`|
+|11|SBS-018: Make calendar hours explorable with day details|`apps/frontend/components/calendar-activity-chart.tsx`<br>`apps/frontend/components/activity-day-dialog.tsx`<br>`apps/frontend/app/demo/activity-chart.css`|
+|12|SBS-018: Add agenda, attention, service mix and workload panels|`apps/frontend/components/business-overview-panels.tsx`<br>`apps/frontend/app/demo/overview.css`|
+|13|SBS-017: Assemble dedicated customer and business workspace pages|`apps/frontend/components/workspace-client.tsx`<br>`apps/frontend/components/workspace-tour.tsx`<br>`apps/frontend/components/business-overview.tsx`<br>`apps/frontend/components/business-review.tsx`<br>`apps/frontend/components/staff-calendar.tsx`<br>`apps/frontend/app/demo/layout.tsx`<br>`apps/frontend/app/demo/workspace.css`<br>`apps/frontend/app/demo/customer-chat.css`<br>`apps/frontend/app/demo/calendar-details.css`|
+|14|SBS-017: Call the customer source collection documents|`apps/frontend/components/chat-workspace.tsx`<br>`apps/frontend/components/conversation-library.tsx`|
+|15|SBS-017: Use document terminology in source readers|`apps/frontend/components/guide-reader-dialog.tsx`<br>`apps/frontend/components/source-reader.tsx`|
+|16|SBS-017: Align entry and business document copy|`apps/frontend/components/entry-client.tsx`<br>`apps/frontend/components/documents.tsx`|
+|17|SBS-017: Align assistant and admission messages with documents|`apps/backend/choreograph/assistant.py`<br>`apps/backend/choreograph/ai_admission.py`|
+|18|SBS-017: Align document replacement and indexing notices|`apps/backend/choreograph/interactions.py`<br>`apps/backend/choreograph/knowledge.py`|
+|19|SBS-010: Refresh isolated Linux acceptance for the workspace checkpoint|`infra/release-evidence.json`<br>`docs/tickets/SBS-010-release.md`|
+|20|SBS-017: Record workspace guidance, validation and checkpoint commits|`AGENTS.md`<br>`docs/CHOREOGRAPH.md`<br>`docs/tickets/README.md`<br>`docs/tickets/SBS-017-workspace-navigation.md`<br>`docs/tickets/SBS-018-business-overview.md`<br>`docs/tickets/COMMIT_PLAN.md`|
+
+The browser/runtime screenshots, ignored environment files, dependency trees, build caches and local databases are excluded. Canonical document titles/bytes remain accurate; UI terminology is Documents. The generated release receipt is safe fake-only source/image evidence.
+
+### Current checkpoint execution record
+
+All local pre-commit gates passed on the exact final application snapshot:236 backend/56 Node tests, full Ruff, pip dependency integrity, generated contract freshness, frontend types and CI template assertions. Both actual pinned Linux production images and the isolated fake release walkthrough passed45 HTTP requests/297 assertions. All temporary owned resources were removed. No hosted Actions, push, deployment, paid/live-provider operation or personal visual acceptance is claimed.
+
+The refreshed178-input source receipt is `4f33f0a3c6fa507d21e113ef521a90c278a765625fdbaab130f2a8070f4779c1`, verified 2026-10-23T20:56:06.710Z. The source fingerprint was independently rechecked before staging. Existing Node module-type warnings and historical Markdown hard breaks were retained; no credential candidates or forbidden runtime/secret/dependency/build files were found in the allocation.
+
+Commits1–19 are complete, with47 exact allocated files. Each staged/committed blob was compared byte-for-byte with its reviewed worktree file; each commit path set matched its group, and the index was empty after each commit. Commit20 records these six documentation owners. Its own hash is available from Git; final clean-tree,20-subject/file-allocation/committed-blob and release-fingerprint verification run after it.
+
+| # | Actual commit | Subject |
+|---|---|---|
+|1|`305e6c35d6bbd286329f6bb5ab54891c062ec2db`|SBS-017: Delay hero discovery until five idle seconds|
+|2|`c6948f5b4ece3b038608583ff4e69fa4062a9d50`|SBS-017: Share the landing collage and conversation motion|
+|3|`216d57151294f8329f3eb287278ffe0b157c01e6`|SBS-017: Make every source discoverable in the intro carousel|
+|4|`f354316236a2b28ddd6388bffcb0b4d3a572f856`|SBS-017: Validate and preserve workspace destinations|
+|5|`e2047b1e1a956e646b1fd5569ac3671e96672725`|SBS-017: Support compact perspective controls on primary blue|
+|6|`ca620ae35f74831028cf8364434c9555520f7370`|SBS-017: Add shared reset and powered-by workspace controls|
+|7|`790a7945daa81bc51284bc5f97fa09ecfcc83b98`|SBS-017: Add the full-height blue business sidebar and drawer|
+|8|`528c0554f783f34a48905d4fa362480c5238bc3d`|SBS-017: Add the glass appointment-filter dropdown|
+|9|`570a600afbb8fa6dd82841be2fe2164bd487fb95`|SBS-018: Preserve calendar detail origins across overview cards|
+|10|`1cc7adcec3f9fdab99698e8366ff8e936a01e24f`|SBS-018: Derive truthful overview and day metrics from shared records|
+|11|`65c301bf5ab4d038c995eddf658c1a05fd0373b8`|SBS-018: Make calendar hours explorable with day details|
+|12|`74ef90687c4d5b3160131c2cfb618a5a76eeb6b8`|SBS-018: Add agenda, attention, service mix and workload panels|
+|13|`e64b2e5cb2d1063df102776b9fd9a7881a1e730d`|SBS-017: Assemble dedicated customer and business workspace pages|
+|14|`4d1f1e544be25189964b49b798911e098810fe46`|SBS-017: Call the customer source collection documents|
+|15|`af1ca6b8f609743aef367b803a9e2b48ee33d872`|SBS-017: Use document terminology in source readers|
+|16|`072f27dc3e35cfc7943478a97464ee2588d6734a`|SBS-017: Align entry and business document copy|
+|17|`d6d08e02170a832ac6ba2c76e1e80f585de827c8`|SBS-017: Align assistant and admission messages with documents|
+|18|`fc627be56d2619cf9002cdaf03463b1556595da7`|SBS-017: Align document replacement and indexing notices|
+|19|`2e5d7095afdbb5fce97cd0130bb8c27282af5bab`|SBS-010: Refresh isolated Linux acceptance for the workspace checkpoint|
+|20|Final documentation commit; read its hash from `git log -1`|SBS-017: Record workspace guidance, validation and checkpoint commits|
+
+No code fixes or plan deviations were needed during this checkpoint. No hooks were bypassed, history rewritten, branch switched or remote contacted. Earlier source snapshots/permissions above remain historical.

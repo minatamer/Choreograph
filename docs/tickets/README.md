@@ -31,6 +31,8 @@ Fresh local ports: frontend **45860**, API **45861**, PostgreSQL **45862**. Sele
 | [SBS-014](SBS-014-cloud-dispatch.md) | Complete actual Tasks publication and unattended dispatcher | 07-build continuation | SBS-013 | Complete local |
 | [SBS-015](SBS-015-integration-readiness.md) | Finish executable readiness, acceptance tools and release files | 07-build continuation;12 refresh | SBS-012/013/014 | Complete local |
 | [SBS-016](SBS-016-guided-workspace.md) | Explain Juniper's guides; conversational customer view, visual Business view and tour | Owner UI continuation,23 October2026 | Existing app and Continue-loading correction | Complete local; owner runnable review remains |
+| [SBS-017](SBS-017-workspace-navigation.md) | Idle hero discovery, complete document carousel and role-specific workspace navigation | Latest owner UI continuation | SBS-016 local checkpoint | Complete local; owner visual review remains |
+| [SBS-018](SBS-018-business-overview.md) | Useful record-derived overview and consistent Business card surfaces | Owner dashboard continuation | SBS-017 | Complete local; owner visual review remains |
 
 Scope is one Python backend, one Next frontend, SQLAlchemy/Alembic, actual PostgreSQL/pgvector, narrow LlamaIndex/OpenAI/HubSpot adapters and local durable runner. No payments/outreach/Google Calendar, extra vector platform or agent framework. Figma remains six desktop key frames and one mobile landing; the implemented app is responsive throughout.
 
@@ -41,4 +43,10 @@ Scope is one Python backend, one Next frontend, SQLAlchemy/Alembic, actual Postg
 
 **Workspace UI handoff,23 October2026:** [SBS-016](SBS-016-guided-workspace.md#evidence-and-validation-disposition) is complete locally after the documented plan, implementation and read-only validation. Six-size/source/booking/reschedule/retry/tour walkthroughs, frontend types,24 unique Node checks,9 isolated PostgreSQL booking/knowledge tests and canonical preview integrity passed. Temporary probes were removed; the same hot-reloaded frontend remains. Owner runnable visual review and real/hosted acceptance remain; this UI receipt does not refresh production/Linux or external-provider evidence.
 
-**Local Git follow-up:** the latest direct owner request authorizes the [five-group file-level plan](COMMIT_PLAN.md) and local commits with SBS ticket prefixes. The canonical Git permission is updated independently of provisional product/visual/security reviews. Git log/clean-tree verification owns actual completion; no push/deployment/paid action is included.
+**Prior SBS-016 Git follow-up:** the owner request for that checkpoint authorized the [five-group file-level plan](COMMIT_PLAN.md) and local commits with SBS ticket prefixes. The canonical Git permission is updated independently of provisional product/visual/security reviews. Git log/clean-tree verification owns actual completion; no push/deployment/paid action is included.
+
+
+**Current workspace-navigation handoff,23 October2026:** [SBS-017](SBS-017-workspace-navigation.md) records the audit-first plan, role-specific navigation/discovery implementation and three-pass execute/validate loop. Local fake browser checks, six Customer viewport sizes, types,49 Node tests,9 isolated PG tests and a settled pinned Linux frontend build passed. This source is unstaged/uncommitted; the prior checkpoint Git permission does not cover new staging/commits. Full release-smoke freshness, actual hosted Actions and owner visual acceptance are separate.
+
+
+**Latest owner-authorized workspace Git checkpoint,23 October2026:** explicit approval now covers the complete53-file/20-commit SBS-017/018 checkpoint on main. [COMMIT_PLAN](COMMIT_PLAN.md#owner-authorized-workspace-checkpoint23-october2026) owns exact allocation and hashes; this supersedes the preceding no-new-Git authorization for these changes. Fresh236 backend/56 Node checks, lint/dependency/contracts/types/template assertions and isolated Linux production images with45 HTTP requests/297 assertions passed. No push, hosted Actions, deployment or paid/live operation is included. Earlier unstaged handoffs describe their recorded implementation snapshots.
