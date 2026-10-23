@@ -7,6 +7,9 @@ import './tour.css';
 import './customer-chat.css';
 import './expanding-dialog.css';
 import './availability.css';
+import './workspace-shell.css';
+import './overview.css';
+import './activity-chart.css';
 
 export default function DemoLayout({children}:{children:ReactNode}){
   return <DemoGuestProvider>{children}</DemoGuestProvider>;

@@ -1,26 +1,53 @@
 'use client';
-import {useEffect,useLayoutEffect,useMemo,useRef,useState} from 'react';
+import {useEffect,useId,useMemo,useRef,useState} from 'react';
 import {animate} from 'motion';
-import {motion} from 'motion/react';
+import {AnimatePresence,LayoutGroup,motion} from 'motion/react';
 import {money,type SessionState} from '@/lib/api';
-import {calendarWeek} from '@/lib/calendar-metrics';
-import {StaffCalendar} from './staff-calendar';
-import {ScrollButton} from './scroll-button';
+import {addDays,localDay} from '@/lib/calendar-metrics';
+import {overviewAgenda,overviewWeek,weekOf} from '@/lib/business-overview-data';
+import {utcOffset,weekUtcOffset} from '@/lib/timezone';
+import type {BusinessPage} from '@/lib/workspace-navigation';
+import {CalendarEventDialog,type CalendarEvent} from './calendar-event-dialog';
+import {OverviewAppointments,OverviewAttention,OverviewServices,OverviewStaff} from './business-overview-panels';
+import {CalendarActivityChart} from './calendar-activity-chart';
 
 function MetricValue({value,format=String}:{value:number;format?:(value:number)=>string}){
  const node=useRef<HTMLSpanElement>(null);const previous=useRef(0);
  useEffect(()=>{const from=previous.current;previous.current=value;const animation=animate(from,value,{duration:.85,ease:[.16,1,.3,1],onUpdate:current=>{if(node.current)node.current.textContent=format(Math.round(current));}});return()=>animation.stop();},[value,format]);
  return <><span className="sr-only">{format(value)}</span><span ref={node} aria-hidden="true">{format(value)}</span></>;
 }
-export function BusinessOverview({state,week,onWeek,pending,onClear}:{state:SessionState;week:string;onWeek:(week:string)=>void;pending:boolean;onClear:(id:string)=>Promise<boolean>}){
- const days=useMemo(()=>calendarWeek(state.calendar,week,state.timezone),[state.calendar,week,state.timezone]);
- const chart=useRef<HTMLDivElement>(null);const [chartWidth,setChartWidth]=useState(720);
- useLayoutEffect(()=>{const node=chart.current;if(!node)return;setChartWidth(Math.max(1,node.getBoundingClientRect().width));const observer=new ResizeObserver(entries=>setChartWidth(Math.max(1,entries[0].contentRect.width)));observer.observe(node);return()=>observer.disconnect();},[]);
- const [selected,setSelected]=useState(0);const max=Math.max(4,...days.map(day=>day.hours));
- const points=days.map((day,index)=>({x:28+index*(chartWidth-48)/6,y:154-day.hours/max*122}));
- const line=points.map((point,index)=>`${index?'L':'M'}${point.x},${point.y}`).join(' ');
- const area=`${line} L${chartWidth-20},154 L28,154 Z`;const total=days.reduce((sum,day)=>sum+day.hours,0);
- const dayLabel=(day:string)=>new Intl.DateTimeFormat(undefined,{weekday:'short',timeZone:'UTC'}).format(new Date(day+'T12:00Z'));
+export function BusinessOverview({state,week,onWeek,onNavigate,pending,onClear}:{state:SessionState;week:string;onWeek:(week:string)=>void;onNavigate:(page:BusinessPage,week?:string)=>void;pending:boolean;onClear:(id:string)=>Promise<boolean>}){
+ const data=useMemo(()=>overviewWeek(state.calendar,week,state.timezone),[state.calendar,week,state.timezone]);
+ const {days}=data;
+ const [now,setNow]=useState(()=>Date.now());
+ useEffect(()=>{const update=()=>setNow(Date.now());const timer=window.setInterval(update,60_000);document.addEventListener('visibilitychange',update);return()=>{window.clearInterval(timer);document.removeEventListener('visibilitychange',update);};},[]);
+ const agenda=useMemo(()=>overviewAgenda(state.calendar,state.timezone,now),[state.calendar,state.timezone,now]);
+ const group=useId(),titleId=useId();
+ const [selection,setSelection]=useState<{id:string;origin:string}|null>(null);
+ const opener=useRef<HTMLElement|null>(null);
+ const selectedEvent=state.calendar.find(event=>event.id===selection?.id);
+ const selectedRequest=selectedEvent?state.requests.find(record=>record.id===selectedEvent.enquiry_id&&record.booking?.id===selectedEvent.id):undefined;
+ function open(event:CalendarEvent,origin:string,node:HTMLElement){opener.current=node;setSelection({id:event.id,origin});}
+ const total=days.reduce((sum,day)=>sum+day.hours,0);
  const metrics=[{label:'Requests',value:state.summary.requests_count,icon:'↗',note:'Customer enquiries'},{label:'To review',value:state.summary.awaiting_count,icon:'◷',note:'Waiting for your approval'},{label:'Confirmed',value:state.summary.confirmed_count,icon:'✓',note:'Reserved appointments'},{label:'Booked value',value:state.summary.booked_cents,icon:'$',note:'Booking value, before any payment',format:money}];
- return <section className="business-overview" aria-label="Juniper business overview"><div className="business-metric-grid" data-tour="overview">{metrics.map((metric,index)=><motion.div key={metric.label} initial={{opacity:0,y:12}} animate={{opacity:1,y:0}} transition={{duration:.4,delay:index*.065}}><ScrollButton targetId="booking-requests" className="business-metric"><span className="metric-label"><span className="metric-icon" aria-hidden="true">{metric.icon}</span><span>{metric.label}</span></span><strong><MetricValue value={metric.value} format={metric.format}/></strong><small>{metric.note}</small></ScrollButton></motion.div>)}</div><StaffCalendar state={state} week={week} onWeek={onWeek} pending={pending} onClear={onClear}/><div className="business-activity"><header><div><span className="eyebrow blue-text">A little room to plan</span><h2>Time on the calendar.</h2><p>Scheduled & blocked staff hours</p></div><div className="activity-total"><strong>{Number(total.toFixed(1))}<small> hrs</small></strong><span>Week of {new Intl.DateTimeFormat(undefined,{month:'short',day:'numeric',timeZone:'UTC'}).format(new Date(week+'T12:00Z'))}</span></div></header><figure aria-label="Scheduled and blocked staff hours by day"><div className="activity-chart" ref={chart}><svg viewBox={`0 0 ${chartWidth} 180`} role="img" aria-label={`${Number(total.toFixed(1))} staff hours in the displayed week`}><defs><linearGradient id="activity-fill" x1="0" y1="0" x2="0" y2="1"><stop stopColor="#1967d2" stopOpacity=".24"/><stop offset="1" stopColor="#1967d2" stopOpacity="0"/></linearGradient></defs>{[32,93,154].map((y,index)=><g key={y}><path d={`M28 ${y}H${chartWidth-20}`} stroke="#b8cde644" strokeDasharray={index===2?undefined:'3 5'}/><text x="8" y={y+4} fontSize="10" fill="#78899f">{Number((max*(1-index/2)).toFixed(1))}</text></g>)}<motion.path key={'area'+week} d={area} fill="url(#activity-fill)" initial={{opacity:0}} animate={{opacity:1}} transition={{duration:1}}/><motion.path key={week} d={line} fill="none" stroke="#1967d2" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" initial={{pathLength:0}} animate={{pathLength:1}} transition={{duration:1.1,ease:[.16,1,.3,1]}}/>{points.map((point,index)=><circle key={index} cx={point.x} cy={point.y} r={selected===index?6:3.5} fill={selected===index?'#1967d2':'#fff'} stroke="#1967d2" strokeWidth="2"/>)}</svg></div><figcaption className="activity-days">{days.map((day,index)=><button type="button" key={day.day} style={{left:points[index].x}} aria-pressed={selected===index} aria-label={`${day.day}: ${Number(day.hours.toFixed(1))} staff hours`} onMouseEnter={()=>setSelected(index)} onFocus={()=>setSelected(index)} onClick={()=>setSelected(index)}><span>{dayLabel(day.day)}</span><strong>{Number(day.hours.toFixed(1))}<small> h</small></strong></button>)}</figcaption></figure></div></section>;
+ const first=state.calendar_first_week_start??state.calendar_week_start??week,last=state.calendar_last_week_start??first;
+ const calendar=(target=week)=>onNavigate('calendar',target);
+ const todayLabel=new Intl.DateTimeFormat(undefined,{weekday:'long',month:'short',day:'numeric',timeZone:state.timezone}).format(new Date(now));
+ const weekLabel='Week of '+new Intl.DateTimeFormat(undefined,{month:'short',day:'numeric',timeZone:'UTC'}).format(new Date(week+'T12:00Z'));
+ return <LayoutGroup id={group}><section className="business-overview" aria-label="Juniper business overview">
+  <div className="business-metric-grid" data-tour="overview">{metrics.map((metric,index)=><motion.div key={metric.label} initial={{opacity:0,y:12}} animate={{opacity:1,y:0}} transition={{duration:.4,delay:index*.065}}><button type="button" onClick={()=>onNavigate('requests')} className="business-metric"><span className="metric-label"><span className="metric-icon" aria-hidden="true">{metric.icon}</span><span>{metric.label}</span></span><strong><MetricValue value={metric.value} format={metric.format}/></strong><small>{metric.note}</small></button></motion.div>)}</div>
+  <div className="overview-priority-grid">
+   <OverviewAppointments title="Today’s agenda" subtitle={`${todayLabel} · ${utcOffset(state.timezone,now)}`} events={agenda.agenda} zone={state.timezone} origin="today" selected={selection?.origin} onOpen={open} onCalendar={()=>calendar(weekOf(agenda.today))}/>
+   <OverviewAttention state={state} onNavigate={onNavigate}/>
+  </div>
+  <div className="overview-analytics-grid">
+   <section className="business-activity" aria-label="Weekly calendar hours"><header><div><span className="eyebrow blue-text">A little room to plan</span><h2>Time on the calendar.</h2><p>Calendar staff hours · {weekUtcOffset(state.timezone,week)}</p></div><div className="activity-total"><strong>{Number(total.toFixed(1))}<small> hrs</small></strong><span>{weekLabel}</span><div className="week-navigation"><button type="button" aria-label="Previous overview week" disabled={week<=first} onClick={()=>onWeek(addDays(week,-7))}>←</button><button type="button" aria-label="Next overview week" disabled={week>=last} onClick={()=>onWeek(addDays(week,7))}>→</button></div></div></header>
+    <CalendarActivityChart key={state.workspace_id+week} days={days} events={state.calendar} requests={state.requests} zone={state.timezone} pending={pending} onClear={onClear} onCalendar={()=>calendar()}/>
+   </section><OverviewServices services={data.services} weekLabel={weekLabel}/>
+  </div>
+  <div className="overview-priority-grid">
+   <OverviewAppointments title="Next on the calendar" subtitle="Upcoming appointments" events={agenda.upcoming} zone={state.timezone} origin="next" selected={selection?.origin} onOpen={open} onCalendar={()=>calendar(agenda.upcoming[0]?weekOf(localDay(agenda.upcoming[0].starts_at,state.timezone)):week)}/>
+   <OverviewStaff staff={data.staff} weekLabel={weekLabel} onCalendar={()=>calendar()}/>
+  </div>
+ </section><AnimatePresence>{selectedEvent&&selection&&<CalendarEventDialog key={state.workspace_id+selection.origin} layoutId={selection.origin} returnLabel="Back to overview" event={selectedEvent} request={selectedRequest} zone={state.timezone} opener={opener.current} titleId={titleId} onClose={()=>setSelection(null)} pending={pending} onClear={onClear}/>}</AnimatePresence></LayoutGroup>;
 }

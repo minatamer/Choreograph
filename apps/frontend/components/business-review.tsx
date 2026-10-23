@@ -4,7 +4,6 @@ import {useEffect,useState} from 'react';
 import {money,duration,appointment,type SessionState,type RequestRecord} from '@/lib/api';
 import {Badge,Button} from './ui';
 import {WeekCalendar} from './week-calendar';
-import {BusinessOverview} from './business-overview';
 import {requestTone} from '@/lib/appointment-status';
 type Action=(record:RequestRecord,action:string,fields?:Record<string,unknown>)=>void;
 function RequestReview({record,state,pending,onAction}:{record:RequestRecord;state:SessionState;pending:boolean;onAction:Action}){
@@ -22,7 +21,6 @@ function RequestReview({record,state,pending,onAction}:{record:RequestRecord;sta
     </>}
   </article>;
 }
-export function BusinessReview({state,pending,onAction,selectedWeek,onWeek,onClear}:{state:SessionState;pending:boolean;onAction:Action;selectedWeek:string;onWeek:(week:string)=>void;onClear:(id:string)=>Promise<boolean>}){
-  const first=state.calendar_week_start??state.scenario.week_start??'';const week=selectedWeek||first;
-  return <div className="business-content">{week&&<BusinessOverview state={state} week={week} onWeek={onWeek} pending={pending} onClear={onClear}/>}<section id="booking-requests" tabIndex={-1} className="business-queue" data-tour="review" aria-label="Booking requests"><div className="queue-title"><h2>A little review. Then it’s booked.</h2><span>{state.summary.awaiting_count} to review</span></div>{!state.requests.length?<div className="business-empty"><span aria-hidden="true">✓</span><div><h3>You’re all caught up.</h3><p>Try a clean in Customer view. Its request will arrive here for your approval.</p></div></div>:state.requests.map(record=><RequestReview key={record.id} record={record} state={state} pending={pending} onAction={onAction}/>)}</section></div>;
+export function BusinessReview({state,pending,onAction}:{state:SessionState;pending:boolean;onAction:Action}){
+  return <section id="booking-requests" tabIndex={-1} className="business-queue" data-tour="review" aria-label="Booking requests"><div className="queue-title"><h2>A little review. Then it’s booked.</h2><span>{state.summary.awaiting_count} to review</span></div>{!state.requests.length?<div className="business-empty"><span aria-hidden="true">✓</span><div><h3>You’re all caught up.</h3><p>Try a clean in Customer view. Its request will arrive here for your approval.</p></div></div>:state.requests.map(record=><RequestReview key={record.id} record={record} state={state} pending={pending} onAction={onAction}/>)}</section>;
 }

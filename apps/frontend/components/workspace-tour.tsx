@@ -5,26 +5,27 @@ import {animate} from 'motion';
 import {tourPanels,tourPlacement,tourSpotlight,sameTourBox,TOUR_FADE_MS,type TourBox,type TourViewport} from '@/lib/tour-layout';
 import {Button,Mark} from './ui';
 import {markTourSeen} from '@/lib/tour-preference';
+import type {BusinessPage} from '@/lib/workspace-navigation';
 
 const steps=[
- {target:'assistant',business:false,title:'Meet your front desk.',text:'You’re a customer of Juniper Cleaning. Its assistant can answer from Juniper’s guides, prepare a quote and find a time.'},
+ {target:'assistant',business:false,title:'Meet your front desk.',text:'You’re a customer of Juniper Cleaning. Its assistant can answer from Juniper’s documents, prepare a quote and find a time.'},
  {target:'questions',business:false,title:'A good place to start.',text:'These replies adapt as you chat. Tap one to send it, or use the plus button for more questions.'},
  {target:'composer',business:false,title:'Talk it through.',text:'Ask naturally, or change your mind. Quotes, sources and available times appear in the conversation. You review before sending a request.'},
- {target:'overview',business:true,title:'Now, the business side.',text:'Follow incoming requests, confirmed bookings and booked value.'},
- {target:'review',business:true,title:'You’re in control.',text:'Customer requests arrive here. Review the quote, choose a cleaner and approve. A time is reserved only after that approval.'},
- {target:'calendar',business:true,title:'See the whole week.',text:'This is the full staff calendar. Approved bookings appear alongside Juniper’s existing jobs. Change the week to explore.'},
- {target:'documents',business:true,title:'The pages behind the answers.',text:'Six guides are already uploaded. Open the original pages, or try a revised guide and ask again. Replies link to the source they used.'},
- {target:'hubspot',business:true,title:'Your HubSpot. Your choice.',text:'Both paths use Juniper. Connect your own HubSpot to follow approved bookings after sync. You can disconnect, or uninstall through Finish demo or HubSpot Connected Apps.'},
+ {target:'overview',business:true,page:'overview',title:'Now, the business side.',text:'Follow incoming requests, confirmed bookings and booked value.'},
+ {target:'review',business:true,page:'requests',title:'You’re in control.',text:'Customer requests arrive here. Review the quote, choose a cleaner and approve. A time is reserved only after that approval.'},
+ {target:'calendar',business:true,page:'calendar',title:'See the whole week.',text:'This is the full staff calendar. Approved bookings appear alongside Juniper’s existing jobs. Change the week to explore.'},
+ {target:'documents',business:true,page:'guides',title:'The pages behind the answers.',text:'Six documents are already uploaded. Open the original pages, or try a revised document and ask again. Replies link to the source they used.'},
+ {target:'hubspot',business:true,page:'connections',title:'Your HubSpot. Your choice.',text:'Both paths use Juniper. Connect your own HubSpot to follow approved bookings after sync. You can disconnect, or uninstall through Finish demo or HubSpot Connected Apps.'},
 ] as const;
 type Layout={view:TourViewport;hole:TourBox|null;card:TourBox};
 const viewport=():TourViewport=>({left:window.visualViewport?.offsetLeft??0,top:window.visualViewport?.offsetTop??0,width:window.visualViewport?.width??innerWidth,height:window.visualViewport?.height??innerHeight});
 
-export function WorkspaceTour({business,onPerspective,onClose}:{business:boolean;onPerspective:(business:boolean)=>void;onClose:()=>void}){
+export function WorkspaceTour({business,page,onPerspective,onClose}:{business:boolean;page:BusinessPage;onPerspective:(business:boolean,page?:BusinessPage)=>void;onClose:()=>void}){
  const [index,setIndex]=useState(-1);const [layout,setLayout]=useState<Layout|null>(null);const [leaving,setLeaving]=useState(false);const [ready,setReady]=useState(false);
  const card=useRef<HTMLElement>(null);const timer=useRef<ReturnType<typeof setTimeout>|null>(null);const moving=useRef(false);
  const closing=useRef(false);const stopScroll=useRef<(()=>void)|null>(null);
  const callbacks=useRef({onPerspective,onClose});callbacks.current={onPerspective,onClose};
- const origin=useRef({business,focus:typeof document==='undefined'?null:document.activeElement as HTMLElement|null});
+ const origin=useRef({business,page,focus:typeof document==='undefined'?null:document.activeElement as HTMLElement|null});
  const step=index>=0?steps[index]:null;
  useEffect(()=>{
   const root=document.querySelector<HTMLElement>('[data-demo-workspace-root]');const previousInert=root?.inert??false;
@@ -33,15 +34,15 @@ export function WorkspaceTour({business,onPerspective,onClose}:{business:boolean
  },[]);
  function finish(){
   if(closing.current)return;closing.current=true;moving.current=true;stopScroll.current?.();if(timer.current)clearTimeout(timer.current);setLeaving(true);
-  timer.current=setTimeout(()=>{markTourSeen(()=>localStorage);callbacks.current.onPerspective(origin.current.business);callbacks.current.onClose();},TOUR_FADE_MS);
+  timer.current=setTimeout(()=>{markTourSeen(()=>localStorage);callbacks.current.onPerspective(origin.current.business,origin.current.page);callbacks.current.onClose();},TOUR_FADE_MS);
  }
  function move(next:number){
   if(moving.current)return;if(next>=steps.length){finish();return;}
   moving.current=true;setLeaving(true);
-  timer.current=setTimeout(()=>{setReady(false);setIndex(next);setLeaving(false);if(next>=0)callbacks.current.onPerspective(steps[next].business);},TOUR_FADE_MS);
+  timer.current=setTimeout(()=>{setReady(false);setIndex(next);setLeaving(false);if(next>=0){const destination=steps[next];callbacks.current.onPerspective(destination.business,'page'in destination?destination.page:undefined);}},TOUR_FADE_MS);
  }
  useLayoutEffect(()=>{
-  if(step&&business!==step.business)return;
+  if(step&&(business!==step.business||(step.business&&'page'in step&&page!==step.page)))return;
   let frame=0;let disposed=false;let scroll:ReturnType<typeof animate>|undefined;
   let target=step?document.querySelector<HTMLElement>(`[data-tour="${step.target}"]`):null;
   if(target&&target.getBoundingClientRect().height>viewport().height*.5)target=target.querySelector<HTMLElement>('.section-heading,.card-heading,header,.queue-title')??target;
@@ -61,7 +62,7 @@ export function WorkspaceTour({business,onPerspective,onClose}:{business:boolean
   const observer=new ResizeObserver(schedule);if(card.current)observer.observe(card.current);if(target)observer.observe(target);
   window.addEventListener('resize',schedule);window.addEventListener('scroll',schedule,{passive:true});window.visualViewport?.addEventListener('resize',schedule);window.visualViewport?.addEventListener('scroll',schedule);
   return()=>{disposed=true;scroll?.stop();cancelAnimationFrame(frame);observer.disconnect();window.removeEventListener('resize',schedule);window.removeEventListener('scroll',schedule);window.visualViewport?.removeEventListener('resize',schedule);window.visualViewport?.removeEventListener('scroll',schedule);};
- },[index,business]);
+ },[index,business,page]);
  useEffect(()=>{
   const key=(event:KeyboardEvent)=>{
    if(event.key==='Escape'){event.preventDefault();finish();}
@@ -78,7 +79,7 @@ export function WorkspaceTour({business,onPerspective,onClose}:{business:boolean
   {layout?.hole&&<div className="tour-highlight" style={layout.hole}/>}
   <section className="workspace-tour-card" ref={card} style={{left:layout?.card.left??16,top:layout?.card.top??16,width:layout?.card.width??Math.min(348,view.width-32),maxHeight:view.height-32}}>
    <div className="tour-card-heading"><span className="tour-brand"><Mark/></span><span>{step?`${index+1} of ${steps.length}`:'A little introduction'}</span><button type="button" className="tour-close" aria-label="Close tour" onClick={finish}>×</button></div>
-   <h2 id="tour-title">{step?.title??'A better time starts here.'}</h2><p>{step?.text??'Take a quick look around Juniper’s front desk. See the conversation, the guides behind its answers, and what happens on the business side.'}</p>
+   <h2 id="tour-title">{step?.title??'A better time starts here.'}</h2><p>{step?.text??'Take a quick look around Juniper’s front desk. See the conversation, the documents behind its answers, and what happens on the business side.'}</p>
    {step&&<div className="tour-progress" aria-label={`Step ${index+1} of ${steps.length}`}>{steps.map((_,position)=><span key={position} data-current={position<=index}/>)}</div>}
    <div className="tour-actions"><Button kind="quiet" onClick={finish}>Skip tour</Button>{index>=0&&<Button kind="secondary" onClick={()=>move(index-1)}>Back</Button>}<Button onClick={()=>move(index+1)}>{step?(index===steps.length-1?'Finish':'Next'):'Show me around'}<span aria-hidden="true">→</span></Button></div>
   </section>
