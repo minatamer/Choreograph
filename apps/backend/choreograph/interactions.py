@@ -37,7 +37,7 @@ def _profile(app, db, workspace):
     spec = knowledge.spec_for_workspace(db, workspace)
     current = app.state.ai_runtime.spec
     if spec.provider != current.provider or (spec.provider != 'fake' and spec.profile_id != current.profile_id):
-        raise DomainError('ASSISTANT_CHANGED', 'Assistance has changed. Reset the demo before sending a new question or guide.', 409)
+        raise DomainError('ASSISTANT_CHANGED', 'Assistance has changed. Reset the demo before sending a new question or document.', 409)
     return spec
 
 
@@ -130,7 +130,7 @@ def replace_document(app, slot, body, request):
         if previous is not None:
             return MutationView(state=app.state.full_view(db, workspace, token), **previous)
         if slot not in knowledge.SLOTS:
-            raise DomainError('DOCUMENT_SLOT', 'Choose a guide to replace.', 422)
+            raise DomainError('DOCUMENT_SLOT', 'Choose a document to replace.', 422)
         if workspace.ingestion_attempts >= 3:
             raise DomainError('DOCUMENT_LIMIT', 'This demo has used its three document replacements.', 422)
         current = db.scalar(knowledge.authorized(db, workspace).where(DocumentVersion.slot == slot).options(

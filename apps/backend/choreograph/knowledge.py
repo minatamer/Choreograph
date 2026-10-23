@@ -66,7 +66,7 @@ def validate_vector(vector,spec):
     if (not isinstance(vector,list) or len(vector)!=spec.dimensions or
             any(type(value) not in (int,float) or not math.isfinite(value) for value in vector) or
             (spec.provider!='fake' and not any(vector))):
-        raise DomainError('EMBEDDING_FORMAT','The guide could not be indexed. Try again later.',503)
+        raise DomainError('EMBEDDING_FORMAT','The document could not be indexed. Try again later.',503)
     return [float(value) for value in vector]
 
 
@@ -101,12 +101,12 @@ class OpenAIEmbedding(BaseEmbedding):
         # batch until earlier batches have already consumed provider allowance.
         if (not texts or len(texts)>64 or any(not isinstance(value,str) or not value.strip() or
                 not 0<len(self._tokenizer.encode(value))<=8192 for value in texts)):
-            raise DomainError('EMBEDDING_INPUT','Use a shorter guide or question.',422)
+            raise DomainError('EMBEDDING_INPUT','Use a shorter document or question.',422)
         return super().get_text_embedding_batch(texts,**kwargs)
     def _embed(self,texts,phase):
         counts=[len(self._tokenizer.encode(value)) for value in texts]
         if not texts or len(texts)>64 or any(not value.strip() for value in texts) or any(not 0<count<=8192 for count in counts):
-            raise DomainError('EMBEDDING_INPUT','Use a shorter guide or question.',422)
+            raise DomainError('EMBEDDING_INPUT','Use a shorter document or question.',422)
         if not self._admission or self._admission.grant.embedding_model!=self.spec.model:
             raise DomainError('LIVE_NOT_CONFIGURED','A finite live allowance is required.',503)
         result=[]
@@ -128,7 +128,7 @@ class OpenAIEmbedding(BaseEmbedding):
             except DomainError:raise
             except Exception as error:  # noqa: BLE001 - provider errors must never expose request or response bodies.
                 code='ASSISTANT_TIMEOUT' if 'Timeout' in type(error).__name__ else 'EMBEDDING_UNAVAILABLE'
-                raise DomainError(code,'The guide could not be indexed. Try again later.',503) from None
+                raise DomainError(code,'The document could not be indexed. Try again later.',503) from None
         return result
     def _get_text_embeddings(self,texts):return self._embed(texts,'ingest_embed')
     def _get_text_embedding(self,text):return self._embed([text],'ingest_embed')[0]
@@ -147,7 +147,7 @@ def register_profile(db,spec):
 
 def spec_for_workspace(db,workspace):
     row=db.get(EmbeddingProfile,workspace.embedding_profile_id)
-    if not row:raise DomainError('KNOWLEDGE_PROFILE','The guide configuration needs review.',503)
+    if not row:raise DomainError('KNOWLEDGE_PROFILE','The document configuration needs review.',503)
     return EmbeddingSpec(row.provider,row.model,row.dimensions,row.chunker,row.tokenizer)
 
 
@@ -187,11 +187,11 @@ def parse(data:bytes,kind:str):
 
 
 def parse_version(data,kind,slot,title,version,now,*,owner=None,generation=1,spec=FAKE_SPEC,tokenizer=None):
-    if slot not in SLOTS:raise DomainError('DOCUMENT_SLOT','Choose a guide to replace.',422)
+    if slot not in SLOTS:raise DomainError('DOCUMENT_SLOT','Choose a document to replace.',422)
     if spec.provider=='fake' and spec!=FAKE_SPEC:
-        raise DomainError('KNOWLEDGE_PROFILE_RESET','Start a new demo to replace this legacy guide.',409)
+        raise DomainError('KNOWLEDGE_PROFILE_RESET','Start a new demo to replace this legacy document.',409)
     if spec.provider=='openai' and (spec.chunker!='llama-token-section-v4' or not hasattr(tokenizer,'encode')):
-        raise DomainError('LIVE_NOT_CONFIGURED','The guide tokenizer is not configured.',503)
+        raise DomainError('LIVE_NOT_CONFIGURED','The document tokenizer is not configured.',503)
     pages=parse(data,kind)
     if kind=='pdf':
         # Authored headings are used only when their bodies occur in the actual
@@ -225,9 +225,9 @@ def embed_version(parsed,embedder=None):
     if embedder is None:
         if parsed.spec.provider!='fake':raise DomainError('LIVE_NOT_CONFIGURED','Live embedding is not configured.',503)
         embedder=FakeEmbedding(parsed.spec)
-    if embedder.spec!=parsed.spec:raise DomainError('KNOWLEDGE_PROFILE','The guide configuration changed.',409)
+    if embedder.spec!=parsed.spec:raise DomainError('KNOWLEDGE_PROFILE','The document configuration changed.',409)
     vectors=embedder.get_text_embedding_batch([item.content for item in parsed.chunks])
-    if len(vectors)!=len(parsed.chunks):raise DomainError('EMBEDDING_FORMAT','The guide could not be indexed.',503)
+    if len(vectors)!=len(parsed.chunks):raise DomainError('EMBEDDING_FORMAT','The document could not be indexed.',503)
     version_id=uuid4() if parsed.owner else uuid5(NAMESPACE_URL,
         'choreograph:'+parsed.slot+':'+hashlib.sha256(parsed.data).hexdigest()+':'+parsed.spec.profile_id)
     row=DocumentVersion(id=version_id,owner_id=parsed.owner,generation=parsed.generation,slot=parsed.slot,title=parsed.title,
@@ -315,7 +315,7 @@ class ScopedRetriever(BaseRetriever):
     def __init__(self,db,workspace,*,vector=None,spec=None,embedder=None):
         super().__init__();self.db=db;self.workspace=workspace;self.spec=spec or spec_for_workspace(db,workspace)
         if self.spec.profile_id!=workspace.embedding_profile_id:
-            raise DomainError('KNOWLEDGE_PROFILE','The guides changed. Start a fresh demo.',409)
+            raise DomainError('KNOWLEDGE_PROFILE','The documents changed. Start a fresh demo.',409)
         self.vector=vector;self.embed=embedder
     def _retrieve(self,query_bundle:QueryBundle):
         question=query_bundle.query_str[:1200];tokens=set(terms(question))
@@ -360,28 +360,28 @@ def publish_replacement(db,workspace,parsed,built,expected_version_id,expected_r
         raise DomainError('SESSION_EXPIRED','This demo has ended.',410)
     if (workspace.revision!=expected_revision or workspace.id!=parsed.owner or
             workspace.embedding_profile_id!=parsed.spec.profile_id):
-        raise DomainError('STALE_REVISION','The demo or guides changed. Refresh before continuing.')
+        raise DomainError('STALE_REVISION','The demo or documents changed. Refresh before continuing.')
     current=db.scalar(authorized(db,workspace).where(DocumentVersion.slot==parsed.slot))
     if not current or str(current.id)!=str(expected_version_id):
-        raise DomainError('DOCUMENT_CHANGED','The guide changed. Refresh before continuing.')
+        raise DomainError('DOCUMENT_CHANGED','The document changed. Refresh before continuing.')
     row,chunks=built
     if (row.owner_id!=workspace.id or row.generation!=workspace.generation or row.slot!=parsed.slot or
             row.embedding_profile_id!=workspace.embedding_profile_id):
-        raise DomainError('DOCUMENT_CHANGED','The guide changed. Refresh before continuing.')
+        raise DomainError('DOCUMENT_CHANGED','The document changed. Refresh before continuing.')
     db.add(row);db.flush();db.add_all(chunks);db.flush()
     db.get(Manifest,(workspace.id,parsed.slot)).version_id=row.id;db.flush()
     if current.owner_id==workspace.id:db.delete(current)
-    return {'ready':True,'code':'DOCUMENT_READY','message':'The new guide is ready.'}
+    return {'ready':True,'code':'DOCUMENT_READY','message':'The new document is ready.'}
 
 
 def replace(db,workspace,slot,data,kind,now):
     if not workspace.active or workspace.expires_at<=now:
         raise DomainError('SESSION_EXPIRED','This demo has ended.',410)
-    if slot not in SLOTS:raise DomainError('DOCUMENT_SLOT','Choose a guide to replace.',422)
+    if slot not in SLOTS:raise DomainError('DOCUMENT_SLOT','Choose a document to replace.',422)
     if workspace.ingestion_attempts>=3:raise DomainError('DOCUMENT_LIMIT','This demo has used its three document replacements.',422)
     # At most two document parses across API processes sharing this database.
     if not any(db.scalar(text('SELECT pg_try_advisory_xact_lock(45860,:slot)'),{'slot':slot}) for slot in (1,2)):
-        raise DomainError('DOCUMENT_BUSY','Other guides are processing. Try again shortly.',429)
+        raise DomainError('DOCUMENT_BUSY','Other documents are processing. Try again shortly.',429)
     workspace.ingestion_attempts+=1
     try:
         current=db.scalar(authorized(db,workspace).where(DocumentVersion.slot==slot))
