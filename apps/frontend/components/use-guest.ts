@@ -2,7 +2,7 @@
 import {useCallback,useEffect,useRef,useState} from 'react';
 import {api,ApiError,type SessionState,type Mutation} from '@/lib/api';
 type Operation={path:string;method:string;body:unknown;key:string;csrf:string;chatText?:string};
-export function useGuest(){
+export function useGuest(autoInitialize=true){
   const [state,setState]=useState<SessionState|null>(null);
   const [pending,setPending]=useState(false);
   const [error,setError]=useState<{code:string;message:string}|null>(null);
@@ -63,14 +63,15 @@ export function useGuest(){
     }catch(error){if(tag===serial.current&&!controller.signal.aborted)showFailure(error);}
     finally{if(tag===serial.current)setPending(false);}
   },[showFailure]);
-  useEffect(()=>{void initialize();return()=>{active.current?.abort();serial.current++;};},[initialize]);
+  useEffect(()=>{if(autoInitialize)void initialize();return()=>{active.current?.abort();serial.current++;};},[autoInitialize,initialize]);
   const perform=useCallback(async(operation:Operation)=>{
     active.current?.abort();const controller=new AbortController();active.current=controller;const tag=++serial.current;
     last.current=operation;setPending(true);setError(null);
     try{
       const value=await api<Mutation|SessionState>(operation.path,{...operation,signal:controller.signal});
       const next='state'in value?value.state:value;
-      if(tag===serial.current)setState(next);
+      if(tag!==serial.current||controller.signal.aborted)return null;
+      setState(next);
       return value;
     }catch(error){if(tag===serial.current&&!controller.signal.aborted)showFailure(error);return null;}
     finally{if(tag===serial.current)setPending(false);}
