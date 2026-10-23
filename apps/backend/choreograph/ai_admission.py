@@ -144,7 +144,7 @@ def claim_interaction(engine, scope: AttemptScope, *, operation, request_hash, p
         expected={row.slot:str(row.version_id) for row in db.scalars(select(Manifest).where(
             Manifest.workspace_id==workspace.id))}
         if workspace.embedding_profile_id!=profile_id or expected!=manifest_ids:
-            raise DomainError('DOCUMENT_CHANGED','The guides changed. Refresh before continuing.')
+            raise DomainError('DOCUMENT_CHANGED','The documents changed. Refresh before continuing.')
         previous=db.scalar(select(AIInteraction).where(AIInteraction.workspace_id==workspace.id,
             AIInteraction.generation==scope.generation,AIInteraction.command_key==scope.command_key))
         if previous:
@@ -173,7 +173,7 @@ def check_interaction(db, claim, workspace, now):
         raise DomainError('SESSION_EXPIRED','This operation is no longer active.',410)
     current={item.slot:str(item.version_id) for item in db.scalars(select(Manifest).where(Manifest.workspace_id==workspace.id))}
     if workspace.revision!=claim.revision or workspace.embedding_profile_id!=claim.profile_id or current!=claim.manifest_ids:
-        raise DomainError('STALE_REVISION','The demo or guides changed. Refresh before continuing.')
+        raise DomainError('STALE_REVISION','The demo or documents changed. Refresh before continuing.')
 
 
 def complete_interaction(db, claim, workspace, now):

@@ -68,7 +68,7 @@ class FakeAssistant:
 
 def validate_claims(output,hits):
     if output.status!='supported':return []
-    if not 1<=len(output.claims)<=3:raise DomainError('ANSWER_UNSUPPORTED','The guides don’t establish an answer. Ask for a review.',422)
+    if not 1<=len(output.claims)<=3:raise DomainError('ANSWER_UNSUPPORTED','The documents don’t establish an answer. Ask for a review.',422)
     supplied={hit.node.id_:hit.node for hit in hits};result=[]
     for claim in output.claims:
         node=supplied.get(claim.passage_id)
@@ -115,9 +115,9 @@ def apply_chat(db,workspace,text,revision,now,*,intent:Interpretation,hits,outpu
         edits={key:value for key,value in {'service':intent.service,'bedrooms':intent.bedrooms,'oven':intent.oven}.items() if value is not None}
         if edits:service.update_draft(db,workspace,edits,workspace.revision,now)
         if intent.guide_question:
-            if output.status=='conflicting':paragraphs.append('The guide has conflicting or unrelated instructions. A coordinator needs to review it; your quote and booking rules are unchanged.')
-            elif not claims:paragraphs.append('The current guides don’t establish that. Ask for a coordinator review.')
-            else:paragraphs.append('From Juniper’s current guides:')
+            if output.status=='conflicting':paragraphs.append('The document has conflicting or unrelated instructions. A coordinator needs to review it; your quote and booking rules are unchanged.')
+            elif not claims:paragraphs.append('The current documents don’t establish that. Ask for a coordinator review.')
+            else:paragraphs.append('From Juniper’s current documents:')
         quote=service.current_quote(workspace)
         if intent.intent=='greeting':paragraphs.append('Hi. Choose a question below, or tell us about the clean you need.');cards=['services']
         elif not quote:
