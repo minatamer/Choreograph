@@ -17,6 +17,10 @@ function dayStart(day:string,formatter:Intl.DateTimeFormat){
  while(high-low>1){const middle=Math.floor((low+high)/2);if(dayWith(formatter,new Date(middle))<day)low=middle;else high=middle;}
  return high;
 }
+export function calendarDayBounds(day:string,zone:string){
+ const formatter=new Intl.DateTimeFormat('en-CA',{year:'numeric',month:'2-digit',day:'2-digit',timeZone:zone});
+ return {start:dayStart(day,formatter),end:dayStart(addDays(day,1),formatter)};
+}
 export function calendarWeek(events:SessionState['calendar'],week:string,zone:string){
  const formatter=new Intl.DateTimeFormat('en-CA',{year:'numeric',month:'2-digit',day:'2-digit',timeZone:zone});
  const boundaries=Array.from({length:8},(_,index)=>dayStart(addDays(week,index),formatter));
