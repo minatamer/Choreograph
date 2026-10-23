@@ -1,14 +1,14 @@
 # Release operations — prepared, unconfigured
 
-This directory owns packaging and operational recovery. Product decisions and phase/evidence remain in [the blueprint](../docs/CHOREOGRAPH.md) and SBS-010/012–015. Examples and the offline renderer prepare reviewable configuration/commands; they contain no credentials and execute no provisioning/deployment/IAM writes. Defaults remain fake. Explicit live AI and independent visitor CRM code paths are implemented and tested with injected transports. Hosted examples remain restricted fake QA candidates until separately funded real/hosted acceptance. Hosting fakes and the continuously running WorkerPool still cost money.
+This directory owns packaging and operational recovery. Product decisions and phase/evidence remain in [the blueprint](../docs/CHOREOGRAPH.md) and SBS-010/012–015. Examples and the offline renderer prepare reviewable configuration/commands; they contain no credentials and execute no provisioning/deployment/IAM writes. AI defaults remain fake; public CRM is disabled until real visitor HubSpot OAuth is configured. Fake CRM is reserved for isolated tests. Explicit live AI and independent visitor CRM code paths are implemented and tested with injected transports. Hosted examples remain restricted fake QA candidates until separately funded real/hosted acceptance. Hosting fakes and the continuously running WorkerPool still cost money.
 
 ## Implemented readiness and acceptance tools
 
-Run Python module commands below from `apps/backend` with `../../.venv/Scripts/python.exe` on Windows (the corresponding `.venv/bin/python` on Linux). No command implicitly reads another repository's configuration. `.env.example` lists the actual setting names; `.env.local` is ignored and server-only. Keep paid/CRM flags false until separately authorized. Do not paste secrets into chat or receipts.
+Run Python module commands below from `apps/backend` with `../../.venv/Scripts/python.exe` on Windows (the corresponding `.venv/bin/python` on Linux). No command implicitly reads another repository's configuration. `apps/backend/.env.example` lists backend settings; the adjacent `.env.local` is ignored and server-only. `apps/frontend/.env.local` contains only frontend server bridge settings, based on its own example. Local API/runner/Compose/acceptance commands use the backend file; the former root env file is no longer used. Keep paid/CRM flags false until separately authorized. Do not paste secrets into chat or receipts.
 
 ```powershell
 ../../.venv/Scripts/python.exe -B -m choreograph.readiness
-../../.venv/Scripts/python.exe -B -m choreograph.readiness --env-file ../../.env.local --database --require-ready
+../../.venv/Scripts/python.exe -B -m choreograph.readiness --env-file .env.local --database --require-ready
 ../../.venv/Scripts/python.exe -B -m choreograph.acceptance ai evaluate
 ../../.venv/Scripts/python.exe -B -m choreograph.acceptance crm sync
 ../../.venv/Scripts/python.exe -B -m choreograph.cloud_plan
@@ -132,3 +132,71 @@ python -m choreograph.release maintenance
 Status reads SQL only. The publishing commands require CHOREOGRAPH_TASKS_ENABLED=true plus explicit project/region/queue/target/audience/delivery identity. Do not execute them against Google before the separate cloud authorization. Native worker-pool deployment/bootstrap plans are prepared under SBS-015. To recover after an approved stop or crash, restart the reviewed pool revision at manual count1, inspect a fresh heartbeat and oldest due work, and allow durable leases/epoch reconciliation to resume. Permission/target/receipt errors remain attention; do not reset budgets, delivery counts or delete rows to claim recovery. Human-reviewed intervention is required where the finite window or attempts have ended.
 
 Primary format/identity references checked22October2026: [WorkerPool resource/scaling](https://docs.cloud.google.com/run/docs/reference/rest/v2/projects.locations.workerPools), [container probes and versioned secrets](https://docs.cloud.google.com/run/docs/reference/rest/v2/Container), [Cloud SQL volume](https://docs.cloud.google.com/run/docs/reference/rest/v2/Volume), [worker-pool health guidance](https://docs.cloud.google.com/run/docs/configuring/workerpools/healthchecks), [metadata access tokens](https://docs.cloud.google.com/run/docs/securing/service-identity), and Tasks [create](https://docs.cloud.google.com/tasks/docs/reference/rest/v2/projects.locations.queues.tasks/create)/[get](https://docs.cloud.google.com/tasks/docs/reference/rest/v2/projects.locations.queues.tasks/get). Local configuration/schema checks do not establish real platform acceptance.
+
+## Free HubSpot test account and real OAuth setup (23 October 2026)
+
+Choreograph's visitor choices are **Continue with HubSpot** and **Continue without HubSpot**. Connecting uses HubSpot's real account-selection/authorization screen. Public simulated-account approval is removed. Local CRM currently stays disabled until the OAuth app is configured; AI can remain fake independently, so this setup needs no OpenAI credits.
+
+### 1. Create your free account and isolated test portal
+
+Start with [HubSpot Free CRM](https://www.hubspot.com/products/crm) and select Get free CRM. HubSpot advertises this plan without a card requirement. Use your real registration details and Egypt as your country.
+
+Egypt appears supported: HubSpot's own [Egypt directory](https://ecosystem.hubspot.com/marketplace/solutions/egypt) lists local partners. This is evidence of service presence, not a completed test of your individual signup or verification.
+
+Inside your account, open **Development → Testing → Test Accounts → Create developer test account**. Name it **Choreograph Testing**, then open it from that list or the account picker. This is a real, separate HubSpot portal for app testing, rather than a Choreograph imitation. Use fictional contacts and deals there.
+
+HubSpot's [account-types documentation](https://developers.hubspot.com/docs/getting-started/account-types) describes up to ten free developer test accounts, with 90-day access to many Enterprise features. The separate Standard Sandbox requires Enterprise and is unnecessary here. Manage the test portal through Actions, including Renew trials; HubSpot also documents expiry after 90 days without qualifying API activity. A Free CRM account itself is distinct from these temporary test features.
+
+### 2. Register Choreograph's OAuth app
+
+The test portal supplies CRM data; an OAuth app supplies the credentials visitors authorize. Both are needed. A private/static access token cannot implement visitor-owned account selection.
+
+Use HubSpot's current [CLI app-creation guide](https://developers.hubspot.com/docs/apps/developer-platform/build-apps/create-an-app), rather than old tutorials that create a legacy public app in the UI. After installing the supported CLI using that guide:
+
+```text
+hs account auth
+hs project create
+```
+
+Choose App, OAuth authentication and Marketplace distribution for the intended visitor-installable integration. Configure the generated app metadata with Choreograph's name/description and this exact local redirect:
+
+```text
+http://localhost:45860/auth/hubspot/callback
+```
+
+Choreograph's current transport requests these permissions:
+
+```text
+oauth
+crm.objects.contacts.read
+crm.objects.contacts.write
+crm.objects.deals.read
+crm.objects.deals.write
+crm.schemas.contacts.read
+crm.schemas.contacts.write
+crm.schemas.deals.read
+crm.schemas.deals.write
+```
+
+Match the app's OAuth permissions to that contract. No payments, marketing email, workflows or extra enterprise objects are needed. Once its configuration is reviewed, the official workflow uses `hs project upload`, then `hs project open`; open the app component and its Auth section to obtain App ID, Client ID and Client Secret. These commands create/update the HubSpot app; none was run by this guide's preparation.
+
+The current [unlisted Marketplace distribution cap](https://developers.hubspot.com/changelog/new-marketplace-distribution-app-install-limits) is 25 account installs before listing approval. Private OAuth distribution normally permits ten selected customers. These are app-distribution limits, not a payment requirement for creating your test portal, and not unlimited public installs.
+
+### 3. Configure the local app, then connect
+
+HubSpot [permits HTTP localhost redirects but rejects IP-address redirects](https://developers.hubspot.com/docs/apps/developer-platform/build-apps/authentication/oauth/working-with-oauth). When enabling OAuth, set `CHOREOGRAPH_ORIGIN=http://localhost:45860` consistently in both app-local files and browse that host throughout the connection. Keep the same frontend/API/database ports; do not mix localhost and 127.0.0.1 guest cookies.
+
+Only `apps/backend/.env.local` receives the app credentials and CRM settings:
+
+- `CHOREOGRAPH_CRM_PROVIDER=hubspot` and `CHOREOGRAPH_CRM_ENABLED=true`.
+- `CHOREOGRAPH_HUBSPOT_APP_ID`, `CHOREOGRAPH_HUBSPOT_CLIENT_ID`, `CHOREOGRAPH_HUBSPOT_CLIENT_SECRET` and the exact `CHOREOGRAPH_HUBSPOT_REDIRECT_URI` above.
+- `CHOREOGRAPH_HUBSPOT_DISTRIBUTION=marketplace_unlisted` and an explicit capacity no greater than 25.
+- Explicit finite `CHOREOGRAPH_CRM_GRANT_ID`, `CHOREOGRAPH_CRM_EXPIRES_AT`, `CHOREOGRAPH_CRM_REQUESTS` and `CHOREOGRAPH_CRM_WORKSPACE_REQUESTS`, using the bounded acceptance process above. Do not enable an unlimited allowance.
+
+Keep the client secret out of chat, browser code and Git. App ID and Client ID are sufficient to identify the app during setup; enter the secret locally. AI remains fake unless separately configured. Reload only the API/runner after configuration and keep the frontend on its normal hot reload.
+
+Continue with HubSpot then opens HubSpot immediately. Select **Choreograph Testing**, review the requested access and authorize the app there. HubSpot may show its own unverified-app confirmation. On return, select/verify the booking destination and explicitly allow fictional-record exports. Those actual account/data approvals remain; the removed step is the pretend-account confirmation. Continue without HubSpot creates no HubSpot calls or exports.
+
+Use the prepared bounded real-acceptance tools above to verify one reviewed contact/deal, native record links and cleanup. Developer test portals include trial features: successful testing there alone does not establish every Free-plan scope/property entitlement. No account creation, credentials, live OAuth exchange, export, cleanup or app registration has been performed by preparing this guide.
+
+The official unmodified HubSpot wordmark comes from the [HubSpot newsroom logo pack](https://www.hubspot.com/newsroom), used to identify this integration under the [Developer Terms branding rules](https://legal.hubspot.com/hs-developer-terms). No partnership/certification claim is made.

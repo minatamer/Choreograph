@@ -1,5 +1,23 @@
 # SBS-013 — Complete visitor HubSpot composition and account setup
 
+## Owner correction: public real-or-skip HubSpot flow,23 October2026
+
+The owner rejected the public simulated-account approval step. The two visitor paths are now **Continue with HubSpot** and **Continue without HubSpot**. CRMControls no longer renders a challenge, simulated consent, fake callback action or fake-connected presentation. It accepts an authorization URL only from a non-simulated OAuth response and immediately navigates there. Only a configured HubSpot provider can enable the connection action or display connected/setup controls. Existing destination selection, explicit fictional-record export consent, cleanup/uninstall controls and provider/app/session fences remain. Those are real account/data approvals, not the removed simulated-account step.
+
+The official primary HubSpot SVG is copied byte-for-byte from the [corporate newsroom's logo pack](https://www.hubspot.com/newsroom), including its original wordmark typography and current orange artwork. Source ZIP: `https://www.hubspot.com/hubfs/WBZ%202025%20Rebrand/HubSpot%20Logo/HubSpot%20Logo%20Zip/HubSpot%20Logos_2025.zip`, entry `HubSpot Logos_2025/HubSpot_Logo_Primary.svg`. The local asset is `apps/frontend/public/brand/hubspot-logo.svg`. No font imitation, recolouring or partnership claim was added. [Developer Terms](https://legal.hubspot.com/hs-developer-terms) and [trademark guidance](https://legal.hubspot.com/tm-usage-guidelines) were reviewed for referential integration branding.
+
+Runtime defaults and fresh setup now select disabled CRM; isolated tests still select fake CRM or explicitly inject transports. The actual ignored backend env's CRM selector was changed to disabled without printing or altering credentials, AI mode or other settings. The fake adapter/API contract remains for isolated deterministic tests; visitors cannot enter that flow from the UI. Local AI remains fake. The existing real transport is retained; actual OAuth cannot be enabled until an app/client secret, matching localhost origin/callback and finite allowance are configured. Disabled/capacity-unavailable paths remain honest and permit the full no-HubSpot demo.
+
+[The free test-portal and OAuth guide](../../infra/README.md#free-hubspot-test-account-and-real-oauth-setup-23-october-2026) owns the account-creation steps, current CLI workflow, required scope/callback/configuration and source links. Official docs describe free developer test portals; paid Enterprise sandboxes are a separate product. HubSpot's Egypt partner directory supports expected availability but does not prove this owner's personal registration or verification. No account, app, credentials, real OAuth exchange or provider records were created during this work.
+
+Actual checks:
+
+- Eight configuration/setup tests and39 CRM/live-transport/security regression tests pass. The latter use actual isolated PostgreSQL with fake/injected transports, not HubSpot. Frontend TypeScript, affected Ruff and whitespace checks pass.
+- Real running UI inspection at1440×900,1280×720,768×1024,390×844 and320×740 finds the official logo loaded, no horizontal overflow, no simulated consent, the real connection unavailable until configuration, and an enabled Continue without HubSpot action. That action reaches `/demo/workspace` with Sample mode, Africa/Cairo, HubSpot not connected and no alert. Browser warning/error logs are empty. Ignored receipts: `.runtime/hubspot-real-choice-responsive.json`, `hubspot-real-choice-final.png` and `hubspot-real-choice-phone.png`.
+- Owned runner16764 and API19332 plus their recorded descendants were stopped and verified absent before replacement. New API supervisor34288 is ready on45861, with log `C:/Users/minat/Work/Choreograph/.runtime/api-7df37ad1-f1cd-4995-b8b7-73a4fcd3e8d5.log`; new runner9708 has current readiness, with log `C:/Users/minat/Work/Choreograph/.runtime/runner-3167758c-703f-4087-bc89-ec6265809d32.log`. Frontend supervisor16548 stayed on45860, log `C:/Users/minat/Work/Choreograph/.runtime/frontend-d6e24e1a-2a73-4453-a424-62320c5bea63.log`; the database/volume and siblings were preserved. The run/restart/kill skills' scoped lifecycle checks were used.
+
+No Git write, deployment, Figma update, new listener/preview route, paid provider or account action occurred. The actual HubSpot account/consent/native-record/Free-plan entitlement and hosted acceptance gates remain unverified. The historical fake-connected browser evidence below is superseded as a visitor design, while its isolated backend testing remains useful.
+
 Status: **Complete local**  
 Owning phase: **07-build continuation**  
 Depends on: SBS-012 configuration/composition boundary; existing SBS-006/007.
