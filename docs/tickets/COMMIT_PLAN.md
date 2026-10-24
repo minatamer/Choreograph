@@ -600,3 +600,23 @@ The current direct owner authorization includes local staging and commits. Reope
 Subject: `SBS-026: Keep no-key CI compatible with the two-switch configuration`
 
 Stage only these paths, verify staged source bytes/private-value exclusion and whitespace, commit, then verify the entire index/worktree empty before restarting the security audit. No provider/account/cloud/remote Git action.
+
+
+## SBS-027 audit/handoff documentation allocation -24 October2026
+
+Current direct owner request authorizes local stage/commit after file-level planning and AFK security selection. Security audit stayed source-read-only. Its concrete reports received explicit provisional AFK no-fixes; phase11 is skipped because no new substantial actionable local security defect was confirmed, not because a local failure was relabelled external. Source baseline96cf2b5 was completely clean before the audit resumed. Prior ten checkpoint and four quality commits remain separate.
+
+One cohesive documentation commit, subject `SBS-027: Record renewed security audit and bounded AFK handoff`:
+
+| Exact file | Responsibility |
+|---|---|
+| `docs/security/SECURITY_REVIEW.md` | Full current STRIDE/general review, official advisory comparisons, actual evidence/limits, investigated non-findings and future-edit guards; dated history preserved. |
+| `docs/security/SECURITY_OVERVIEW.html` | Concise ranked PM findings/controls/evidence and external acceptance, with prior review collapsed as history. |
+| `docs/tickets/SBS-027-security-review.md` | Audit-only plan, exact scope/authority, results, read-only validation and honest HTML-preview limit. |
+| `docs/tickets/README.md` | Current audit packet/queue result. |
+| `docs/CHOREOGRAPH.md` | Current checkpoint and canonical complete prompts, provisional AFK no-fixes/skip, material deferrals and complete_local handoff. |
+| `docs/tickets/COMMIT_PLAN.md` | This exact allocation and current Git authority. |
+
+Validation:326 full backend tests plus26 focused config/setup checks including the new actual CI-generator regression;75 Node/no skips; Ruff; pip check;192-input release freshness retaining actual Linux44 HTTP/291 assertions;373-file bounded current-tree private-value scan;112 npm HTTPS/integrity entries and93 Python exact pins; static HTML nesting/relative targets; owned frontend/API/runner still running without restart. No image input changed during this report-only security phase. HTML local-file browser preview was policy-blocked and not bypassed; no browser-rendered report check is claimed. No paid/account/provider/cloud/remote scanner metadata export/push operation.
+
+Stage explicit paths only after final settled read-only review. Verify staged/worktree byte equality, known private-value absence and CRLF-aware whitespace; commit and verify the entire worktree/index empty. Final verified commit/clean receipt is retained in ignored runtime evidence and reported at handoff to avoid an endless post-commit documentation change. Human/native/hosted/scanning acceptance remains outstanding.
