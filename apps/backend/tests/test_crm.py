@@ -149,6 +149,7 @@ def test_real_adapter_is_injected_bounded_and_uses_only_owned_identity():
     def handler(request):
         seen.append(request)
         path=request.url.path
+        if path=='/settings/currencies/2026-09/company-currency':return httpx.Response(200,json={'id':'USD'})
         if path.startswith('/oauth/'):
             if path.endswith('/introspect'):return httpx.Response(200,json={'active':True,'app_id':123,'hub_id':456,'scopes':SCOPES,'client_id':'test-client','token_use':'access_token','token_type':'Bearer','is_private_distribution':False})
             return httpx.Response(200,json={'access_token':'test-access','refresh_token':'test-refresh','expires_in':1800})

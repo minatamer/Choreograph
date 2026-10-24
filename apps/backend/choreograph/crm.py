@@ -13,7 +13,16 @@ from sqlalchemy import case, func, or_, select, text, update
 from . import service
 from .errors import DomainError
 from .hubspot import CRMFailure
-from .models import Connection, ExternalMapping, Installation, OAuthState, Outbox, Workspace
+from .models import (
+    Connection,
+    Enquiry,
+    ExternalMapping,
+    Installation,
+    OAuthState,
+    Outbox,
+    Reservation,
+    Workspace,
+)
 
 
 def latest_connection(db,workspace):
@@ -144,6 +153,8 @@ def setup_destination(db,workspace,body,provider,key,now):
         provider.preflight(tokens,allow_schema=body.allow_schema)
     except CRMFailure as error:
         workspace.revision+=1
+        if error.code=='CRM_CURRENCY_REQUIRED':
+            return {'request_id':None,'crm_notice':'Juniper’s sample quotes use USD. Set this HubSpot account’s company currency to USD in Account defaults, or continue without HubSpot. No records were shared.'}
         return {'request_id':None,'crm_notice':('The selected destination is unavailable. Review the account setup or continue without CRM.'
             if error.code not in {'CRM_SETUP_REQUIRED','CRM_UNIQUENESS_REQUIRED'} else
             'The account needs compatible demo ID fields. Authorize setup or continue without CRM.')}
@@ -185,7 +196,7 @@ def public_view(db,workspace,secret,now,*,connection,events,provider=None):
             'uninstall_state':outcomes.get('uninstall',cleanup.state if cleanup and cleanup.payload.get('uninstall') else 'not_requested')}
 
 
-def consent(db,workspace,body,provider=None):
+def consent(db,workspace,body,provider=None,*,now):
     service.require_revision(workspace,body.revision);connection=latest_connection(db,workspace)
     if not connection or connection.id!=body.connection_id or connection.state!='ready' or workspace.crm_mode!='connected':
         raise DomainError('CRM_CONNECTION_CHANGED','Review the current connection before sharing.',409)
@@ -193,7 +204,19 @@ def consent(db,workspace,body,provider=None):
         raise DomainError('CRM_PROVIDER_CHANGED','The connection configuration changed. Disconnect before continuing.',409)
     if connection.provider=='hubspot' and not connection.destination:
         raise DomainError('CRM_DESTINATION_REQUIRED','Choose a CRM destination before sharing.',409)
-    connection.export_consent=True;workspace.revision+=1
+    if not connection.export_consent:
+        connection.export_consent=True
+        # Consent covers already reviewed records too. Destination and record
+        # revision remain explicit; pending requests cannot become exports.
+        reviewed=db.scalars(select(Enquiry).where(Enquiry.workspace_id==workspace.id,
+            Enquiry.status.in_(['confirmed','completed','cancelled']),Enquiry.id.in_(
+                select(Reservation.enquiry_id).where(Reservation.workspace_id==workspace.id))))
+        for enquiry in reviewed:
+            existing=db.scalar(select(Outbox.id).where(Outbox.workspace_id==workspace.id,
+                Outbox.connection_id==connection.id,Outbox.enquiry_id==enquiry.id,
+                Outbox.revision==enquiry.revision,Outbox.kind=='crm_upsert').limit(1))
+            if existing is None:service.queue_crm(db,workspace,enquiry,now)
+    workspace.revision+=1
     return {'request_id':None,'crm_notice':'Fictional contact and reviewed booking details can now be shared with this account.'}
 
 

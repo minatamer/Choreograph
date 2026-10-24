@@ -1,0 +1,32 @@
+{
+  "uid": "choreograph-front-desk",
+  "type": "app",
+  "config": {
+    "name": "Choreograph",
+    "description": "Save explicitly reviewed fictional Juniper Cleaning bookings as a demo contact and associated deal in your selected HubSpot account. No email, marketing, payment or real cleaning service is sent.",
+    "distribution": "marketplace",
+    "auth": {
+      "type": "oauth",
+      "redirectUrls": ["http://localhost:45860/auth/hubspot/callback"],
+      "requiredScopes": [
+        "oauth",
+        "crm.objects.contacts.read",
+        "crm.objects.contacts.write",
+        "crm.objects.deals.read",
+        "crm.objects.deals.write",
+        "crm.schemas.contacts.read",
+        "crm.schemas.contacts.write",
+        "crm.schemas.deals.read",
+        "crm.schemas.deals.write",
+        "settings.currencies.read"
+      ],
+      "optionalScopes": [],
+      "conditionallyRequiredScopes": []
+    },
+    "permittedUrls": {
+      "fetch": ["https://api.hubapi.com"],
+      "iframe": [],
+      "img": []
+    }
+  }
+}

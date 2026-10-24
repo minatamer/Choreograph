@@ -38,7 +38,7 @@ from choreograph.settings import Settings
 
 
 def config_values():
-    return {'CHOREOGRAPH_CRM_ENABLED':'true','CHOREOGRAPH_HUBSPOT_APP_ID':'123',
+    return {'CHOREOGRAPH_HUBSPOT_APP_ID':'123',
         'CHOREOGRAPH_HUBSPOT_CLIENT_ID':'synthetic-client','CHOREOGRAPH_HUBSPOT_CLIENT_SECRET':'synthetic-secret',
         'CHOREOGRAPH_HUBSPOT_REDIRECT_URI':'http://localhost:45860/auth/hubspot/callback',
         'CHOREOGRAPH_HUBSPOT_DISTRIBUTION':'private','CHOREOGRAPH_HUBSPOT_CAPACITY':'10',
@@ -48,7 +48,7 @@ def config_values():
 
 
 @pytest.mark.parametrize('changes,origin', [
-    ({'CHOREOGRAPH_CRM_ENABLED':'false'},'http://localhost:45860'),
+    ({'CHOREOGRAPH_HUBSPOT_CLIENT_SECRET':''},'http://localhost:45860'),
     ({},'http://127.0.0.1:45860'),({},'http://other.invalid'),
     ({'CHOREOGRAPH_HUBSPOT_REDIRECT_URI':'https://other.invalid/auth/hubspot/callback'},'http://localhost:45860'),
     ({'CHOREOGRAPH_HUBSPOT_CAPACITY':'11'},'http://localhost:45860'),
@@ -62,11 +62,12 @@ def test_invalid_configuration_rejected_without_client_or_network(changes,origin
 
 
 class NativeFixture:
-    def __init__(self):self.requests=[];self.records={};self.properties=False;self.associated=False
+    def __init__(self):self.requests=[];self.records={};self.properties=False;self.associated=False;self.currency='USD'
     def __call__(self,request):
         self.requests.append(request);path=request.url.path
         assert request.url.host=='api.hubapi.com'
         assert request.headers['accept-encoding']=='identity'
+        if path=='/settings/currencies/2026-09/company-currency':return httpx.Response(200,json={'id':self.currency,'createdAt':'2026-01-01T00:00:00Z'})
         if path.endswith('/token'):
             return httpx.Response(200,json={'access_token':'synthetic-access','refresh_token':'synthetic-refresh','expires_in':1800})
         if path.endswith('/introspect'):
@@ -94,7 +95,7 @@ class NativeFixture:
         return httpx.Response(200,json=self.records[kind])
 
 
-def native(database):
+def native(database,zone='UTC'):
     engine,settings=database;wire=NativeFixture()
     config=parse_live_crm(config_values(),'http://localhost:45860',now=NOW)
     settings=replace(settings,testing=False,origin='http://localhost:45860',crm_provider='hubspot',live_crm=config)
@@ -102,7 +103,7 @@ def native(database):
     provider=compose_crm(settings,engine,client=http,clock=lambda:NOW)
     client=TestClient(create_app(settings,engine,lambda:NOW,crm_provider=provider))
     headers={'x-choreograph-bridge':settings.bridge_secret,'origin':settings.origin}
-    state=client.post('/v1/session',headers=headers,json={'timezone':'UTC'}).json();headers['x-csrf-token']=state['csrf']
+    state=client.post('/v1/session',headers=headers,json={'timezone':zone}).json();headers['x-csrf-token']=state['csrf']
     return client,headers,state,provider,wire,settings,http
 
 
@@ -217,6 +218,70 @@ def test_true_skip_has_zero_real_calls_and_mismatched_tokens_and_oauth_never_rea
         with Session(database[0]) as db:
             assert db.scalar(select(func.count()).select_from(Outbox).where(Outbox.workspace_id==state['workspace_id']))==0
     finally:client.close();fake.close();http.close()
+
+
+def test_existing_booking_exports_only_after_consent_and_tracks_move_cancel_without_duplicates(database):
+    client,headers,state,provider,wire,settings,http=native(database,'Asia/Kathmandu')
+    try:
+        state=command(client,headers,state,{'service':'regular','bedrooms':1}).json()['state']
+        week=client.get('/v1/availability',headers=headers).json()
+        start=next(slot['start'] for day in week['days'] for slot in day['slots'])
+        state=command(client,headers,state,{'preferred_at':start}).json()['state']
+        state=command(client,headers,state,{'accept_quote':True},'/v1/bookings',method='post').json()['state']
+        record=state['requests'][0];assert not wire.requests
+        # A declined unreserved request is not a reviewed booking to export.
+        state=command(client,headers,state,{'accept_quote':True},'/v1/requests',method='post').json()['state']
+        pending=state['requests'][-1]
+        state=book(client,headers,state,pending['id'],'cancel').json()['state']
+        state,_=connect(client,headers,state);state=setup(client,headers,state).json()['state']
+        assert not wire.records
+        consent={'connection_id':state['connection']['id'],'confirm':True}
+        state=command(client,headers,state,consent,'/v1/crm/consent',method='post').json()['state']
+        state=command(client,headers,state,consent,'/v1/crm/consent',method='post').json()['state']
+        with Session(database[0]) as db:
+            assert db.scalar(select(func.count()).select_from(Outbox).where(Outbox.workspace_id==state['workspace_id'],Outbox.kind=='crm_upsert'))==1
+        assert jobs.tick(database[0],settings,provider,lambda:NOW)==1
+        deal=wire.records['deals']['properties']
+        assert deal['amount']=='60' and deal['deal_currency_code']=='USD'
+        assert '+05:45' in deal['description'] and 'Asia/Kathmandu' not in deal['description']
+        assert 'Status: confirmed' in deal['description'] and wire.associated
+        alternatives=client.get(f"/v1/requests/{record['id']}/availability",headers=headers).json()
+        candidate=next(slot['start'] for day in alternatives['days'] for slot in day['slots'] if slot['start']!=start)
+        state=book(client,headers,state,record['id'],'reschedule',{'preferred_at':candidate}).json()['state']
+        assert jobs.tick(database[0],settings,provider,lambda:NOW)==1
+        key=str(uuid4());before=state
+        state=book(client,headers,state,record['id'],'cancel',key=key).json()['state']
+        assert jobs.tick(database[0],settings,provider,lambda:NOW)==1
+        replay=book(client,headers,before,record['id'],'cancel',key=key).json()
+        assert replay['replayed'] and jobs.tick(database[0],settings,provider,lambda:NOW)==0
+        assert len(wire.records)==2 and 'Status: cancelled' in wire.records['deals']['properties']['description']
+        assert sum(request.method=='POST' and request.url.path=='/crm/v3/objects/deals' for request in wire.requests)==1
+        current=client.get('/v1/session',headers=headers).json()
+        assert next(row for row in current['requests'] if row['id']==record['id'])['crm_state']=='synced'
+    finally:client.close();http.close()
+
+
+def test_currency_mismatch_blocks_schema_setup_and_later_export_without_changing_account(database):
+    client,headers,state,provider,wire,settings,http=native(database)
+    try:
+        state,_=connect(client,headers,state);wire.currency='EGP'
+        rejected=setup(client,headers,state).json();state=rejected['state']
+        assert state['connection']['state']=='setup' and 'USD' in rejected['crm_notice']
+        assert not wire.properties and not wire.records
+        wire.currency='USD';state=setup(client,headers,state).json()['state']
+        state=command(client,headers,state,{'connection_id':state['connection']['id'],'confirm':True},'/v1/crm/consent',method='post').json()['state']
+        state=command(client,headers,state,{'service':'regular','bedrooms':1}).json()['state']
+        week=client.get('/v1/availability',headers=headers).json()
+        start=next(slot['start'] for day in week['days'] for slot in day['slots'])
+        state=command(client,headers,state,{'preferred_at':start}).json()['state']
+        state=command(client,headers,state,{'accept_quote':True},'/v1/bookings',method='post').json()['state']
+        wire.currency='EGP';assert jobs.tick(database[0],settings,provider,lambda:NOW)==1
+        assert not wire.records
+        with Session(database[0]) as db:
+            event=db.scalar(select(Outbox).where(Outbox.workspace_id==state['workspace_id'],Outbox.kind=='crm_upsert'))
+            assert event.code=='CRM_CURRENCY_REQUIRED' and event.state=='needs_attention'
+        assert all(request.method=='GET' for request in wire.requests if request.url.path.startswith('/settings/'))
+    finally:client.close();http.close()
 
 
 def test_last_crm_request_has_one_winner_and_survives_business_rollback(database):

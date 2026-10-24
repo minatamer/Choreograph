@@ -3,6 +3,7 @@ import time
 from datetime import timedelta
 from decimal import Decimal, InvalidOperation
 from uuid import uuid4
+from zoneinfo import ZoneInfo
 
 from sqlalchemy import and_, delete, func, or_, select, tuple_, update
 from sqlalchemy.orm import Session
@@ -108,10 +109,12 @@ def prepare(engine,settings,provider,job,clock):
             if not booking:raise CRMFailure('CRM_RETIRED')
             data['deal_key']=crm.record_key(settings.bridge_secret,workspace.id,connection.id,'deals',enquiry.id)
             contact=crm.contact_details(settings.bridge_secret,workspace,connection)
+            local=booking.starts_at.astimezone(ZoneInfo(workspace.timezone))
+            local_end=booking.ends_at.astimezone(ZoneInfo(workspace.timezone))
             data['contact']={**contact,KEY_PROPERTY:data['contact_key']}
             data['deal']={KEY_PROPERTY:data['deal_key'],'dealname':'[Choreograph demo] '+enquiry.quote['items'][0]['name'],
-                'description':f"Fictional demo booking\nStatus: {enquiry.status}\nAppointment: {booking.starts_at.isoformat()}\nTimezone: {workspace.timezone}\nCleaner: {booking.staff_id.title()}\nQuote: USD {enquiry.quote['cents']/100:.2f}\nDuration: {enquiry.quote['minutes']} minutes\nNo real service or payment.",
-                'amount':str(Decimal(enquiry.quote['cents'])/100),
+                'description':f"Fictional demo booking\nStatus: {enquiry.status}\nAppointment: {local.isoformat(timespec='minutes')}\nEnds: {local_end.isoformat(timespec='minutes')}\nCleaner: {booking.staff_id.title()}\nQuote: USD {enquiry.quote['cents']/100:.2f}\nDuration: {enquiry.quote['minutes']} minutes\nNo real service or payment.",
+                'amount':str(Decimal(enquiry.quote['cents'])/100),'deal_currency_code':'USD',
                 'pipeline':connection.destination.get('pipeline_id','') if provider.provider=='hubspot' else 'simulated-pipeline',
                 'dealstage':connection.destination.get('stage_id','') if provider.provider=='hubspot' else 'simulated-'+enquiry.status}
             if provider.provider=='hubspot' and not all((data['deal']['pipeline'],data['deal']['dealstage'])):
@@ -138,6 +141,7 @@ def perform(engine,provider,job,data,clock,deadline):
         if time.monotonic()>deadline:raise CRMFailure('CRM_TIMEOUT',True,True)
         guard(engine,job,clock,provider);return method(tokens,*args)
     if data['kind']=='crm_upsert':
+        if provider.provider=='hubspot':call(provider.verify_currency)
         contact_id=call(provider.upsert,'contacts',data['contact_key'],data['contact'])
         deal_id=call(provider.upsert,'deals',data['deal_key'],data['deal'])
         call(provider.associate,contact_id,deal_id)

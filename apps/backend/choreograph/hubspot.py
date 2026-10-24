@@ -16,8 +16,9 @@ from sqlalchemy.orm import Session
 from .models import SimulatedRecord
 
 SCOPES=('oauth','crm.objects.contacts.read','crm.objects.contacts.write','crm.objects.deals.read','crm.objects.deals.write',
-        'crm.schemas.contacts.read','crm.schemas.contacts.write','crm.schemas.deals.read','crm.schemas.deals.write')
+        'crm.schemas.contacts.read','crm.schemas.contacts.write','crm.schemas.deals.read','crm.schemas.deals.write','settings.currencies.read')
 KEY_PROPERTY='choreograph_demo_key'
+CURRENCY_PATH='/settings/currencies/2026-09/company-currency'
 
 
 class CRMFailure(Exception):
@@ -108,7 +109,8 @@ class HubSpotTransport:
         if self._owned and not self._closed:self._closed=True;self.client.close()
 
     def _request(self,method,path,*,tokens=None,**kwargs):
-        if not path.startswith(('/oauth/2026-09/','/crm/v3/','/crm/v4/','/appinstalls/v3/')) or '..' in path:
+        if (not path.startswith(('/oauth/2026-09/','/crm/v3/','/crm/v4/','/appinstalls/v3/')) and
+                not (method=='GET' and path==CURRENCY_PATH)) or '..' in path:
             raise CRMFailure('CRM_ROUTE')
         if self.deadline is not None and time.monotonic()>=self.deadline:raise CRMFailure('CRM_TIMEOUT')
         if self.admission:self.admission.reserve()
@@ -174,7 +176,12 @@ class HubSpotTransport:
         if refreshed['account_id']!=tokens['account_id']:raise CRMFailure('CRM_ACCOUNT_CHANGED')
         return refreshed
 
+    def verify_currency(self,tokens):
+        currency=self._request('GET',CURRENCY_PATH,tokens=tokens)
+        if not currency or currency.get('id')!='USD':raise CRMFailure('CRM_CURRENCY_REQUIRED')
+
     def preflight(self,tokens,*,allow_schema=False):
+        self.verify_currency(tokens)
         for kind in ('contacts','deals'):
             prop=self._request('GET',f'/crm/v3/properties/{kind}/{KEY_PROPERTY}',tokens=tokens)
             if prop is None:
@@ -209,7 +216,7 @@ class HubSpotTransport:
 
     def read(self,tokens,kind,key):
         if kind not in ('contacts','deals') or not re.fullmatch(r'[a-f0-9]{64}',key):raise CRMFailure('CRM_IDENTITY')
-        properties=[KEY_PROPERTY,'firstname','lastname','email'] if kind=='contacts' else [KEY_PROPERTY,'dealname','description','amount','pipeline','dealstage']
+        properties=[KEY_PROPERTY,'firstname','lastname','email'] if kind=='contacts' else [KEY_PROPERTY,'dealname','description','amount','deal_currency_code','pipeline','dealstage']
         row=self._request('GET',f'/crm/v3/objects/{kind}/{key}',tokens=tokens,params={'idProperty':KEY_PROPERTY,'properties':','.join(properties)})
         if row and row.get('properties',{}).get(KEY_PROPERTY)!=key:raise CRMFailure('CRM_OWNERSHIP')
         return row

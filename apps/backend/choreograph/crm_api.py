@@ -20,7 +20,7 @@ def register(app):
         return run('callback',body,request,db,lambda ws:crm.callback(db,ws,body,app.state.crm,app.state.settings.token_key,app.state.clock()))
     @app.post('/v1/crm/consent',response_model=MutationView)
     def consent(body:CRMConsent,request:Request,db=dependency):
-        return run('consent',body,request,db,lambda ws:crm.consent(db,ws,body,app.state.crm))
+        return run('consent',body,request,db,lambda ws:crm.consent(db,ws,body,app.state.crm,now=app.state.clock()))
     @app.post('/v1/crm/setup',response_model=MutationView)
     def setup(body:CRMSetup,request:Request,db=dependency):
         return run('setup',body,request,db,lambda ws:crm.setup_destination(db,ws,body,app.state.crm,
