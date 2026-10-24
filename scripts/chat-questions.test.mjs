@@ -1,6 +1,6 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {QUESTION_GROUPS,conversationShortcuts,isTourRequest} from '../apps/frontend/lib/chat-questions.ts';
+import {QUESTION_GROUPS,GUIDE_SHORTCUTS,conversationShortcuts,isTourRequest} from '../apps/frontend/lib/chat-questions.ts';
 const state=(fields={})=>({draft:{service:null,bedrooms:null,preferred_at:null},messages:[],quote:null,requests:[],...fields});
 const message=(role,text='',suggestions=[])=>({role,text,suggestions});
 
@@ -30,5 +30,23 @@ test('backend suggestions are retained, deduplicated and skip the recent questio
 test('pending/confirmed booking suggestions prefer the actual lifecycle over a reset draft',()=>{
  const messages=[message('assistant')];
  assert.equal(conversationShortcuts(state({messages,requests:[{status:'awaiting_review'}]}))[0].label,'Changes & cancellations');
- assert.equal(conversationShortcuts(state({messages,requests:[{status:'confirmed'}]}))[0].label,'Change my booking');
+ const choices=conversationShortcuts(state({messages,requests:[{status:'confirmed'}]}));
+ assert.equal(choices[0].label,'Reschedule my booking');assert.match(choices[0].text,/reschedule my appointment/);
+ assert.equal(choices[1].label,'Cancel my booking');assert.match(choices[1].text,/cancel my appointment/);
+});
+
+test('every conversation state keeps guide discovery beside contextual replies',()=>{
+ const guideText=new Set(GUIDE_SHORTCUTS.map(row=>row.text));
+ for(const fields of [{},{draft:{service:'regular'}},{draft:{service:'regular',bedrooms:2},quote:{}},
+  {requests:[{status:'confirmed'}]},{requests:[{status:'cancelled'}]}]){
+  const choices=conversationShortcuts(state({messages:[message('assistant')],...fields}));
+  assert.equal(choices.length,4);assert.ok(choices.some(row=>guideText.has(row.text)));
+ }
+});
+
+test('a source follow-up wins over booking defaults and still leaves two discovery questions',()=>{
+ const followups=[{label:'Oven preparation',text:'How do I prepare the oven?'},{label:'Arrange access',text:'How do I arrange access for the cleaner?'}];
+ const choices=conversationShortcuts(state({requests:[{status:'confirmed'}],messages:[message('user','What should I do with my pets?'),{...message('assistant','',followups),claims:[{title:'Preparation Guide'}]}]}));
+ assert.deepEqual(choices.slice(0,2),followups);assert.equal(choices.length,4);
+ assert.ok(choices.every(row=>row.text!=='What should I do with my pets?'));
 });

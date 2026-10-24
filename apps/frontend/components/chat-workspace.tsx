@@ -1,26 +1,28 @@
 'use client';
-import {useLayoutEffect,useRef,useState,type Dispatch,type SetStateAction} from 'react';
-import {money,duration,type SessionState,type Mutation} from '@/lib/api';
+import {Fragment,useLayoutEffect,useRef,useState,type Dispatch,type SetStateAction} from 'react';
+import {money,duration,type SessionState,type Mutation,type RequestRecord} from '@/lib/api';
 import {conversationShortcuts,isTourRequest} from '@/lib/chat-questions';
-import {acceptedMessage,conversationMessages,type PendingMessage} from '@/lib/chat-messages';
+import {acceptedMessage,bookingMessageAnchors,conversationMessages,type PendingMessage} from '@/lib/chat-messages';
 import {Button,Badge,Arrow,Mark,Spinner} from './ui';
 import {WeekCalendar} from './week-calendar';
 import {BookingOutcome} from './booking-outcome';
-import {SourceReader,type SourceSelection} from './source-reader';
+import {ChatSources} from './chat-sources';
+import {reviewMessage} from '@/lib/chat-sources';
 import {ConversationLibrary} from './conversation-library';
 import {useChatScroll} from './use-chat-scroll';
 import {ReplyText} from './reply-text';
 import {ChatReview} from './chat-review';
+import {ChatBookingManagement,type BookingAction} from './chat-booking-management';
 
-type Props={state:SessionState;pending:boolean;text:string;setText:Dispatch<SetStateAction<string>>;onSend:(text:string)=>Promise<Mutation|SessionState|null>;onEdit:(fields:Record<string,unknown>)=>void;onSubmit:()=>void;onBusiness:()=>void;onTour:()=>void};
+type Props={state:SessionState;pending:boolean;text:string;setText:Dispatch<SetStateAction<string>>;onSend:(text:string)=>Promise<Mutation|SessionState|null>;onEdit:(fields:Record<string,unknown>)=>void;onSubmit:(request?:RequestRecord)=>void;onBookingAction:BookingAction;onBusiness:()=>void;onTour:()=>void};
 
-export function ChatWorkspace({state,pending,text,setText,onSend,onEdit,onSubmit,onBusiness,onTour}:Props){
- const [selection,setSelection]=useState<SourceSelection|null>(null);const [library,setLibrary]=useState<'questions'|'guides'|null>(null);
+export function ChatWorkspace({state,pending,text,setText,onSend,onEdit,onSubmit,onBookingAction,onBusiness,onTour}:Props){
+ const [library,setLibrary]=useState<'questions'|'guides'|null>(null);
  const [sending,setSending]=useState<PendingMessage|null>(null);const sendingLock=useRef(false);
  const messageKeys=useRef(new Map<string,string>());
  const composer=useRef<HTMLTextAreaElement>(null);const composing=useRef(false);
  const initialMessages=useRef(new Set(state.messages.map(message=>message.id)));
- const latestMessage=state.messages.at(-1);const latest=state.requests.at(-1);
+ const latestMessage=state.messages.at(-1);const reviewAnchor=reviewMessage(state.messages);
  const {pane,content}=useChatScroll(`${latestMessage?.id??''}:${sending?.key??''}`);
  useLayoutEffect(()=>{const node=composer.current;if(!node)return;let width=0;const size=()=>{node.style.height='auto';node.style.height=Math.min(96,Math.max(44,node.scrollHeight))+'px';};size();const observer=new ResizeObserver(entries=>{const next=entries[0].contentRect.width;if(Math.abs(next-width)>.5){width=next;size();}});observer.observe(node);return()=>observer.disconnect();},[text]);
  const starters=[
@@ -39,25 +41,27 @@ export function ChatWorkspace({state,pending,text,setText,onSend,onEdit,onSubmit
  const busy=pending||!!sending;
  const hasCalendar=latestMessage?.cards.includes('week')&&state.quote;
  const shortcuts=conversationShortcuts(state);
- return <><div className={`chat-layout customer-conversation ${selection?'source-open':''} ${state.messages.length?'has-messages':''}`}><section className="chat-column" aria-label="Juniper conversation">
+ const bookingAnchors=bookingMessageAnchors(state.messages);
+ const managementAnchors=new Map<string,string>();
+ for(const message of state.messages)if(message.request_id&&(message.cards.includes('manage')||message.cards.includes('booking')))managementAnchors.set(message.request_id,message.id);
+ return <><div className={`chat-layout customer-conversation ${state.messages.length?'has-messages':''}`}><section className="chat-column" aria-label="Juniper conversation">
   <header className="conversation-intro" data-tour="assistant"><span className="assistant-orb" aria-hidden="true"><Mark/></span><div><h1>Juniper’s front desk</h1><p>Questions, quotes & bookings</p></div><button type="button" className="guide-shelf-toggle" onClick={()=>setLibrary('guides')}>{state.documents.length} documents <span aria-hidden="true">↗</span></button></header>
   <div ref={pane} className="conversation-scroll" role="region" aria-label="Conversation history" tabIndex={0}><div ref={content} className="conversation-content">
   {!state.messages.length&&<div className="conversation-empty"><h2>Let’s make room for your day.</h2><p>Choose a starting point, or ask below.</p><div className="chat-starters">{starters.map(start=><button key={start.title} disabled={busy} onClick={()=>void send(start.text)}><span aria-hidden="true">{start.icon}</span><strong>{start.title}</strong><small>{start.detail}</small></button>)}</div></div>}
   <div className="chat-messages" aria-live="polite" aria-relevant="additions">
-   {conversationMessages(state.messages,sending,messageKeys.current).map(({key,message})=><article key={key} className={`chat-message ${message.role} ${initialMessages.current.has(message.id)?'history-message':'new-message'}`} aria-label={message.role==='user'?'Your message':'Juniper reply'}>
+   {conversationMessages(state.messages,sending,messageKeys.current).map(({key,message})=>{const booking=message.request_id?state.requests.find(record=>record.id===message.request_id):undefined;return <Fragment key={key}><article className={`chat-message ${message.role} ${initialMessages.current.has(message.id)?'history-message':'new-message'}`} aria-label={message.role==='user'?'Your message':'Juniper reply'}>
     {message.role==='assistant'&&<span className="assistant-orb" aria-hidden="true"><Mark/></span>}
     <div className="message-body"><p className="message-text">{message.role==='assistant'?<ReplyText text={message.text} animate={!initialMessages.current.has(message.id)}/>:message.text}</p>
-     {!!message.claims.length&&<div className="answer-passages">{message.claims.map(claim=><section className="sourced-answer" key={claim.passage_id}><p className="source-answer-excerpt"><ReplyText text={claim.excerpt} animate={!initialMessages.current.has(message.id)}/></p><button className={`source-citation ${selection?.passage_id===claim.passage_id?'selected-source':''}`} onClick={()=>setSelection({version_id:claim.version_id,passage_id:claim.passage_id,page:claim.page,excerpt:claim.excerpt})}><span aria-hidden="true">▤</span><span>{claim.title}<small>{claim.media_type==='application/pdf'?`Page ${claim.page}`:claim.section} · v{claim.version}</small></span><span aria-hidden="true">↗</span></button></section>)}</div>}
+     {!!message.claims.length&&<ChatSources claims={message.claims} animate={!initialMessages.current.has(message.id)}/>}
      {message.id===latestMessage?.id&&message.role==='assistant'&&<>
       {message.cards.includes('quote')&&state.quote&&<div className="chat-quote"><div><small>Your quote</small><strong>{money(state.quote.cents)}</strong></div><Badge tone="blue">{duration(state.quote.minutes)}</Badge><span>{state.quote.items.map(item=>item.name).join(' + ')}</span>{!hasCalendar&&<Button kind="secondary" disabled={busy} onClick={()=>void send('When is this service free this week?')}>Find a time</Button>}</div>}
      </>}
     </div>
-   </article>)}
+   </article>{booking&&message.cards.includes('manage')&&managementAnchors.get(booking.id)===message.id&&<ChatBookingManagement state={state} record={booking} pending={busy} onAction={onBookingAction}/>} {message.id===latestMessage?.id&&hasCalendar&&<div className="chat-calendar"><WeekCalendar key={message.id} state={state} pending={busy} initialDate={message.requested_date??undefined} initialPeriod={message.requested_period??undefined} onSelect={preferred_at=>onEdit({preferred_at})}/></div>}{message.id===reviewAnchor&&<ChatReview state={state} pending={busy} onSubmit={onSubmit}/>}
+   {booking?.booking&&bookingAnchors.get(booking.id)===message.id&&<div className="chat-booking-result"><BookingOutcome request={booking} zone={state.timezone}/>{managementAnchors.get(booking.id)===message.id&&<ChatBookingManagement compact state={state} record={booking} pending={busy} onAction={onBookingAction}/>}<aside className="business-booking-nudge" aria-label="Explore the business view"><p>Take a look from the business side.</p><button type="button" aria-label="View booking in Business view" onClick={onBusiness}>Business view <span aria-hidden="true">↗</span></button></aside></div>}
+   </Fragment>;})}
    {sending&&<div className="assistant-working" role="status"><span className="assistant-orb" aria-hidden="true"><Mark/></span><Spinner/><span>Juniper is working on it</span></div>}
-   {hasCalendar&&latestMessage&&<div className="chat-calendar"><WeekCalendar key={latestMessage.id} state={state} pending={busy} initialDate={latestMessage.requested_date??undefined} onSelect={preferred_at=>onEdit({preferred_at})}/></div>}
-   <ChatReview state={state} pending={busy} onSubmit={onSubmit}/>
-   {latest?.status==='awaiting_review'&&<div className="request-sent"><Badge tone="amber">Awaiting review</Badge><p>Your request is with Juniper. Let’s take a look from the business side.</p><Button kind="secondary" onClick={onBusiness}>Review in Business view</Button></div>}
-   {latest?.booking&&<BookingOutcome request={latest} zone={state.timezone} onReview={onBusiness}/>}
+   {!reviewAnchor&&<ChatReview state={state} pending={busy} onSubmit={onSubmit}/>}
   </div></div></div>
   <div className="chat-compose-area">
    <div className="conversation-suggestions" data-tour="questions" role="group" aria-label="Suggested replies">
@@ -68,5 +72,5 @@ export function ChatWorkspace({state,pending,text,setText,onSend,onEdit,onSubmit
     <Button type="submit" className="composer-send" aria-label="Send message" title="Send message (Enter)" disabled={busy||!text.trim()} busy={busy}><Arrow direction="up"/></Button>
    </form>
   </div>
- </section>{selection&&<div className="chat-companion"><SourceReader selection={selection} onClose={()=>setSelection(null)}/></div>}</div>{library&&<ConversationLibrary kind={library} documents={state.documents} onClose={()=>setLibrary(null)} onQuestion={question=>{setLibrary(null);void send(question);}} onTour={()=>{setLibrary(null);onTour();}}/>}</>;
+ </section></div>{library&&<ConversationLibrary kind={library} documents={state.documents} onClose={()=>setLibrary(null)} onQuestion={question=>{setLibrary(null);void send(question);}} onTour={()=>{setLibrary(null);onTour();}}/>}</>;
 }

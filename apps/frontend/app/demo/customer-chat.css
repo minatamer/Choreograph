@@ -4,8 +4,8 @@
 .customer-workspace .workspace-loading{flex:1;min-height:0}.customer-workspace .error-banner{flex-shrink:0;max-height:25%;overflow:auto;font-size:12px;padding:10px 14px;margin:0}
 .customer-workspace .customer-conversation.chat-layout{display:grid;flex:1;grid-template-columns:minmax(0,1fr);align-items:stretch;min-width:0;min-height:0;width:100%;max-width:1160px;margin:0 auto;gap:16px;overflow:hidden}
 .customer-workspace .customer-conversation.chat-layout.source-open{grid-template-columns:minmax(0,1fr) minmax(320px,40%);max-width:1360px}
-.customer-workspace .customer-conversation .chat-column{display:grid;grid-template-rows:auto minmax(0,1fr) auto;min-width:0;min-height:0;border:1px solid #bfd1e8;border-radius:26px;background:#f8fbffdf;box-shadow:0 16px 44px -24px #304b775c,inset 0 1px 0 #fff;overflow:hidden}
-.customer-workspace .customer-conversation .conversation-intro{display:flex;flex-direction:row;flex-wrap:nowrap;align-items:center;justify-content:flex-start;gap:10px;text-align:left;margin:0;padding:12px 18px;border-bottom:1px solid #dce6f2;background:linear-gradient(115deg,#e4efffd4,#f8fbff);min-width:0}
+.customer-workspace .customer-conversation .chat-column{display:grid;grid-template-rows:auto minmax(0,1fr) auto;min-width:0;min-height:0;border:1px solid #ffffffc4;border-radius:26px;background:transparent;box-shadow:0 16px 44px -24px #304b775c,0 0 0 1px #91a7c524,var(--material-rim);-webkit-backdrop-filter:blur(14px) saturate(1.15);backdrop-filter:blur(14px) saturate(1.15);overflow:hidden}
+.customer-workspace .customer-conversation .conversation-intro{display:flex;flex-direction:row;flex-wrap:nowrap;align-items:center;justify-content:flex-start;gap:10px;text-align:left;margin:0;padding:12px 18px;border-bottom:1px solid #ffffff80;background:transparent;box-shadow:inset 0 1px 0 #ffffffa6;min-width:0}
 .customer-workspace .customer-conversation .conversation-intro>.assistant-orb{width:34px;height:34px;grid-row:auto;background:transparent}.customer-workspace .conversation-intro .brand-mark{width:22px;height:22px}
 .customer-workspace .customer-conversation .conversation-intro h1{font-size:18px;line-height:1.2;margin:0;letter-spacing:-.025em}.customer-workspace .customer-conversation .conversation-intro p{display:block;font-size:11px;line-height:1.5;margin-top:3px;color:#72839a}
 .customer-workspace .customer-conversation .guide-shelf-toggle{flex-shrink:0;grid-column:auto;justify-self:auto;margin-left:auto;gap:8px;font-size:11px;padding:8px 0}
@@ -17,7 +17,7 @@
 .customer-workspace .customer-conversation .chat-message.assistant>.assistant-orb{width:28px;height:28px;margin-top:0}.customer-workspace .chat-message .brand-mark{width:20px;height:20px}
 .customer-workspace .source-answer-excerpt{font-size:13px;line-height:1.65}.customer-workspace .sourced-answer{gap:7px;margin-bottom:4px}.customer-workspace .customer-conversation .answer-passages{margin-top:10px;gap:10px}
 .customer-workspace .source-citation{font-size:11px;padding:7px 10px;gap:8px;border-radius:12px}.customer-workspace .source-citation small{font-size:9px;margin-top:2px}
-.customer-workspace .customer-conversation .chat-compose-area{position:relative;bottom:auto;margin:0;padding:10px 16px 6px;border-top:1px solid #dce6f2;background:#f4f8fef0;min-width:0}
+.customer-workspace .customer-conversation .chat-compose-area{position:relative;bottom:auto;margin:0;padding:10px 16px 6px;border-top:1px solid #ffffff80;background:transparent;box-shadow:inset 0 1px 0 #ffffff80;min-width:0}
 .conversation-suggestions{display:flex;align-items:center;gap:7px;min-width:0;margin-bottom:7px}.conversation-suggestions>div{display:flex;gap:7px;min-width:0;overflow-x:auto;overscroll-behavior-inline:contain;scrollbar-width:none}.conversation-suggestions button{display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;white-space:nowrap;gap:10px;min-height:34px;padding:7px 12px;border:1px solid #c8d9ed;border-radius:999px;background:transparent;color:#466386;font-size:11px}.conversation-suggestions button:not(:disabled):hover{background:#e2edfd}.conversation-suggestions button span{color:#1967d2}.conversation-suggestions .more-questions{width:34px;min-width:34px;padding:0;color:#1967d2;font-size:21px}
 .customer-workspace .customer-conversation .composer.glass{position:relative;display:block;margin:0;padding:6px;border-radius:21px;background:transparent;border-color:#fff;backdrop-filter:none;-webkit-backdrop-filter:none;box-shadow:0 4px 14px -9px #304b7738,var(--material-rim)}
 .customer-workspace .customer-conversation .composer textarea{display:block;min-height:44px;height:44px;max-height:96px;font-size:14px;line-height:20px;padding:12px 58px 12px 10px;resize:none;border-radius:14px;overflow-y:auto}
@@ -50,3 +50,8 @@
 }
 
 .question-library-tour{margin:0 0 18px;font-size:12px;gap:12px}
+
+.chat-booking-result{display:flex;flex-direction:column;gap:10px}.chat-booking-result .booking-outcome{margin-bottom:0}
+.customer-workspace .business-booking-nudge{display:flex;align-items:center;flex-wrap:wrap;gap:8px 16px;padding:12px 14px;border:1px solid #ffffff9c;border-radius:16px;background:transparent;box-shadow:var(--material-rim)}
+.business-booking-nudge p{flex:1 1 180px;margin:0;font-size:12px;line-height:1.5;color:#63758c}
+.business-booking-nudge button{flex-shrink:0;display:inline-flex;align-items:center;gap:8px;border:0;border-radius:6px;padding:4px 0;background:transparent;color:#1967d2;font-size:12px}

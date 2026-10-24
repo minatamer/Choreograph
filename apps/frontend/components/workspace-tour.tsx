@@ -10,9 +10,9 @@ import type {BusinessPage} from '@/lib/workspace-navigation';
 const steps=[
  {target:'assistant',business:false,title:'Meet your front desk.',text:'You’re a customer of Juniper Cleaning. Its assistant can answer from Juniper’s documents, prepare a quote and find a time.'},
  {target:'questions',business:false,title:'A good place to start.',text:'These replies adapt as you chat. Tap one to send it, or use the plus button for more questions.'},
- {target:'composer',business:false,title:'Talk it through.',text:'Ask naturally, or change your mind. Quotes, sources and available times appear in the conversation. You review before sending a request.'},
+ {target:'composer',business:false,title:'Talk it through.',text:'Ask naturally, or change your mind. Quotes, sources and available times appear in the conversation. Review the details, then book your clean.'},
  {target:'overview',business:true,page:'overview',title:'Now, the business side.',text:'Follow incoming requests, confirmed bookings and booked value.'},
- {target:'review',business:true,page:'requests',title:'You’re in control.',text:'Customer requests arrive here. Review the quote, choose a cleaner and approve. A time is reserved only after that approval.'},
+ {target:'review',business:true,page:'requests',title:'You’re in control.',text:'Customer bookings arrive here with their reserved time and cleaner. Review the details, reschedule or manage the booking.'},
  {target:'calendar',business:true,page:'calendar',title:'See the whole week.',text:'This is the full staff calendar. Approved bookings appear alongside Juniper’s existing jobs. Change the week to explore.'},
  {target:'documents',business:true,page:'guides',title:'The pages behind the answers.',text:'Six documents are already uploaded. Open the original pages, or try a revised document and ask again. Replies link to the source they used.'},
  {target:'hubspot',business:true,page:'connections',title:'Your HubSpot. Your choice.',text:'Both paths use Juniper. Connect your own HubSpot to follow approved bookings after sync. You can disconnect, or uninstall through Finish demo or HubSpot Connected Apps.'},

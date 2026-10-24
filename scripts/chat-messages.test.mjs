@@ -1,9 +1,26 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {acceptedMessage,conversationMessages} from '../apps/frontend/lib/chat-messages.ts';
+import {acceptedMessage,bookingMessageAnchors,conversationMessages} from '../apps/frontend/lib/chat-messages.ts';
 
 const message=(id,role='user',text='Hello')=>({id,role,text,claims:[],cards:[],suggestions:[],requested_date:null,revision:1});
 const send={key:'local-1',text:'Hello',count:1};
+
+test('reschedule, cancellation and status keep one current outcome per booking',()=>{
+ const outcome=(id,request_id='booking-a')=>({...message(id,'assistant'),request_id,cards:['booking']});
+ const booked=outcome('booked'),managed={...outcome('manage'),cards:['manage']};
+ assert.equal(bookingMessageAnchors([booked,managed]).get('booking-a'),'booked');
+ const moved=outcome('moved'),cancelled=outcome('cancelled'),status=outcome('cancelled-status');
+ const history=[booked,managed,moved,cancelled,status,message('guide-answer','assistant')];
+ const anchors=bookingMessageAnchors(history);
+ assert.equal(anchors.size,1);assert.equal(anchors.get('booking-a'),'cancelled-status');
+ assert.deepEqual(history.map(row=>row.id),['booked','manage','moved','cancelled','cancelled-status','guide-answer']);
+});
+
+test('outcome anchoring preserves separate bookings and ignores user or unscoped cards',()=>{
+ const outcome=(id,request_id,role='assistant')=>({...message(id,role),request_id,cards:['booking']});
+ const anchors=bookingMessageAnchors([outcome('a','a'),outcome('b','b'),outcome('a-updated','a'),outcome('unscoped',null),outcome('user-forgery','b','user')]);
+ assert.deepEqual([...anchors],[['a','a-updated'],['b','b']]);
+});
 
 test('a pending bubble keeps its key through acceptance and later renders',()=>{
  const history=[message('previous')],keys=new Map();
