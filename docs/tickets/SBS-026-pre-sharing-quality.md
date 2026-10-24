@@ -1,6 +1,14 @@
 # SBS-026 — Post-deployment/pre-sharing quality and efficiency audit
 
-Status: Complete locally; no actionable quality findings after validation —24 October2026
+## Supplemental Q-026-03 plan —24 October2026
+
+Reopened after the clean quality checkpoint8318b61, before security completion: whole-repo CI inspection found the no-key workflow still uses removed `CHOREOGRAPH_PROFILE` in job environment and its disposable backend fixture. The actual loader returns `LEGACY_CONFIGURATION_REMOVED`; CI would stop before migrations, leaving later checks unexecuted. This is a confirmed quality defect, not a new security exploit. Earlier completion/results below remain historical.
+
+Allocate `.github/workflows/ci.yml` to the exact two-switch fake/paid-off fixture repair; allocate `apps/backend/tests/test_runtime_configuration.py` to an integration regression that parses the actual workflow, executes its real fixture-generator Python in a temporary checkout, and loads both job environment and generated file through the real loader. First reproduce failure, then repair and run focused configuration/setup tests and Ruff. Preserve all user secrets/services and application image inputs. Update this ticket, COMMIT_PLAN and the canonical build progress, inspect the settled diff read-only, then stage/commit these five explicit files and verify clean before resuming security. No dependency, provider, business, UI, logging or deployment change is planned.
+
+**Supplemental result:** the new actual-generator regression failed before the fix with `LEGACY_CONFIGURATION_REMOVED`. Both CI locations now use fake=true/paid=false. The generator executes only in a temporary checkout; its generated private bridge value never appears in output. Actual local/environment loaders prove fake AI, disabled CRM and no provider key independently of developer configuration. All26 focused runtime/configuration/setup tests and Ruff pass. The first lint run found only import ordering in the new test; that was corrected and checked again. Source freshness remains the same192-image-input `d06fd5c2…5962` receipt because only CI/tests/docs changed. Read-only complete-diff review confirms the exact two-switch repair, no application/secret change, meaningful failing-before/passing-after coverage and no additional actionable finding. Actual GitHub-hosted CI execution remains unavailable; this is a local generator/loader verification, not a claim that Actions ran.
+
+Status: Complete locally; no actionable quality findings after supplemental validation —24 October2026
 
 This is the build workflow's audit title, not a claim that Choreograph is deployed. The owner explicitly requests AFK quality/efficiency and subsequent full security review, scoped repairs through execute/validate loops and local staging/commits. The existing123-file continuation was first allocated and committed in ten groups; `13f608bc434946f0a53c67d29ace976bed382cea` was verified completely clean at14:03:44UTC before this audit started. The main build-progress block owns the reopened phases and AFK decisions. Human paid-demo/HubSpot/visual review remains outstanding.
 

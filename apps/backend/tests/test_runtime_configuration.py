@@ -1,7 +1,12 @@
 """External configuration cannot grow switches or override reviewed provider policy."""
+import re
+import subprocess
+import sys
 from datetime import UTC, datetime
+from pathlib import Path
 
 import pytest
+import yaml
 from test_ai_config import live_values
 from test_settings import values as private_values
 
@@ -9,6 +14,33 @@ from choreograph import runtime_config
 from choreograph.ai_config import parse_live_ai
 from choreograph.runtime_config import APPLICATION, ENV_FIELDS, configuration_values
 from choreograph.settings import Settings, load_environment
+
+
+def test_no_key_ci_generator_and_job_environment_load_fake_only(tmp_path, monkeypatch):
+    """Run the checked-in CI generator, never a copied fixture or checkout env."""
+    from dotenv import dotenv_values
+
+    from choreograph import settings
+    root=Path(__file__).resolve().parents[3]
+    job=yaml.safe_load((root/'.github/workflows/ci.yml').read_text())['jobs']['verify']
+    step=next(step for step in job['steps'] if step['name']=='Create disposable fake-only configuration')
+    generator=re.search(r"python - <<'PY'\n(.*?)\nPY",step['run'],re.S).group(1)
+    backend=tmp_path/'apps/backend'
+    backend.mkdir(parents=True)
+    completed=subprocess.run([sys.executable,'-I','-c',generator],cwd=tmp_path,capture_output=True,check=True)
+    values=dotenv_values(backend/'.env.local',interpolate=False)
+    # Job-level values also reach container/migration commands. Both boundaries
+    # must reject accidental live mode even when the developer has live keys.
+    configured=load_environment({**values,**job['env']})
+    monkeypatch.setattr(settings,'__file__',str(backend/'choreograph/settings.py'))
+    local=settings.load_local()
+    assert configured.profile==local.profile=='fake'
+    assert configured.live_ai is local.live_ai is None
+    assert configured.crm_provider==local.crm_provider=='disabled'
+    assert not values.get('OPENAI_API_KEY') and values['PAID_DEMO_ENABLED']=='false'
+    assert values['FAKE_MODE']=='true'
+    assert b'values omitted' in completed.stdout
+    assert values['CHOREOGRAPH_BRIDGE_SECRET'].encode() not in completed.stdout
 
 
 def test_external_loaders_use_fixed_code_policy_with_only_private_values(monkeypatch):

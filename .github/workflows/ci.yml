@@ -17,7 +17,8 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     env:
-      CHOREOGRAPH_PROFILE: fake
+      FAKE_MODE: "true"
+      PAID_DEMO_ENABLED: "false"
       NEXT_TELEMETRY_DISABLED: "1"
       PIP_DISABLE_PIP_VERSION_CHECK: "1"
     services:
@@ -111,7 +112,8 @@ jobs:
 
           password = "ci-only-not-a-secret"
           values = {
-              "CHOREOGRAPH_PROFILE": "fake",
+              "FAKE_MODE": "true",
+              "PAID_DEMO_ENABLED": "false",
               "CHOREOGRAPH_DB_PASSWORD": password,
               "CHOREOGRAPH_DATABASE_URL": f"postgresql+psycopg://choreograph:{password}@127.0.0.1:45862/choreograph",
               "CHOREOGRAPH_ORIGIN": "http://127.0.0.1:45860",

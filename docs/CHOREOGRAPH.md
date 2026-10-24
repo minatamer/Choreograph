@@ -988,9 +988,9 @@ The four-file packet passed static HTML structure/ID checks, local document/sour
 <!-- build-progress:start -->
 ## Build command progress
 
-Current phase: **10a-quality**
-Next action: The settled read-only quality review has no actionable findings. Record exact quality file allocation, inspect staged bytes/secrets and commit quality plus its fresh Linux receipt before starting the security audit.
-Active ticket: SBS-026
+Current phase: **10b-security-review**
+Next action: Commit the validated five-file supplemental Q-026-03 allocation; verify clean, then regenerate the full security audit prompt for the actual new baseline.
+Active ticket: none
 Phase prompts: delegated during AFK
 Local commits approved: yes
 
@@ -1111,6 +1111,10 @@ Provisional owner reviews: 04-decisions, 05-tickets, 09-visual-review
   Reason: The actual40-record agenda/week/day measurement constructs150 Intl formatters and takes p50=37.54ms locally; scoped reuse avoids recurring allocations without a global cache. SourceReader has exactly one call with embedded=true and its shared ExpandingDialog already owns focus. No speculative SQL/provider/CSS refactor is justified.
   Consequence / reversibility: Preserve locale/timezone/DST output, source authorization/highlights, explicit booking and designed motion. Changes are narrow/reversible frontend internals; private logs and running real-mode services are untouched. Test with fake/injected providers/isolated PG, inspect source UI read-only and refresh Linux evidence. Owner visual review remains outstanding.
   Owner review requested on return: yes. Evidence: docs/tickets/SBS-026-pre-sharing-quality.md, .runtime/sbs026-quality-before.json, apps/frontend/lib/calendar-metrics.ts, apps/frontend/components/source-reader.tsx
+- **AFK-0029** (AFK-SESSION-001, 2026-10-24T14:35:17+00:00, 10a-quality): Reopen SBS-026 for confirmed Q-026-03: update the no-key CI fake configuration and execute its real generator through the loader.
+  Reason: The current workflow still supplies removed CHOREOGRAPH_PROFILE in both job environment and generated file; the actual configuration_values probe rejects it with LEGACY_CONFIGURATION_REMOVED. This is a local quality defect, not an external blocker or a claimed security exploit.
+  Consequence / reversibility: Repair only CI fixture/mode fields and add a generator/loader integration regression; keep running services and private files unchanged. Commit quality repair before resuming security. Prior quality evidence remains historical.
+  Owner review requested on return: yes. Evidence: .github/workflows/ci.yml, apps/backend/choreograph/runtime_config.py, docs/tickets/SBS-026-pre-sharing-quality.md
 
 - [x] 01-docs — Documentation (complete)
 - [x] 02-flow — Core flow (complete)
@@ -1121,8 +1125,8 @@ Provisional owner reviews: 04-decisions, 05-tickets, 09-visual-review
 - [x] 07-build — Execute and validate tickets (complete_local)
 - [x] 08-performance — Performance investigation (complete)
 - [x] 09-visual-review — Frontend visual approval checkpoint (provisional)
-- [ ] 10a-quality — Quality audit and fixes (in_progress)
-- [ ] 10b-security-review — Security audit and manual review (pending)
+- [x] 10a-quality — Quality audit and fixes (complete)
+- [ ] 10b-security-review — Security audit and manual review (in_progress)
 - [ ] 11-security-fixes — Approved security fixes (pending)
 - [ ] 12-handoff — Final local handoff (pending)
 
@@ -1133,7 +1137,7 @@ This checklist records local work. Human approvals and unresolved external check
   "schema_version": 3,
   "repo_root": "C:\\Users\\minat\\Work\\Choreograph",
   "main_document": "docs/CHOREOGRAPH.md",
-  "updated_at": "2026-10-24T14:24:24+00:00",
+  "updated_at": "2026-10-24T14:37:36+00:00",
   "context": {
     "PROJECT_NAME": {
       "value": "Choreograph",
@@ -1620,6 +1624,21 @@ This checklist records local work. Human approvals and unresolved external check
           "apps/frontend/lib/calendar-metrics.ts",
           "apps/frontend/components/source-reader.tsx"
         ]
+      },
+      {
+        "id": "AFK-0029",
+        "session_id": "AFK-SESSION-001",
+        "recorded_at": "2026-10-24T14:35:17+00:00",
+        "phase": "10a-quality",
+        "choice": "Reopen SBS-026 for confirmed Q-026-03: update the no-key CI fake configuration and execute its real generator through the loader.",
+        "rationale": "The current workflow still supplies removed CHOREOGRAPH_PROFILE in both job environment and generated file; the actual configuration_values probe rejects it with LEGACY_CONFIGURATION_REMOVED. This is a local quality defect, not an external blocker or a claimed security exploit.",
+        "consequence": "Repair only CI fixture/mode fields and add a generator/loader integration regression; keep running services and private files unchanged. Commit quality repair before resuming security. Prior quality evidence remains historical.",
+        "review_needed": true,
+        "evidence": [
+          ".github/workflows/ci.yml",
+          "apps/backend/choreograph/runtime_config.py",
+          "docs/tickets/SBS-026-pre-sharing-quality.md"
+        ]
       }
     ]
   },
@@ -1659,8 +1678,8 @@ This checklist records local work. Human approvals and unresolved external check
     "final_commit_subject": "SBS-011: Record build, security and external acceptance handoff",
     "final_commit_identity": "git log owns the final documentation commit hash; it cannot be embedded in its own content."
   },
-  "active_ticket": "SBS-026",
-  "next_action": "The settled read-only quality review has no actionable findings. Record exact quality file allocation, inspect staged bytes/secrets and commit quality plus its fresh Linux receipt before starting the security audit.",
+  "active_ticket": null,
+  "next_action": "Commit the validated five-file supplemental Q-026-03 allocation; verify clean, then regenerate the full security audit prompt for the actual new baseline.",
   "phases": [
     {
       "id": "01-docs",
@@ -2145,20 +2164,15 @@ This checklist records local work. Human approvals and unresolved external check
       "id": "10a-quality",
       "name": "Quality audit and fixes",
       "gate": null,
-      "status": "in_progress",
+      "status": "complete",
       "prompt": {
-        "text": "Run Choreograph's renewed pre-sharing code quality, efficiency and structure audit in C:/Users/minat/Work/Choreograph, starting from the clean committed baseline13f608bc434946f0a53c67d29ace976bed382cea. The product is a Next.js/React/TypeScript visual AI front desk with a narrow server bridge, Python/FastAPI, SQLAlchemy/Alembic, PostgreSQL/pgvector, bounded LlamaIndex/OpenAI retrieval, visitor-owned optional HubSpot OAuth and durable local/cloud work. Use AGENTS.md, the main blueprint, lessons and current SBS tickets as authority; preserve the approved clear-glass responsive UI/motion, exact quote/minute/timezone rules, explicit booking/reschedule/cancel confirmations, authorization/source provenance and finite admission/cleanup/replay boundaries. First inspect and fully document the actual functionality-preserving quality/efficiency/structure plan in a new SBS-026 post-deployment/pre-sharing ticket, with exact file responsibilities, expected behavior, meaningful regressions and current evidence. Investigate demonstrated redundancy, dead paths, unsafe duplication, data-loading/CPU/render work, resource lifetime/error recovery and test/entry-point fit; do not refactor for LOC/style or add services/frameworks without a real defect. Preserve useful private backend diagnostics with safe codes; user UI/browser logs must not receive raw exceptions/provider/contact/credential/schema payloads. After planning, immediately run execute → read-only validate → independently confirm/fix → revalidate until no actionable local findings remain. Use actual isolated PostgreSQL plus fake/injected providers; never inherit the owner's manually enabled live credentials, call paid providers or alter their running local services/keys/mode. No real HubSpot account, cloud, push or scanner metadata export is authorized. Run focused meaningful checks during repairs and the settled required gates once, refreshing source-fresh Linux acceptance for changed image inputs. Record provisional AFK decisions before material choices, actual checks and external/human limitations. Prepare a file-level quality commit plan, inspect explicit staged paths and secrets, then make the authorized cohesive SBS-026 local commits. Complete quality before the separate full STRIDE/general/dependency security audit; no security finding selection is fabricated during this quality phase.",
-        "sha256": "e3377a8a92a71d6cedd2150a043d5a151ba9e2ae974bf7da0a31a6e1c897ab92",
+        "text": "Complete the supplemental SBS-026 quality finding Q-026-03 in Choreograph: the actual no-key GitHub Actions fixture still sets the removed CHOREOGRAPH_PROFILE and fails the current external loader. Document its trigger and exact file plan first. Replace both workflow job and generated backend-file mode fields with FAKE_MODE=true and PAID_DEMO_ENABLED=false; add a meaningful regression that parses the actual workflow, executes its actual Python fixture generator only in a temporary checkout and loads it through the actual Settings loader, proving fake AI/disabled CRM/no live keys independently of the owner checkout. Run the regression before/after, focused configuration tests and Ruff; review the complete diff read-only. Make an explicit ticket-level file allocation, stage and commit the quality repair under the current direct owner Git authority; verify a clean tree before resuming audit-only security. Do not change application source, private files, running services, providers, paid allowance or release image inputs. Preserve the earlier quality/results/history.",
+        "sha256": "33b533bb96fc07a5814926e9fba65b7f0d2ccd91795767df1c5d39e2b49f84c3",
         "context_sources": [
           "human:current-thread/24October2026/security-quality-AFK-and-local-Git-request",
-          "AGENTS.md",
-          "docs/CHOREOGRAPH.md",
-          "docs/LESSONS_LEARNED.md",
-          "docs/tickets/README.md",
-          "docs/tickets/SBS-009A-quality.md",
-          "docs/tickets/SBS-025-local-configuration.md",
-          "docs/tickets/COMMIT_PLAN.md",
-          "infra/release-evidence.json"
+          ".github/workflows/ci.yml",
+          "apps/backend/choreograph/runtime_config.py",
+          "docs/tickets/SBS-026-pre-sharing-quality.md"
         ],
         "status": "afk",
         "approval": null,
@@ -2166,9 +2180,9 @@ This checklist records local work. Human approvals and unresolved external check
       },
       "evidence": [
         "docs/tickets/SBS-026-pre-sharing-quality.md",
-        ".runtime/sbs026-quality-final.json",
-        ".runtime/sbs026-source-responsive.json",
-        "infra/release-evidence.json"
+        ".github/workflows/ci.yml",
+        "apps/backend/tests/test_runtime_configuration.py",
+        "docs/tickets/COMMIT_PLAN.md"
       ],
       "blockers": [],
       "approval": null,
@@ -2215,6 +2229,31 @@ This checklist records local work. Human approvals and unresolved external check
           },
           "prior_approval": null,
           "prior_decision": null
+        },
+        {
+          "reopened_at": "2026-10-24T14:35:20+00:00",
+          "reason": "Q-026-03 confirmed during whole-repo inspection: legacy profile fields in CI cause actual loader failure before migrations. Narrow CI/fixture quality follow-up is necessary before security completion.",
+          "prior_status": "complete",
+          "prior_prompt": {
+            "text": "Run Choreograph's renewed pre-sharing code quality, efficiency and structure audit in C:/Users/minat/Work/Choreograph, starting from the clean committed baseline13f608bc434946f0a53c67d29ace976bed382cea. The product is a Next.js/React/TypeScript visual AI front desk with a narrow server bridge, Python/FastAPI, SQLAlchemy/Alembic, PostgreSQL/pgvector, bounded LlamaIndex/OpenAI retrieval, visitor-owned optional HubSpot OAuth and durable local/cloud work. Use AGENTS.md, the main blueprint, lessons and current SBS tickets as authority; preserve the approved clear-glass responsive UI/motion, exact quote/minute/timezone rules, explicit booking/reschedule/cancel confirmations, authorization/source provenance and finite admission/cleanup/replay boundaries. First inspect and fully document the actual functionality-preserving quality/efficiency/structure plan in a new SBS-026 post-deployment/pre-sharing ticket, with exact file responsibilities, expected behavior, meaningful regressions and current evidence. Investigate demonstrated redundancy, dead paths, unsafe duplication, data-loading/CPU/render work, resource lifetime/error recovery and test/entry-point fit; do not refactor for LOC/style or add services/frameworks without a real defect. Preserve useful private backend diagnostics with safe codes; user UI/browser logs must not receive raw exceptions/provider/contact/credential/schema payloads. After planning, immediately run execute → read-only validate → independently confirm/fix → revalidate until no actionable local findings remain. Use actual isolated PostgreSQL plus fake/injected providers; never inherit the owner's manually enabled live credentials, call paid providers or alter their running local services/keys/mode. No real HubSpot account, cloud, push or scanner metadata export is authorized. Run focused meaningful checks during repairs and the settled required gates once, refreshing source-fresh Linux acceptance for changed image inputs. Record provisional AFK decisions before material choices, actual checks and external/human limitations. Prepare a file-level quality commit plan, inspect explicit staged paths and secrets, then make the authorized cohesive SBS-026 local commits. Complete quality before the separate full STRIDE/general/dependency security audit; no security finding selection is fabricated during this quality phase.",
+            "sha256": "e3377a8a92a71d6cedd2150a043d5a151ba9e2ae974bf7da0a31a6e1c897ab92",
+            "context_sources": [
+              "human:current-thread/24October2026/security-quality-AFK-and-local-Git-request",
+              "AGENTS.md",
+              "docs/CHOREOGRAPH.md",
+              "docs/LESSONS_LEARNED.md",
+              "docs/tickets/README.md",
+              "docs/tickets/SBS-009A-quality.md",
+              "docs/tickets/SBS-025-local-configuration.md",
+              "docs/tickets/COMMIT_PLAN.md",
+              "infra/release-evidence.json"
+            ],
+            "status": "afk",
+            "approval": null,
+            "afk_session": "AFK-SESSION-001"
+          },
+          "prior_approval": null,
+          "prior_decision": null
         }
       ]
     },
@@ -2222,8 +2261,27 @@ This checklist records local work. Human approvals and unresolved external check
       "id": "10b-security-review",
       "name": "Security audit and manual review",
       "gate": "security",
-      "status": "pending",
-      "prompt": null,
+      "status": "in_progress",
+      "prompt": {
+        "text": "Perform Choreograph's full renewed pre-sharing STRIDE, general application and dependency security audit at clean committed baseline8318b617d6da21738a0ece4de329847b1d9dbed3, after the completed/committed SBS-026 quality phase. Target the actual Next.js/React/TypeScript browser and narrow BFF, Python/FastAPI/SQLAlchemy domain and private API, PostgreSQL17/pgvector migrations/relationships, LlamaIndex/OpenAI retrieval and paid admission, optional visitor HubSpot OAuth/transport/token storage/account-scoped exports/cleanup/uninstall, local runner/Cloud Tasks/WorkerPool delivery and cloud/CI/Linux release proposals. Use fake/injected external providers and actual isolated PostgreSQL/owned disposable Linux resources; preserve the owner's running real-mode app, credentials, data and manual paid-demo/HubSpot review. Do not make any paid provider, actual account/OAuth, cloud/publish/push/outreach or remote-scanner metadata-export call. Use current official maintainer/package advisories as public read-only research without uploading a dependency graph/repo. Audit actual source and all relevant existing adversarial tests, not only previous reports. Consider spoofing, tampering, repudiation, disclosure, denial of service, elevation, CSRF/origin/cookie/session/guest identity, bounded bytes/work/queues/concurrency/rate/cost/deadlines, replay/stale/reset/expiry, real original-source authorization, untrusted PDF/prompt/model output, unsafe input/injection/SSRF, credential/data/log exposure, tenant/app/account/destination boundaries and supply chain/deployment defaults. Preserve private backend diagnostics and content-free helpful public/browser errors. Include only meaningful substantiated findings, with severity, trigger/path/evidence, actual impact, current controls, carefully scoped functionality-preserving fix/verification plan and residual limits; do not manufacture minor recommendations or overengineer a demo. Prepare a new SBS-027 security-review ticket, update the detailed Markdown audit and severity-ranked PM HTML in docs/security, and keep this phase audit-only. After findings/artifacts are concrete and reviewed, use an explicit provisional AFK security selection for justified scoped local fixes under the owner's direct current authorization; do not invent human approval or silently broaden external action permissions. Finish the separate phase11 execute/validate loop and authorized file-level local commits only after that selection. Record actual coverage, public advisory sources/version comparisons, unavailable scanner/hosted/native/human checks, future-edit guardrails and evidence. The previous reports and fixes remain readable as history; a prior receipt is not current proof. Security review and visual acceptance remain provisional AFK/owner-review outcomes.",
+        "sha256": "a2f6c2ac0df003f946cf89b3c21dfd218baca952d883ea617cbfb88d875df97f",
+        "context_sources": [
+          "human:current-thread/24October2026/security-quality-AFK-and-local-Git-request",
+          "AGENTS.md",
+          "docs/CHOREOGRAPH.md",
+          "docs/LESSONS_LEARNED.md",
+          "docs/tickets/SBS-026-pre-sharing-quality.md",
+          "docs/security/SECURITY_REVIEW.md",
+          "docs/security/SECURITY_OVERVIEW.html",
+          "docs/tickets/SBS-009B-security-review.md",
+          "docs/tickets/SBS-009C-security-fixes.md",
+          "infra/README.md",
+          "infra/release-evidence.json"
+        ],
+        "status": "afk",
+        "approval": null,
+        "afk_session": "AFK-SESSION-001"
+      },
       "evidence": [
         "docs/security/SECURITY_REVIEW.md#current-continuation-review--sbs-01215",
         "docs/security/SECURITY_OVERVIEW.html",

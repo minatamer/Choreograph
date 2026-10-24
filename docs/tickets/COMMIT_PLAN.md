@@ -583,3 +583,20 @@ The owner's current AFK audit/local Git authorization applies after the clean pr
 Inspect explicit stage allocation, raw-byte/source equality, known-private-value exclusions and staged diff before each local commit. Final docs record preceding hashes after they exist; its own identity is read from Git.
 
 Quality preceding commits: `e59c247c1d565ad6a903cf289da14f10ff04b412` (SBS-026: Reuse scoped date formatters and unify source dialog ownership), `742bb0b8f2ecf07d43705f699489b679034310b8` (SBS-010: Refresh isolated Linux evidence after quality remedies). Final documentation identity is read from Git.
+
+
+## SBS-026 supplemental CI commit allocation -24 October2026
+
+The current direct owner authorization includes local staging and commits. Reopened Q-026-03 was planned before source edits, reproduced by the actual workflow-generator/loader test and repaired with26 focused tests/Ruff passing. No image inputs changed; existing Linux receipt remains source-fresh. This local commit resumes quality before security completion.
+
+| File | Owning purpose |
+|---|---|
+| `.github/workflows/ci.yml` | Replace the two legacy-profile locations with fake=true/paid=false. |
+| `apps/backend/tests/test_runtime_configuration.py` | Execute actual CI generator in temporary checkout and verify real loaders remain offline/fake. |
+| `docs/tickets/SBS-026-pre-sharing-quality.md` | Supplemental plan, failure proof, repair and read-only validation. |
+| `docs/tickets/COMMIT_PLAN.md` | Exact file allocation/current local Git authority. |
+| `docs/CHOREOGRAPH.md` | Canonical AFK decision, quality reopening/completion and preserved security prompt. |
+
+Subject: `SBS-026: Keep no-key CI compatible with the two-switch configuration`
+
+Stage only these paths, verify staged source bytes/private-value exclusion and whitespace, commit, then verify the entire index/worktree empty before restarting the security audit. No provider/account/cloud/remote Git action.
