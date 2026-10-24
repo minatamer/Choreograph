@@ -1,5 +1,8 @@
 # Choreograph
 
+**Current AFK audit continuation,24 October2026:** The owner directly authorizes full quality/efficiency and security review with scoped AFK repairs and local commits, after committing all prior changes first. The123-file baseline was recorded in ten commits and verified clean at13f608bc434946f0a53c67d29ace976bed382cea before audits. SBS-026 now completes the scoped quality remedies and checks; security review is next after its local commits. Existing live-mode services/keys were preserved; audits use fake/injected providers and isolated resources. No paid/account/cloud/push/scanner-export permission is inferred.
+
+
 **Latest owner configuration correction,24 October2026:** [SBS-025](tickets/SBS-025-local-configuration.md) supersedes the earlier large env/legacy-alias instructions. Private app-local files now hold only keys, connection values and exactly FAKE_MODE/PAID_DEMO_ENABLED; models/dimensions/rates/finite allowances/public OAuth app settings are code-owned in backend runtime_config.py. Actual backend47→11/frontend4→3 migration preserved values.326 backend/73 Node checks, Ruff and refreshed isolated Linux stack acceptance pass (44 HTTP/291 assertions; source c53466859b700085a78214f5d2795e5d3e47ecdc2e34765b292c990a13a12673). No real provider, account, new grant or local restart occurred. Prior grant remains expired. HubSpot requires one registered Choreograph OAuth app; visitors connect their own accounts through the website without entering API keys.
 
 
@@ -985,9 +988,9 @@ The four-file packet passed static HTML structure/ID checks, local document/sour
 <!-- build-progress:start -->
 ## Build command progress
 
-Current phase: **06-plan-commit**
-Next action: Write the complete file-level existing-work commit allocation, inspect staged snapshot integrity and commit it before beginning either audit.
-Active ticket: none
+Current phase: **10a-quality**
+Next action: The settled read-only quality review has no actionable findings. Record exact quality file allocation, inspect staged bytes/secrets and commit quality plus its fresh Linux receipt before starting the security audit.
+Active ticket: SBS-026
 Phase prompts: delegated during AFK
 Local commits approved: yes
 
@@ -1104,17 +1107,21 @@ Provisional owner reviews: 04-decisions, 05-tickets, 09-visual-review
   Reason: Direct human message: 'I'm in AFK mode ... any security audits you find that are meaningful, you can execute them right away in an execute valid loop ... you are allowed to stage and commit ... when the unstaged is completely empty and everything is committed, you can then start the security audit and the code quality audit'. Existing AFK state is still active and its Git permission is true; this renews the specific current scope without inventing a new session or result approval.
   Consequence / reversibility: Use fake/injected providers and isolated PostgreSQL for audits, preserve the owner's manually enabled real-mode local app and secrets, and perform no paid/provider/account/cloud/push/scanner-export action. No delegation is authorized. Owner visual, HubSpot-native and paid manual review remains separate. Quality/security self-reviews remain provisional AFK decisions.
   Owner review requested on return: yes. Evidence: human:current-thread/24October2026/security-quality-AFK-and-local-Git-request, docs/tickets/COMMIT_PLAN.md, docs/tickets/SBS-025-local-configuration.md
+- **AFK-0028** (AFK-SESSION-001, 2026-10-24T14:11:03+00:00, 10a-quality): Execute SBS-026's two confirmed quality remedies: per-operation/render date formatter reuse and removal of the unreachable standalone source-reader focus mode.
+  Reason: The actual40-record agenda/week/day measurement constructs150 Intl formatters and takes p50=37.54ms locally; scoped reuse avoids recurring allocations without a global cache. SourceReader has exactly one call with embedded=true and its shared ExpandingDialog already owns focus. No speculative SQL/provider/CSS refactor is justified.
+  Consequence / reversibility: Preserve locale/timezone/DST output, source authorization/highlights, explicit booking and designed motion. Changes are narrow/reversible frontend internals; private logs and running real-mode services are untouched. Test with fake/injected providers/isolated PG, inspect source UI read-only and refresh Linux evidence. Owner visual review remains outstanding.
+  Owner review requested on return: yes. Evidence: docs/tickets/SBS-026-pre-sharing-quality.md, .runtime/sbs026-quality-before.json, apps/frontend/lib/calendar-metrics.ts, apps/frontend/components/source-reader.tsx
 
 - [x] 01-docs — Documentation (complete)
 - [x] 02-flow — Core flow (complete)
 - [x] 03-product — Product and design (complete)
 - [x] 04-decisions — Product decisions (provisional)
 - [x] 05-tickets — Ticket plan (provisional)
-- [ ] 06-plan-commit — Planning commit (in_progress)
+- [x] 06-plan-commit — Planning commit (complete)
 - [x] 07-build — Execute and validate tickets (complete_local)
 - [x] 08-performance — Performance investigation (complete)
 - [x] 09-visual-review — Frontend visual approval checkpoint (provisional)
-- [ ] 10a-quality — Quality audit and fixes (pending)
+- [ ] 10a-quality — Quality audit and fixes (in_progress)
 - [ ] 10b-security-review — Security audit and manual review (pending)
 - [ ] 11-security-fixes — Approved security fixes (pending)
 - [ ] 12-handoff — Final local handoff (pending)
@@ -1126,7 +1133,7 @@ This checklist records local work. Human approvals and unresolved external check
   "schema_version": 3,
   "repo_root": "C:\\Users\\minat\\Work\\Choreograph",
   "main_document": "docs/CHOREOGRAPH.md",
-  "updated_at": "2026-10-24T13:58:25+00:00",
+  "updated_at": "2026-10-24T14:24:24+00:00",
   "context": {
     "PROJECT_NAME": {
       "value": "Choreograph",
@@ -1597,6 +1604,22 @@ This checklist records local work. Human approvals and unresolved external check
           "docs/tickets/COMMIT_PLAN.md",
           "docs/tickets/SBS-025-local-configuration.md"
         ]
+      },
+      {
+        "id": "AFK-0028",
+        "session_id": "AFK-SESSION-001",
+        "recorded_at": "2026-10-24T14:11:03+00:00",
+        "phase": "10a-quality",
+        "choice": "Execute SBS-026's two confirmed quality remedies: per-operation/render date formatter reuse and removal of the unreachable standalone source-reader focus mode.",
+        "rationale": "The actual40-record agenda/week/day measurement constructs150 Intl formatters and takes p50=37.54ms locally; scoped reuse avoids recurring allocations without a global cache. SourceReader has exactly one call with embedded=true and its shared ExpandingDialog already owns focus. No speculative SQL/provider/CSS refactor is justified.",
+        "consequence": "Preserve locale/timezone/DST output, source authorization/highlights, explicit booking and designed motion. Changes are narrow/reversible frontend internals; private logs and running real-mode services are untouched. Test with fake/injected providers/isolated PG, inspect source UI read-only and refresh Linux evidence. Owner visual review remains outstanding.",
+        "review_needed": true,
+        "evidence": [
+          "docs/tickets/SBS-026-pre-sharing-quality.md",
+          ".runtime/sbs026-quality-before.json",
+          "apps/frontend/lib/calendar-metrics.ts",
+          "apps/frontend/components/source-reader.tsx"
+        ]
       }
     ]
   },
@@ -1636,8 +1659,8 @@ This checklist records local work. Human approvals and unresolved external check
     "final_commit_subject": "SBS-011: Record build, security and external acceptance handoff",
     "final_commit_identity": "git log owns the final documentation commit hash; it cannot be embedded in its own content."
   },
-  "active_ticket": null,
-  "next_action": "Write the complete file-level existing-work commit allocation, inspect staged snapshot integrity and commit it before beginning either audit.",
+  "active_ticket": "SBS-026",
+  "next_action": "The settled read-only quality review has no actionable findings. Record exact quality file allocation, inspect staged bytes/secrets and commit quality plus its fresh Linux receipt before starting the security audit.",
   "phases": [
     {
       "id": "01-docs",
@@ -1868,7 +1891,7 @@ This checklist records local work. Human approvals and unresolved external check
       "id": "06-plan-commit",
       "name": "Planning commit",
       "gate": null,
-      "status": "in_progress",
+      "status": "complete",
       "prompt": {
         "text": "Prepare and execute the owner's specifically authorized existing-work Git checkpoint in C:/Users/minat/Work/Choreograph on the current branch, starting at c9cc03688f5cfbcdb77151251f4d9acdafe644c1. Reconcile all modified/untracked files from completed SBS-019–025 and earlier landing/visual feedback; retain every approved feature and source. First append an exact file-level allocation and local commit subjects with SBS ticket prefixes to docs/tickets/COMMIT_PLAN.md. This is a cohesive final-snapshot checkpoint, not invented historical intermediate revisions. Adopt current326 backend/73 Node/types/Ruff and source-fresh isolated Linux44-request/291-assertion evidence from SBS-025 and infra/release-evidence.json, recheck freshness and staged integrity, and perform focused verification only for an actual concern. Use explicit literal owned paths, inspect staged contents and compare actual secret values locally without printing/hashing them. Exclude ignored app-local credentials, .runtime receipts/screenshots, caches, dependency/virtualenv trees and database data. Preserve the existing real-mode API/runner/frontend, database and sibling apps; no new paid call, account/OAuth authorization, cloud operation, remote scanner export, push, history rewrite or branch switch is authorized. Record current AFK authority and the outcome truthfully; stage and make the planned cohesive local commits, with final documentation recording preceding hashes and its own identity via Git log. Confirm git status --porcelain is empty after all current work is committed. Only then begin the reopened quality/efficiency audit and later security audit. Human manual paid-demo/HubSpot/visual acceptance stays separate.",
         "sha256": "71f282b4672e1b2011aa63ef63089d2031a4d629c7c1cda7d7e2843dc6483769",
@@ -1886,8 +1909,10 @@ This checklist records local work. Human approvals and unresolved external check
         "afk_session": "AFK-SESSION-001"
       },
       "evidence": [
-        "docs/tickets/README.md",
-        "AGENTS.md"
+        "docs/tickets/COMMIT_PLAN.md#owner-authorized-pre-audit-checkpoint24-october2026",
+        "commit:13f608bc434946f0a53c67d29ace976bed382cea",
+        ".runtime/pre-audit-clean-boundary.json",
+        "infra/release-evidence.json"
       ],
       "blockers": [],
       "approval": null,
@@ -2120,13 +2145,30 @@ This checklist records local work. Human approvals and unresolved external check
       "id": "10a-quality",
       "name": "Quality audit and fixes",
       "gate": null,
-      "status": "pending",
-      "prompt": null,
+      "status": "in_progress",
+      "prompt": {
+        "text": "Run Choreograph's renewed pre-sharing code quality, efficiency and structure audit in C:/Users/minat/Work/Choreograph, starting from the clean committed baseline13f608bc434946f0a53c67d29ace976bed382cea. The product is a Next.js/React/TypeScript visual AI front desk with a narrow server bridge, Python/FastAPI, SQLAlchemy/Alembic, PostgreSQL/pgvector, bounded LlamaIndex/OpenAI retrieval, visitor-owned optional HubSpot OAuth and durable local/cloud work. Use AGENTS.md, the main blueprint, lessons and current SBS tickets as authority; preserve the approved clear-glass responsive UI/motion, exact quote/minute/timezone rules, explicit booking/reschedule/cancel confirmations, authorization/source provenance and finite admission/cleanup/replay boundaries. First inspect and fully document the actual functionality-preserving quality/efficiency/structure plan in a new SBS-026 post-deployment/pre-sharing ticket, with exact file responsibilities, expected behavior, meaningful regressions and current evidence. Investigate demonstrated redundancy, dead paths, unsafe duplication, data-loading/CPU/render work, resource lifetime/error recovery and test/entry-point fit; do not refactor for LOC/style or add services/frameworks without a real defect. Preserve useful private backend diagnostics with safe codes; user UI/browser logs must not receive raw exceptions/provider/contact/credential/schema payloads. After planning, immediately run execute → read-only validate → independently confirm/fix → revalidate until no actionable local findings remain. Use actual isolated PostgreSQL plus fake/injected providers; never inherit the owner's manually enabled live credentials, call paid providers or alter their running local services/keys/mode. No real HubSpot account, cloud, push or scanner metadata export is authorized. Run focused meaningful checks during repairs and the settled required gates once, refreshing source-fresh Linux acceptance for changed image inputs. Record provisional AFK decisions before material choices, actual checks and external/human limitations. Prepare a file-level quality commit plan, inspect explicit staged paths and secrets, then make the authorized cohesive SBS-026 local commits. Complete quality before the separate full STRIDE/general/dependency security audit; no security finding selection is fabricated during this quality phase.",
+        "sha256": "e3377a8a92a71d6cedd2150a043d5a151ba9e2ae974bf7da0a31a6e1c897ab92",
+        "context_sources": [
+          "human:current-thread/24October2026/security-quality-AFK-and-local-Git-request",
+          "AGENTS.md",
+          "docs/CHOREOGRAPH.md",
+          "docs/LESSONS_LEARNED.md",
+          "docs/tickets/README.md",
+          "docs/tickets/SBS-009A-quality.md",
+          "docs/tickets/SBS-025-local-configuration.md",
+          "docs/tickets/COMMIT_PLAN.md",
+          "infra/release-evidence.json"
+        ],
+        "status": "afk",
+        "approval": null,
+        "afk_session": "AFK-SESSION-001"
+      },
       "evidence": [
-        "docs/tickets/SBS-009A-quality.md#continuation10a-quality-plan--recorded-before-edits",
-        "apps/backend/choreograph/acceptance.py",
-        "apps/backend/tests/test_acceptance.py",
-        "docs/tickets/SBS-008-responsive-flow.md"
+        "docs/tickets/SBS-026-pre-sharing-quality.md",
+        ".runtime/sbs026-quality-final.json",
+        ".runtime/sbs026-source-responsive.json",
+        "infra/release-evidence.json"
       ],
       "blockers": [],
       "approval": null,

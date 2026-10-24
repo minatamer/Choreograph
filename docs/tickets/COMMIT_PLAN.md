@@ -549,3 +549,37 @@ All first nine groups passed explicit staged allocation/raw-byte comparison, kno
 | 8 | `d62811def454c4ec75e27c39aef55a9d12451fd5` | SBS-023: Offer useful chat replies and reviewed appointment management |
 | 9 | `d7999e5da4e6aa234cec2adf28f66abb26f42a4b` | SBS-010: Refresh isolated Linux acceptance for the complete assistant snapshot |
 |10|Read from `git log` after commit|SBS-025: Record continuation evidence and the authorized pre-audit checkpoint|
+
+
+## SBS-026 quality commit allocation —24 October2026
+
+The owner's current AFK audit/local Git authorization applies after the clean prior checkpoint13f608b. Plan and execute/validate evidence: SBS-026. This is the quality phase only; commit it before starting the separate security audit.75 Node tests/types and final source-fresh Linux44-request/291-assertion stack checks pass. The unchanged backend retains its326-test baseline. Preserve current private env, running services and motion; no external operation/push is authorized.
+
+### Quality commit 1: SBS-026: Reuse scoped date formatters and unify source dialog ownership
+
+- `apps/frontend/components/guide-reader-dialog.tsx`
+- `apps/frontend/components/source-reader.tsx`
+- `apps/frontend/components/staff-calendar.tsx`
+- `apps/frontend/components/week-calendar.tsx`
+- `apps/frontend/lib/api.ts`
+- `apps/frontend/lib/business-overview-data.ts`
+- `apps/frontend/lib/calendar-metrics.ts`
+- `apps/frontend/lib/timezone.ts`
+- `scripts/date-readers.test.mjs`
+
+### Quality commit 2: SBS-010: Refresh isolated Linux evidence after quality remedies
+
+- `infra/release-evidence.json`
+
+### Quality commit 3: SBS-026: Record quality audit evidence and AFK workflow decisions
+
+- `AGENTS.md`
+- `README.md`
+- `docs/CHOREOGRAPH.md`
+- `docs/tickets/COMMIT_PLAN.md`
+- `docs/tickets/README.md`
+- `docs/tickets/SBS-026-pre-sharing-quality.md`
+
+Inspect explicit stage allocation, raw-byte/source equality, known-private-value exclusions and staged diff before each local commit. Final docs record preceding hashes after they exist; its own identity is read from Git.
+
+Quality preceding commits: `e59c247c1d565ad6a903cf289da14f10ff04b412` (SBS-026: Reuse scoped date formatters and unify source dialog ownership), `742bb0b8f2ecf07d43705f699489b679034310b8` (SBS-010: Refresh isolated Linux evidence after quality remedies). Final documentation identity is read from Git.

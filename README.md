@@ -1,5 +1,8 @@
 # Choreograph
 
+**Current AFK audit continuation,24 October2026:** The owner authorized a file-level checkpoint first;123 files were committed in ten groups and the tree verified empty at13f608b before audit work. [SBS-026](docs/tickets/SBS-026-pre-sharing-quality.md) completes the scoped quality audit: calendar formatter construction150→6 with unchanged date/DST behavior, and removal of an unreachable reader mode.75 Node/types and fresh isolated Linux44 HTTP/291 assertions pass. Full security review follows after the quality commits; no security completion is claimed yet.
+
+
 **Latest configuration cleanup,24 October2026:** [SBS-025](docs/tickets/SBS-025-local-configuration.md) reduces the actual backend env from47 to11 entries and frontend from4 to3, preserving all keys/connections and the two mode choices. Fixed policy/public OAuth IDs/finite allowances now live in backend code; legacy aliases and duplicate enable flags are removed.326 backend/73 Node checks, Ruff and the refreshed isolated Linux stack pass. Existing local services were preserved without restart; the prior paid allowance remains expired. HubSpot uses one-time Choreograph app registration, then ordinary visitor Connect/account consent.
 
 
