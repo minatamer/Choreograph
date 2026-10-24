@@ -2,22 +2,22 @@
   {
     "slot": "service",
     "title": "Service Guide",
-    "version": "1.0",
+    "version": "1.1",
     "file": "service-guide.pdf",
     "pages": 2,
-    "sha256": "1f65e213d4a666acab0f8e04074be6acd978eba3c1a4e2cd273e6169d77df0fd",
+    "sha256": "c714fd41913179defba22244375b6eef4d5522ca496db4c13d77897851f04c94",
     "previews": [
       {
         "file": "service-1.webp",
         "width": 800,
         "height": 1132,
-        "sha256": "eba52a49fba697ddbf5762985634e6625d4b333998c338f6ef07ad0df5064f68"
+        "sha256": "2b2586218e86390059cb92dfcfbd149e6517d37be40d92d249944f677146839f"
       },
       {
         "file": "service-2.webp",
         "width": 800,
         "height": 1132,
-        "sha256": "76f042c9ce26be27a1b594011fa8caad0564bf0663be71ad74e0cf4bf5d93b1d"
+        "sha256": "46877e55330199bf12b5ee4b0a3c080431b4e993e8a704a27f2b3e24df6379e7"
       }
     ]
   },
@@ -40,16 +40,16 @@
   {
     "slot": "access",
     "title": "Access and Arrival",
-    "version": "1.0",
+    "version": "1.1",
     "file": "access-and-arrival.pdf",
     "pages": 1,
-    "sha256": "0e842e302350061b42e3c73cfc7d6007a87539f0485cd8ba3e398f0cd8d4e069",
+    "sha256": "1ab297d0b2c61433adb5c9f9c43553fbf5aa11b0a39d036a18aca4a03efa43ca",
     "previews": [
       {
         "file": "access-1.webp",
         "width": 800,
         "height": 1132,
-        "sha256": "c5059985c7d31d5149e9452889e97253c89257491df69e8b91ce1788aca6d0c4"
+        "sha256": "6a2090b7180f38ae094f339286de0d51d40d748a0bfb8c5787f225441767cbe4"
       }
     ]
   },
@@ -88,11 +88,11 @@
   {
     "slot": "questions",
     "title": "Service Questions",
-    "version": "1.0",
+    "version": "1.1",
     "file": "service-questions.md",
     "pages": 1,
-    "sha256": "f185dac621b034171442abdc533d2c05a93ae0a59d3444f00c797bb19bae17a8",
+    "sha256": "b54909eacca52103497053a79eed8500c112a0473f51f1a170dc72a5d3c8c422",
     "previews": [],
-    "text": "# Service Questions\n\nJuniper Cleaning - fictional demo company\nVersion 1.0 | Effective 22 October 2026\n\n## Service area\nThis demonstration accepts fictional homes in the visitor's selected local timezone. It has no real dispatch area, postcode eligibility check or travel charge. Do not enter a real address. The coordinator view represents a fictional cleaning business.\n\n## Supplies\nJuniper brings ordinary products, cloths, a vacuum and a mop. Ask the coordinator before requesting a particular product or equipment change. The Service Guide and Safety and Exclusions describe the limits of those requests.\n\n## Results and guarantees\nThe guides do not promise a landlord deposit return or a property inspection result. They describe the agreed cleaning scope. Ask for a coordinator review if a requirement goes beyond that scope.\n\n## Booking and CRM\nA submitted request is awaiting review until a coordinator approves it. HubSpot sharing is optional and separate from the reservation. Continuing without CRM creates no CRM records. This is a fictional demonstration; it does not send staff, emails or text messages.\n"
+    "text": "# Service Questions\n\nJuniper Cleaning - fictional demo company\nVersion 1.1 | Effective 24 October 2026\n\n## Service area\nThis demonstration accepts fictional homes in the visitor's selected local timezone. It has no real dispatch area, postcode eligibility check or travel charge. Do not enter a real address. The coordinator view represents a fictional cleaning business.\n\n## Supplies\nJuniper brings ordinary products, cloths, a vacuum and a mop. Ask the coordinator before requesting a particular product or equipment change. The Service Guide and Safety and Exclusions describe the limits of those requests.\n\n## Results and guarantees\nThe guides do not promise a landlord deposit return or a property inspection result. They describe the agreed cleaning scope. Ask for a coordinator review if a requirement goes beyond that scope.\n\n## Booking and CRM\nReview the quote and selected time, then select Book this clean. A successful booking reserves the time and shows a confirmation with the assigned cleaner. Business view is an optional place to inspect and manage that booking. A request submitted through the older review flow remains unreserved until explicitly booked. HubSpot sharing is optional and separate from the reservation. Continuing without CRM creates no CRM records. This is a fictional demonstration; it does not send staff, emails or text messages.\n"
   }
 ]

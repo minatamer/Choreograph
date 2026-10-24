@@ -3,6 +3,7 @@ import {useEffect,useId,useRef,useState} from 'react';
 import {AnimatePresence,LayoutGroup,motion} from 'motion/react';
 import {ExpandingDialog,cardSpring} from './expanding-dialog';
 import {GuideReaderDialog} from './guide-reader-dialog';
+import {SourceThumbnail} from './source-thumbnail';
 import Image from 'next/image';
 import samples from '@/lib/sample-guides.json';
 import type {KnowledgeDocument} from '@/lib/api';
@@ -37,5 +38,5 @@ export function GuestGuideShelf({documents}:{documents:KnowledgeDocument[]}){
  const group=useId();const opener=useRef<HTMLElement|null>(null);const [selection,setSelection]=useState<string|null>(null);
  const selected=documents.find(doc=>doc.id===selection);
  useEffect(()=>{if(selection&&!selected)setSelection(null);},[selection,selected]);
- return <LayoutGroup id={group}><div className="guest-guide-shelf">{documents.map(doc=><motion.button layoutId={doc.id} transition={cardSpring} style={{borderRadius:3}} initial={{opacity:0,y:16}} animate={{opacity:1,y:0}} type="button" className="guest-guide" key={doc.id} onClick={event=>{opener.current=event.currentTarget;setSelection(doc.id);}} aria-haspopup="dialog"><GuidePaper slot={doc.slot} current={!doc.private&&doc.version==='1.0'}/><span>{doc.title}<small>{doc.private?'Your document':`${doc.pages} ${doc.pages===1?'page':'pages'} · Juniper document`}</small></span></motion.button>)}</div><AnimatePresence>{selected&&<GuideReaderDialog key={selected.id} selection={{version_id:selected.id}} opener={opener.current} onClose={()=>setSelection(null)}/>}</AnimatePresence></LayoutGroup>;
+ return <LayoutGroup id={group}><div className="guest-guide-shelf">{documents.map(doc=><motion.button layoutId={doc.id} transition={cardSpring} style={{borderRadius:3}} initial={{opacity:0,y:16}} animate={{opacity:1,y:0}} type="button" className="guest-guide" key={doc.id} onClick={event=>{opener.current=event.currentTarget;setSelection(doc.id);}} aria-haspopup="dialog"><SourceThumbnail version={doc.id} page={1} mediaType={doc.media_type} title={doc.title}/><span>{doc.title}<small>{doc.private?'Your document':`${doc.pages} ${doc.pages===1?'page':'pages'} · Juniper document`}</small></span></motion.button>)}</div><AnimatePresence>{selected&&<GuideReaderDialog key={selected.id} selection={{version_id:selected.id}} opener={opener.current} onClose={()=>setSelection(null)}/>}</AnimatePresence></LayoutGroup>;
 }

@@ -23,6 +23,24 @@
         }
       }
     },
+    "/v1/verification": {
+      "get": {
+        "summary": "Verification Config",
+        "operationId": "verification_config_v1_verification_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VerificationView"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/session": {
       "get": {
         "summary": "Get Session",
@@ -204,6 +222,44 @@
       "post": {
         "summary": "Send Request",
         "operationId": "send_request_v1_requests_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubmitCommand"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MutationView"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/bookings": {
+      "post": {
+        "summary": "Book Clean",
+        "operationId": "book_clean_v1_bookings_post",
         "requestBody": {
           "content": {
             "application/json": {
@@ -1332,11 +1388,25 @@
                 "clarify",
                 "quote",
                 "week",
-                "review"
+                "review",
+                "booking",
+                "manage"
               ]
             },
             "type": "array",
             "title": "Cards"
+          },
+          "request_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Request Id"
           },
           "suggestions": {
             "items": {
@@ -1357,6 +1427,21 @@
             ],
             "title": "Requested Date"
           },
+          "requested_period": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "morning",
+                  "afternoon"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Requested Period"
+          },
           "revision": {
             "type": "integer",
             "title": "Revision"
@@ -1370,8 +1455,10 @@
           "text",
           "claims",
           "cards",
+          "request_id",
           "suggestions",
           "requested_date",
+          "requested_period",
           "revision"
         ],
         "title": "ChatMessage"
@@ -2600,6 +2687,37 @@
           "type"
         ],
         "title": "ValidationError"
+      },
+      "VerificationView": {
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled"
+          },
+          "site_key": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Site Key"
+          },
+          "required": {
+            "type": "boolean",
+            "title": "Required"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "enabled",
+          "site_key",
+          "required"
+        ],
+        "title": "VerificationView"
       },
       "WeekView": {
         "properties": {

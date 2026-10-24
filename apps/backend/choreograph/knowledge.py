@@ -127,8 +127,8 @@ class OpenAIEmbedding(BaseEmbedding):
                 result.extend(validate_vector(item.get('embedding'),self.spec) for item in sorted(rows,key=lambda item:item['index']))
             except DomainError:raise
             except Exception as error:  # noqa: BLE001 - provider errors must never expose request or response bodies.
-                code='ASSISTANT_TIMEOUT' if 'Timeout' in type(error).__name__ else 'EMBEDDING_UNAVAILABLE'
-                raise DomainError(code,'The document could not be indexed. Try again later.',503) from None
+                from .providers import provider_failure
+                raise provider_failure(error,embedding=True) from None
         return result
     def _get_text_embeddings(self,texts):return self._embed(texts,'ingest_embed')
     def _get_text_embedding(self,text):return self._embed([text],'ingest_embed')[0]

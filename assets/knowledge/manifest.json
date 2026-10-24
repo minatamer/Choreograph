@@ -2,11 +2,11 @@
   {
     "slot": "service",
     "title": "Service Guide",
-    "version": "1.0",
+    "version": "1.1",
     "file": "service-guide.pdf",
     "pages": 2,
     "replacement": false,
-    "sha256": "1f65e213d4a666acab0f8e04074be6acd978eba3c1a4e2cd273e6169d77df0fd"
+    "sha256": "c714fd41913179defba22244375b6eef4d5522ca496db4c13d77897851f04c94"
   },
   {
     "slot": "preparation",
@@ -20,11 +20,11 @@
   {
     "slot": "access",
     "title": "Access and Arrival",
-    "version": "1.0",
+    "version": "1.1",
     "file": "access-and-arrival.pdf",
     "pages": 1,
     "replacement": false,
-    "sha256": "0e842e302350061b42e3c73cfc7d6007a87539f0485cd8ba3e398f0cd8d4e069"
+    "sha256": "1ab297d0b2c61433adb5c9f9c43553fbf5aa11b0a39d036a18aca4a03efa43ca"
   },
   {
     "slot": "changes",
@@ -56,10 +56,10 @@
   {
     "slot": "questions",
     "title": "Service Questions",
-    "version": "1.0",
+    "version": "1.1",
     "file": "service-questions.md",
     "pages": 1,
     "replacement": false,
-    "sha256": "f185dac621b034171442abdc533d2c05a93ae0a59d3444f00c797bb19bae17a8"
+    "sha256": "b54909eacca52103497053a79eed8500c112a0473f51f1a170dc72a5d3c8c422"
   }
 ]

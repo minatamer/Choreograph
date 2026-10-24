@@ -15,6 +15,12 @@ class Health(Contract):
     profile: Literal["fake", "live"] = "fake"
 
 
+class VerificationView(Contract):
+    enabled:bool
+    site_key:str|None=None
+    required:bool
+
+
 class Problem(Contract):
     code: str
     message: str
@@ -134,9 +140,11 @@ class ChatMessage(Contract):
     role: Literal['user','assistant']
     text: str
     claims: list[SourceClaim] = Field(default_factory=list)
-    cards: list[Literal['services','clarify','quote','week','review']] = Field(default_factory=list)
+    cards: list[Literal['services','clarify','quote','week','review','booking','manage']] = Field(default_factory=list)
+    request_id: UUID | None = None
     suggestions: list[Suggestion] = Field(default_factory=list)
     requested_date: date | None = None
+    requested_period: Literal['morning','afternoon'] | None = None
     revision: int
 
 

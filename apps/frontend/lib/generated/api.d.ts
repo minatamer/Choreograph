@@ -21,6 +21,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/verification": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Verification Config */
+        get: operations["verification_config_v1_verification_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/session": {
         parameters: {
             query?: never;
@@ -101,6 +118,23 @@ export interface paths {
         put?: never;
         /** Send Request */
         post: operations["send_request_v1_requests_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/bookings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Book Clean */
+        post: operations["book_clean_v1_bookings_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -566,11 +600,15 @@ export interface components {
             /** Claims */
             claims: components["schemas"]["SourceClaim"][];
             /** Cards */
-            cards: ("services" | "clarify" | "quote" | "week" | "review")[];
+            cards: ("services" | "clarify" | "quote" | "week" | "review" | "booking" | "manage")[];
+            /** Request Id */
+            request_id: string | null;
             /** Suggestions */
             suggestions: components["schemas"]["Suggestion"][];
             /** Requested Date */
             requested_date: string | null;
+            /** Requested Period */
+            requested_period: ("morning" | "afternoon") | null;
             /** Revision */
             revision: number;
         };
@@ -1033,6 +1071,15 @@ export interface components {
             /** Context */
             ctx?: Record<string, never>;
         };
+        /** VerificationView */
+        VerificationView: {
+            /** Enabled */
+            enabled: boolean;
+            /** Site Key */
+            site_key: string | null;
+            /** Required */
+            required: boolean;
+        };
         /** WeekView */
         WeekView: {
             /**
@@ -1076,6 +1123,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Health"];
+                };
+            };
+        };
+    };
+    verification_config_v1_verification_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VerificationView"];
                 };
             };
         };
@@ -1231,6 +1298,39 @@ export interface operations {
         };
     };
     send_request_v1_requests_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SubmitCommand"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MutationView"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    book_clean_v1_bookings_post: {
         parameters: {
             query?: never;
             header?: never;
