@@ -7,14 +7,16 @@ export type Quote=components['schemas']['QuoteView'];
 export type RequestRecord=components['schemas']['RequestView'];
 export type KnowledgeDocument=components['schemas']['DocumentView'];
 export type DocumentDetail=components['schemas']['DocumentDetail'];
+export type VerificationConfig=components['schemas']['VerificationView'];
 export class ApiError extends Error {
   constructor(public code:string,message:string,public status:number){super(message);}
 }
-export async function api<T>(path:string,options:{method?:string;body?:unknown;csrf?:string;key?:string;signal?:AbortSignal}={}):Promise<T>{
+export async function api<T>(path:string,options:{method?:string;body?:unknown;csrf?:string;key?:string;proof?:string;signal?:AbortSignal}={}):Promise<T>{
   const headers:Record<string,string>={};
   if(options.body!==undefined)headers['content-type']='application/json';
   if(options.csrf)headers['x-csrf-token']=options.csrf;
   if(options.key)headers['idempotency-key']=options.key;
+  if(options.proof)headers['x-turnstile-token']=options.proof;
   const response=await fetch('/api/demo/'+path,{method:options.method??'GET',headers,
     body:options.body===undefined?undefined:JSON.stringify(options.body),credentials:'same-origin',cache:'no-store',signal:options.signal});
   const result=await response.json();

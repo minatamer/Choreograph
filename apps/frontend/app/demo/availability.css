@@ -10,6 +10,7 @@
 .calendar-load-status{font-size:11px;line-height:1.4;color:#63758c;text-align:right}
 .calendar-load-status[role="alert"]{color:#b3261e}
 .calendar-load-status button{border:0;padding:0;background:none;color:#1967d2;text-decoration:underline;cursor:pointer;font:inherit}
+.availability-period{display:flex;align-items:center;justify-content:flex-end;gap:10px;font-size:11px;margin:12px 0}.availability-period select{font:inherit;color:inherit;border:1px solid #c6d8ef;border-radius:14px;background:transparent;padding:8px 12px;min-height:36px}
 .calendar-card .calendar-days{animation:availability-reveal .2s ease both}
 .calendar-card .calendar-day small{max-width:100%}
 .calendar-card .calendar-day:disabled{opacity:1;cursor:progress}

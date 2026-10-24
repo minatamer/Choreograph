@@ -2,13 +2,14 @@
 import hashlib
 import json
 from datetime import date, datetime, time, timedelta
-from uuid import UUID
+from uuid import UUID, uuid4
 from zoneinfo import ZoneInfo
 
 from sqlalchemy import func, select
 from sqlalchemy.dialects.postgresql import insert
 
 from . import domain
+from .contracts import BookingCommand, ChatMessage
 from .errors import DomainError
 from .models import (
     Activity,
@@ -224,6 +225,27 @@ def owned_request(db,workspace,request_id):
     return enquiry
 
 
+def book_from_chat(db,workspace,revision,now):
+    submitted=submit_request(db,workspace,revision,now)
+    approval=BookingCommand(generation=workspace.generation,revision=workspace.revision,
+                            request_revision=1,confirm=True)
+    return booking_command(db,workspace,UUID(submitted['request_id']),'approve',approval,now)
+
+
+def bind_booking_messages(db,workspace,messages):
+    """Project older accepted confirmations from their scoped durable receipts."""
+    legacy=[message for message in messages if message.role=='assistant' and message.request_id is None and
+            message.text=="You're booked. Here are the details for your clean."]
+    if not legacy:return
+    receipts={row.result['applied_revision']:row.result['request_id'] for row in db.scalars(select(Idempotency).where(
+        Idempotency.workspace_id==workspace.id,Idempotency.operation.in_(['book','approve'])))
+        if (row.result.get('receipt') or {}).get('action')=='confirmed'}
+    for message in legacy:
+        request_id=receipts.get(message.revision)
+        if request_id:
+            message.request_id=UUID(request_id);message.cards=['booking']
+
+
 def queue_crm(db,workspace,enquiry,now):
     if workspace.crm_mode!='connected':
         return 'not_connected'
@@ -250,6 +272,8 @@ def booking_command(db,workspace,request_id,action,body,now):
     enquiry=owned_request(db,workspace,request_id)
     if enquiry.revision!=body.request_revision:
         raise DomainError('STALE_REQUEST','The booking changed. Review its current details.')
+    matching_draft=(workspace.draft.get('preferred_at')==enquiry.preferred_at.isoformat() and
+                    all(workspace.draft.get(key)==enquiry.fields.get(key) for key in ('service','bedrooms','oven')))
     reservation=db.scalar(select(Reservation).where(Reservation.workspace_id==workspace.id,Reservation.enquiry_id==enquiry.id).with_for_update())
     if action in {'approve','reschedule'}:
         expected='awaiting_review' if action=='approve' else 'confirmed'
@@ -292,6 +316,15 @@ def booking_command(db,workspace,request_id,action,body,now):
     else:
         raise DomainError('ACTION_UNAVAILABLE','That action is unavailable.',422)
     enquiry.revision+=1;workspace.revision+=1
+    if matching_draft and action in {'reschedule','cancel'}:
+        workspace.draft={**workspace.draft,'preferred_at':enquiry.preferred_at.isoformat() if action=='reschedule' else None}
+    reply={'approve':"You're booked. Here are the details for your clean.",
+           'reschedule':'Your clean has been moved and the previous reservation released. Here are your updated details.',
+           'cancel':'Your booking is cancelled and its time has been released.' if reservation else 'Your request has been cancelled. No time was reserved.',
+           'complete':'Your booking is marked completed. Here are its current details.'}[action]
+    message=ChatMessage(id=uuid4(),role='assistant',text=reply,
+                        revision=workspace.revision,cards=['booking'] if reservation else [],request_id=enquiry.id)
+    workspace.messages=[*workspace.messages,message.model_dump(mode='json')]
     return booking_receipt(db,workspace,enquiry,reservation,{'approve':'confirmed','reschedule':'rescheduled','cancel':'cancelled','complete':'completed'}[action],now)
 
 
