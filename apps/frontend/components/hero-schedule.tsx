@@ -8,15 +8,15 @@ import {ReplyText} from './reply-text';
 type Beat = 'question' | 'suggestion' | 'clarification' | 'review' | 'approved' | 'booked' | 'change-request' | 'change-review' | 'change-approved' | 'rescheduled';
 const story: {beat:Beat;at:number}[] = [
   {beat:'question',at:0},
-  {beat:'suggestion',at:2000},
-  {beat:'clarification',at:6500},
-  {beat:'review',at:8500},
-  {beat:'approved',at:12500},
-  {beat:'booked',at:13700},
-  {beat:'change-request',at:18000},
-  {beat:'change-review',at:20500},
-  {beat:'change-approved',at:25000},
-  {beat:'rescheduled',at:26200},
+  {beat:'suggestion',at:600},
+  {beat:'clarification',at:2300},
+  {beat:'review',at:2900},
+  {beat:'approved',at:4900},
+  {beat:'booked',at:5600},
+  {beat:'change-request',at:7600},
+  {beat:'change-review',at:8200},
+  {beat:'change-approved',at:10200},
+  {beat:'rescheduled',at:10900},
 ];
 const spring = {type:'spring' as const,stiffness:250,damping:29,mass:.9};
 type Day = {id:string;name:string;date:string;event?:string;time?:string;start?:number;duration?:number;tone?:string};
@@ -41,7 +41,7 @@ function Check({draw=false}:{draw?:boolean}){
   return <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><motion.path d="m5 12 4 4L19 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" initial={draw?{pathLength:0}:false} animate={{pathLength:1}} transition={{duration:.4,delay:.25}}/></svg>;
 }
 function Question({children}:{children:ReactNode}){
-  return <motion.div layout="position" className="schedule-question" initial={{opacity:0,y:6,scale:.98}} animate={{opacity:1,y:0,scale:1}} transition={{duration:.28,ease:[.2,.8,.2,1]}}>{children}</motion.div>;
+  return <motion.div layout="position" className="schedule-question" initial={{opacity:0,y:6,scale:.98}} animate={{opacity:1,y:0,scale:1}} transition={{duration:.2,ease:[.2,.8,.2,1]}}>{children}</motion.div>;
 }
 function Reply({children}:{children:ReactNode}){
   return <motion.div layout="position" className="schedule-reply" initial={{opacity:0,y:8}} animate={{opacity:1,y:0}} transition={spring}><div className="schedule-assistant"><Mark/></div><motion.div layout="size" className="schedule-reply-content" style={{borderRadius:'6px 20px 20px 20px'}} transition={spring}>{children}</motion.div></motion.div>;
@@ -93,7 +93,7 @@ export function HeroSchedule(){
       if(next==='booked'||next==='rescheduled')setLanded(false);
       setBeat(next);
     },at));
-    timers.push(window.setTimeout(()=>{setBeat('question');setLanded(false);setCycle(value=>value+1);},33000));
+    timers.push(window.setTimeout(()=>{setBeat('question');setLanded(false);setCycle(value=>value+1);},15500));
     return ()=>timers.forEach(window.clearTimeout);
   },[cycle,started]);
 
@@ -103,7 +103,7 @@ export function HeroSchedule(){
       const top=Math.max(0,viewport.scrollHeight-viewport.clientHeight);
       if(Math.abs(top-viewport.scrollTop)<1)return [];
       return [animate(viewport.scrollTop,top,{
-        duration:.75,ease:[.25,.1,.25,1],onUpdate:value=>{viewport.scrollTop=value;},
+        duration:.3,ease:[.25,.1,.25,1],onUpdate:value=>{viewport.scrollTop=value;},
       })];
     });
     return ()=>animations.forEach(animation=>animation.stop());

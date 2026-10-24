@@ -7,8 +7,8 @@ import {ActionLink} from './ui';
 export function LandingHero(){
   return <div className="hero-intro">
       <motion.div className="landing-lead" initial={{opacity:.85,y:16}} animate={{opacity:1,y:0}} transition={{duration:.8,ease:[.2,.8,.2,1]}}>
-        <h1>Less back-and-forth.<br/><span>More “see you then.”</span></h1>
-        <p>An AI front desk that answers questions, prepares quotes and finds a time that works.</p>
+        <h1>Hire a choreographer. <span>Give your business a better rhythm.</span></h1>
+        <p>An AI front desk that brings every enquiry, quote and booking into harmony.</p>
         <div className="hero-actions"><ActionLink href="/demo">Try demo</ActionLink></div>
       </motion.div>
   </div>;

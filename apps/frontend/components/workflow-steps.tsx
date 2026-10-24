@@ -50,6 +50,6 @@ export function WorkflowSteps(){
   return <div ref={target} className="steps workflow-steps">{[
     ['Ask a question','Choose a suggested question or write your own. Read the source beside the answer.'],
     ['Choose a time','Check the week and choose an available appointment.'],
-    ['Confirm the booking','Review the quote and approve the request in Business view.'],
+    ['Confirm the booking','Review the quote and book your clean. Explore the booking in Business view.'],
   ].map(([title,body],index)=><WorkflowCard index={index} progress={progress} phone={phone} key={title}><div className="step-meta"><strong>0{index+1}</strong><span>{index===0?'Sources':index===1?'Availability':'Approval'}</span></div><StepVisual step={index}/><h3>{title}</h3><p>{body}</p></WorkflowCard>)}</div>;
 }
