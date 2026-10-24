@@ -368,3 +368,184 @@ Commits1–19 are complete, with47 exact allocated files. Each staged/committed 
 |20|Final documentation commit; read its hash from `git log -1`|SBS-017: Record workspace guidance, validation and checkpoint commits|
 
 No code fixes or plan deviations were needed during this checkpoint. No hooks were bypassed, history rewritten, branch switched or remote contacted. Earlier source snapshots/permissions above remain historical.
+
+
+## Owner-authorized pre-audit checkpoint —24 October2026
+
+The owner directly said: “you are allowed to make a staging commit, file-level commit plan, and you are allowed to stage and commit … If you already have any kind of unstaged work right now, make another file-level commit plan for it first, and then stage and commit it … when the unstaged is completely empty and everything is committed, you can then start the security audit and the code quality audit.” This is fresh local Git authorization for the entire existing continuation plus later AFK audit remedies; no push or external action is included. Active AFK-SESSION-001 is reconciled in the main progress record.
+
+Baseline HEAD: `c9cc03688f5cfbcdb77151251f4d9acdafe644c1`. The following exact allocation records the final interdependent SBS-019–025/landing snapshot; it does not invent historical intermediate states. Shared contract/service/provider files are allocated once by final responsibility. Commit the complete sequence before starting either new audit.
+
+Existing settled evidence:326 isolated-PG/injected backend tests,73 Node tests, types/Ruff, actual responsive/new real conversation receipts in SBS-023, and the latest isolated Linux44-HTTP/291-assertion receipt at source `c53466859b700085a78214f5d2795e5d3e47ecdc2e34765b292c990a13a12673` (192 inputs). No source/dependency/runtime change is needed merely for grouping. Explicit paths only; compare staged bytes with reviewed source, inspect actual secret exclusions locally without revealing values, check the staged diff and leave `.env.local`, `.runtime`, dependencies/caches and development data ignored. Preserve the running app and sibling services.
+
+### Checkpoint commit 1: SBS-019: Refine landing motion and scheduling illustration
+
+- `apps/frontend/app/landing-hero.css`
+- `apps/frontend/components/hero-schedule.tsx`
+- `apps/frontend/components/landing-motion.tsx`
+- `apps/frontend/components/workflow-steps.tsx`
+
+### Checkpoint commit 2: SBS-020: Show grounded source previews and original passage highlights
+
+- `apps/backend/choreograph/contracts.py`
+- `apps/backend/choreograph/knowledge.py`
+- `apps/frontend/app/demo/source-citations.css`
+- `apps/frontend/components/documents.tsx`
+- `apps/frontend/components/guide-papers.tsx`
+- `apps/frontend/components/guide-reader-dialog.tsx`
+- `apps/frontend/components/source-reader.tsx`
+- `apps/frontend/components/chat-sources.tsx`
+- `apps/frontend/components/source-thumbnail.tsx`
+- `apps/frontend/lib/chat-sources.ts`
+- `apps/frontend/lib/source-highlights.ts`
+- `apps/frontend/lib/generated/api.d.ts`
+- `apps/frontend/lib/generated/openapi.json`
+- `apps/frontend/lib/sample-guides.json`
+- `apps/frontend/public/guide-previews/access-1.webp`
+- `apps/frontend/public/guide-previews/service-1.webp`
+- `apps/frontend/public/guide-previews/service-2.webp`
+- `assets/knowledge/access-and-arrival.pdf`
+- `assets/knowledge/manifest.json`
+- `assets/knowledge/service-guide.pdf`
+- `assets/knowledge/service-questions.md`
+- `assets/knowledge/sources/guides.json`
+- `scripts/author-knowledge.py`
+- `scripts/source-highlights.test.mjs`
+
+### Checkpoint commit 3: SBS-019: Reserve reviewed customer bookings through shared lifecycle commands
+
+- `apps/backend/choreograph/service.py`
+- `apps/backend/tests/test_customer_booking.py`
+- `apps/frontend/app/demo/availability.css`
+- `apps/frontend/components/booking-outcome.tsx`
+- `apps/frontend/components/business-review.tsx`
+- `apps/frontend/components/chat-review.tsx`
+- `apps/frontend/components/week-calendar.tsx`
+- `apps/frontend/lib/api.ts`
+- `apps/frontend/lib/availability-period.ts`
+- `scripts/availability-period.test.mjs`
+
+### Checkpoint commit 4: SBS-021: Ground live assistant turns and preserve scoped command context
+
+- `apps/backend/choreograph/assistant.py`
+- `apps/backend/choreograph/assistant_context.py`
+- `apps/backend/choreograph/composition.py`
+- `apps/backend/choreograph/interactions.py`
+- `apps/backend/choreograph/providers.py`
+- `apps/backend/choreograph/tokenizers.py`
+- `apps/backend/tests/test_assistant.py`
+- `apps/backend/tests/test_assistant_apply.py`
+- `apps/backend/tests/test_assistant_quality.py`
+- `apps/backend/tests/test_composition.py`
+- `apps/backend/tests/test_live_assistant.py`
+- `apps/backend/tests/test_provider_limits.py`
+
+### Checkpoint commit 5: SBS-022: Verify protected demo actions with background Turnstile
+
+- `apps/backend/choreograph/api.py`
+- `apps/backend/choreograph/verification.py`
+- `apps/backend/tests/test_verification.py`
+- `apps/frontend/app/api/demo/[...path]/route.ts`
+- `apps/frontend/app/demo/layout.tsx`
+- `apps/frontend/app/demo/verification.css`
+- `apps/frontend/components/demo-guest.tsx`
+- `apps/frontend/components/use-guest.ts`
+- `apps/frontend/components/verification-provider.tsx`
+- `apps/frontend/lib/bridge.ts`
+- `apps/frontend/lib/turnstile.ts`
+- `scripts/bridge.test.mjs`
+- `scripts/turnstile.test.mjs`
+
+### Checkpoint commit 6: SBS-024: Prepare currency-safe visitor HubSpot booking exports
+
+- `apps/backend/choreograph/crm.py`
+- `apps/backend/choreograph/crm_api.py`
+- `apps/backend/choreograph/hubspot.py`
+- `apps/backend/choreograph/jobs.py`
+- `apps/backend/tests/test_crm.py`
+- `apps/backend/tests/test_live_crm.py`
+- `apps/backend/tests/test_hubspot_readiness.py`
+- `apps/frontend/components/crm-controls.tsx`
+- `infra/hubspot/app-hsmeta.json`
+
+### Checkpoint commit 7: SBS-025: Keep private environment small and own fixed policy in backend code
+
+- `apps/backend/.env.example`
+- `apps/backend/choreograph/acceptance.py`
+- `apps/backend/choreograph/ai_config.py`
+- `apps/backend/choreograph/crm_config.py`
+- `apps/backend/choreograph/dispatcher.py`
+- `apps/backend/choreograph/readiness.py`
+- `apps/backend/choreograph/runtime_config.py`
+- `apps/backend/choreograph/settings.py`
+- `apps/backend/tests/conftest.py`
+- `apps/backend/tests/test_acceptance.py`
+- `apps/backend/tests/test_ai_config.py`
+- `apps/backend/tests/test_ai_entrypoints.py`
+- `apps/backend/tests/test_dispatch.py`
+- `apps/backend/tests/test_local_setup.py`
+- `apps/backend/tests/test_release.py`
+- `apps/backend/tests/test_runtime_configuration.py`
+- `apps/backend/tests/test_settings.py`
+- `apps/frontend/.env.example`
+- `infra/cloud-run.example.yaml`
+- `scripts/local.mjs`
+- `scripts/local.test.mjs`
+- `scripts/setup.py`
+
+### Checkpoint commit 8: SBS-023: Offer useful chat replies and reviewed appointment management
+
+- `apps/frontend/app/demo/booking-management.css`
+- `apps/frontend/app/demo/customer-chat.css`
+- `apps/frontend/components/chat-booking-management.tsx`
+- `apps/frontend/components/chat-workspace.tsx`
+- `apps/frontend/components/conversation-library.tsx`
+- `apps/frontend/components/workspace-client.tsx`
+- `apps/frontend/components/workspace-tour.tsx`
+- `apps/frontend/lib/chat-messages.ts`
+- `apps/frontend/lib/chat-questions.ts`
+- `scripts/chat-messages.test.mjs`
+- `scripts/chat-questions.test.mjs`
+
+### Checkpoint commit 9: SBS-010: Refresh isolated Linux acceptance for the complete assistant snapshot
+
+- `infra/release-evidence.json`
+- `scripts/release-smoke.mjs`
+
+### Checkpoint commit 10: SBS-025: Record continuation evidence and the authorized pre-audit checkpoint
+
+- `AGENTS.md`
+- `README.md`
+- `docs/CHOREOGRAPH.md`
+- `docs/security/SECURITY_REVIEW.md`
+- `docs/tickets/COMMIT_PLAN.md`
+- `docs/tickets/README.md`
+- `docs/tickets/SBS-008-responsive-flow.md`
+- `docs/tickets/SBS-017-workspace-navigation.md`
+- `docs/tickets/SBS-019-customer-booking.md`
+- `docs/tickets/SBS-020-rag-citations.md`
+- `docs/tickets/SBS-021-live-ai-audit.md`
+- `docs/tickets/SBS-022-turnstile-live-controls.md`
+- `docs/tickets/SBS-023-assistant-quality.md`
+- `docs/tickets/SBS-024-hubspot-free-readiness.md`
+- `docs/tickets/SBS-025-local-configuration.md`
+- `infra/README.md`
+
+The final documentation commit records preceding hashes after they exist; its own identity is read from `git log`. Clean `git status --porcelain` is the required boundary before quality/security work starts. No new audit finding or fix is part of this baseline checkpoint.
+
+### Pre-audit checkpoint execution record
+
+All first nine groups passed explicit staged allocation/raw-byte comparison, known-private-value exclusion and whitespace checks before their local commits. Current image-input freshness remains verified. The final documentation commit has the subject below and its hash is read from Git; quality/security work starts only after the resulting working tree is actually empty.
+
+| Group | Actual commit | Subject |
+| --- | --- | --- |
+| 1 | `1015b4eae20477bd90712d982bf76bfd9bbe3343` | SBS-019: Refine landing motion and scheduling illustration |
+| 2 | `99278425fe85a5791e88229437e4e2c7373ade39` | SBS-020: Show grounded source previews and original passage highlights |
+| 3 | `9e82017e22883efd9e62e7565e0bf6ff2e3f4039` | SBS-019: Reserve reviewed customer bookings through shared lifecycle commands |
+| 4 | `a330bb81d493ecf340936afec4bcf22fd26913ad` | SBS-021: Ground live assistant turns and preserve scoped command context |
+| 5 | `f0974975d9f7ec757e98a0cd4665ffdd9c250be7` | SBS-022: Verify protected demo actions with background Turnstile |
+| 6 | `f76082ace498c0c639077ab94f3cf21a60e8141f` | SBS-024: Prepare currency-safe visitor HubSpot booking exports |
+| 7 | `778380df43be1e9e9580d02653cd5f92cbd25257` | SBS-025: Keep private environment small and own fixed policy in backend code |
+| 8 | `d62811def454c4ec75e27c39aef55a9d12451fd5` | SBS-023: Offer useful chat replies and reviewed appointment management |
+| 9 | `d7999e5da4e6aa234cec2adf28f66abb26f42a4b` | SBS-010: Refresh isolated Linux acceptance for the complete assistant snapshot |
+|10|Read from `git log` after commit|SBS-025: Record continuation evidence and the authorized pre-audit checkpoint|

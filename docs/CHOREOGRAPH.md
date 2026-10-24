@@ -1,6 +1,19 @@
 # Choreograph
 
+**Latest owner configuration correction,24 October2026:** [SBS-025](tickets/SBS-025-local-configuration.md) supersedes the earlier large env/legacy-alias instructions. Private app-local files now hold only keys, connection values and exactly FAKE_MODE/PAID_DEMO_ENABLED; models/dimensions/rates/finite allowances/public OAuth app settings are code-owned in backend runtime_config.py. Actual backend47→11/frontend4→3 migration preserved values.326 backend/73 Node checks, Ruff and refreshed isolated Linux stack acceptance pass (44 HTTP/291 assertions; source c53466859b700085a78214f5d2795e5d3e47ecdc2e34765b292c990a13a12673). No real provider, account, new grant or local restart occurred. Prior grant remains expired. HubSpot requires one registered Choreograph OAuth app; visitors connect their own accounts through the website without entering API keys.
+
+
+**Latest HubSpot continuation,24 October2026:** [SBS-024](tickets/SBS-024-hubspot-free-readiness.md) confirms official Free CRM/API support for the bounded contacts/deals design and diagnoses missing OAuth app credentials/independent disabled CRM, rather than fake AI. Currency checks now prevent USD quotes becoming another account currency, and explicit sharing queues already booked records once; future move/cancel updates retain the same owned deal and verified receipt.309 isolated-provider/backend and71 Node checks, types/Ruff and a pinned Linux frontend build pass. Prepared app metadata, ignored env fields and a no-provider CRM-only diagnostic are documented in operations. CRM is still disabled; the later SBS-023 restart loaded this backend source while preserving disabled CRM. The owner must create the Free account/OAuth app and supply App ID/Client ID/Client Secret before a correctly configured CRM activation/reload can make real Connect work. No account, purchase, live HubSpot/paid AI, origin/mode switch or new grant was used. Actual Free-account native acceptance remains unverified.
+
+**Latest assistant-quality continuation,24 October2026:** [SBS-023](tickets/SBS-023-assistant-quality.md) completes contextual/guide replies and reviewed chat rescheduling/cancellation with a fresh actual real website pass:15 turns, all six sources, yellow original PDF/FAQ highlights, honest absent-policy handling and explicit booking/change/cancel/status. One repeated history-card defect was repaired and rechecked on phone/short laptop/desktop; one current outcome/invitation per request stays at its conversation position.309 backend/73 Node checks, types and the final Linux frontend build pass. Updated owned API/runner are healthy/live. A separate US$1/30-minute grant runs12:58:49–13:28:49UTC /15:58:49–16:28:49Cairo, with US$0.680283 conservatively reserved,31 completed and zero unknown/active attempts at test completion. Existing vectors were reused, keys/false-true switches preserved and CRM remained skipped with zero outbox rows. No grant renewal is implied; the full real evaluation, human/native HubSpot and hosted acceptance remain separate.
+
+**Current AI/verification continuation,24 October2026:** [SBS-021](tickets/SBS-021-live-ai-audit.md) and [SBS-022](tickets/SBS-022-turnstile-live-controls.md) complete the scoped assistant audit, conversational context, strict command routing, background Turnstile and standard backend-local fake/paid controls. The owner's one US$1/30-minute local real test successfully used OpenAI retrieval across all six sources, yellow highlighted original-source dialogs and explicit review/booking/status with refresh persistence; Cloudflare verified operations without a visible challenge.294 backend/69 Node checks, types/lint/contracts and the final Linux frontend build passed; final scoped review has no actionable findings. The original allowance expired at11:18:37 UTC /14:18:37 Cairo with US$0.480574 conservatively reserved,33 completed requests and zero unknown/active attempts. The owner's `FAKE_MODE=false` / `PAID_DEMO_ENABLED=true` and keys remain in the ignored backend file; new paid calls are closed after expiry, and restart cannot replenish it. The full real quality evaluation, actual human-challenge recovery, real visitor HubSpot, current full-stack release receipt, human and hosted acceptance remain outstanding. This local result is distinct from older injected receipts and production readiness; current changes remain unstaged.
+
 Detailed product and delivery blueprint · updated 23 October 2026 · Choreograph is the project name. This blueprint, the companion HTML and merged lessons live in docs/; AGENTS.md lives at the repository root.
+
+**Owner RAG/history correction,24 October2026:** [SBS-020](tickets/SBS-020-rag-citations.md) supersedes the desktop side-reader requirement for chat citations: use actual-source paper previews expanding into the shared centered document dialog, with yellow highlights on supported passages. Fake and live citation bindings use the same authorized reader. Review, booking and Business invitations belong to their conversation position and must not follow subsequent answers.
+
+**Owner booking-flow correction,24 October2026:** [SBS-019](tickets/SBS-019-customer-booking.md) replaces the mandatory Business approval handoff. The Customer explicitly reviews quote/time and books through the same transactional reservation rules, then sees a normal assistant confirmation and real booking card. A small optional Business-view invitation follows. Existing pending requests remain reviewable and explicitly bookable; conflicts and failed transactions never display a successful booking. This supersedes older coordinator-switch requirements for new Customer bookings in both provider profiles.
 
 **Latest owner-authorized local Git checkpoint,23 October2026:** the owner requested a file-level plan, many coherent ticket-prefixed commits and local staging/committing. [The exact53-file/20-commit plan](tickets/COMMIT_PLAN.md#owner-authorized-workspace-checkpoint23-october2026) groups SBS-017 discovery/navigation/documents and SBS-018 overview/chart changes, retaining required prop changes together. Current local gates pass236 backend/56 Node tests, lint/dependencies/contracts/types/template assertions and actual pinned Linux production images with45 HTTP requests/297 assertions. The refreshed release receipt covers178 inputs; no hosted Actions, push, deployment, paid/live-provider or owner visual approval is claimed. Commit execution hashes and final clean-tree/source-freshness checks are recorded in the plan.
 
@@ -42,7 +55,7 @@ Detailed product and delivery blueprint · updated 23 October 2026 · Choreograp
 
 **Final continuation handoff,22 October2026:** source `c803fbcd8d491d794dc3504bd08d0da056f5521363fcdd8e1fdaa73f7c7251b4` (107 inputs), verified 2026-10-22T19:37:30.285Z.227 backend/15 Node checks, lint/pip/contracts/types/Windows build, bounded performance, actual responsive review and fresh non-root Linux smoke (24 HTTP requests/180 assertions plus schema/profile/corpus/bootstrap/worker/maintenance/cleanup) pass. No new substantial local security finding was confirmed; earlier six remedies remain. All coding tickets through SBS-015 are complete locally. Defaults remain fake; real AI, visitor-account and hosted acceptance are unchecked. [Exact remaining owner inputs](tickets/SBS-011-external-acceptance.md#exact-owner-inputs-remaining-after-coding-completion) include the funded key/finite allowance, chosen OAuth app/account/consent, funded project/region/SQL/backups/secrets/IAM/deployment scope, human runnable/security review and separately requested Git/hosted-CI scope. AFK-0020–0026 record durable profiles/grants, explicit visitor destination/schema permission, native WorkerPool recovery, finite dry-run acceptance tools, provisional visual review and no-new-security-fix disposition; these are delegated agent choices, not personal acceptance. No spending, cloud/account/publication/scanner export or Git writes occurred.
 
-**Status: all authorized coding and local continuation gates complete.** SBS-012–015 implement versioned real embeddings/live AI composition, durable grants, visitor HubSpot destination/schema consent, actual Tasks create/get/epoch recovery, WorkerPool maintenance, readiness, acceptance and offline cloud rendering. The settled local suite has 227 backend and 15 Node passes plus lint/contracts/types/Windows build. Real-provider, real-account, hosted and human acceptance are still outstanding; coding authorization supplies no spending/provisioning/publication/Git permission. Current tickets and release receipt supersede older planning language below.
+**Historical22 October checkpoint: all then-authorized coding and local continuation gates complete.** SBS-012–015 implemented versioned real embeddings/live AI composition, durable grants, visitor HubSpot destination/schema consent, actual Tasks create/get/epoch recovery, WorkerPool maintenance, readiness, acceptance and offline cloud rendering. That settled local suite had227 backend and15 Node passes plus lint/contracts/types/Windows build; real-provider/account/hosted/human acceptance was outstanding then. The24 October current continuation at the top and its owning tickets supersede this historical scope; coding authorization alone supplies no additional spending/provisioning/publication/Git permission.
 
 **Prior fake-local milestone — retained as history, 22 October 2026:** **105 backend tests**, **11 Node tests**, configured Python lint, regenerated-contract freshness, Windows production build/typecheck and actual non-root Linux builds pass. Final isolated release acceptance passed **24 HTTP requests / 180 assertions** at source `01188ea208d46e60973f37b40579fdac90747528ae64e6765ff0e6eaf0d9523e`; that milestone verified83 image inputs. Current source/image proof is now in [release evidence](../infra/release-evidence.json), superseding the earlier receipt. Measured source/PDF/calendar work was removed without a latency/scale claim. Six security findings were selected under AFK-0017 and locally remedied; [audit/dispositions](security/SECURITY_REVIEW.md) and [finite external plan](tickets/SBS-011-external-acceptance.md) retain proof and limitations. Eighteen visual captures across desktop/short laptop/phone preserve the approved direction; runnable visual/security reviews remain provisional agent decisions. Owned hidden API/runner/frontend are running on 45861/45860 with persistent PostgreSQL 45862 preserved; no sibling was changed. The approved Figma remains six desktop key frames, one mobile landing and six reusable conversation states. Human runnable/security acceptance, Figma hands-on editing/privacy, live activation/provider results, hosted CI/IAM/SQL/Tasks/maintenance and funded public capacity remain pending. No spending, account/provisioning/deployment, publication, messages, scanner metadata export or Git writes occurred. [Operations](../infra/README.md) and the canonical phase/AFK ledger distinguish completed local work from those external gates.
 
@@ -144,7 +157,7 @@ The actual product UI uses plain labels: Services, Your request, Sources, Docume
 
 ## 5. Full guest flow
 
-**Short version:** Try demo → connect HubSpot or genuinely skip → start the visual assistant in your local timezone → ask document/service questions → inspect sources → see the occupied week and choose a free alternative (or ask what's free this week) → review quote/time and submit → approve from Business view → confirmed booking → verified CRM sync only if connected. Follow-up guidance and reviewed changes stay in the same conversation/workspace.
+**Short version:** Try demo → connect HubSpot or genuinely skip → start the visual assistant in your local timezone → ask document/service questions → inspect sources → see the occupied week and choose a free alternative (or ask what's free this week) → review quote/time and book → confirmed booking → optionally explore Business view → verified CRM sync only if connected. Follow-up guidance and reviewed changes stay in the same conversation/workspace.
 
 ### Step 1 — Enter a private fictional workspace
 
@@ -179,7 +192,7 @@ Visitors can edit or replace the text. No real name, phone number, address or co
 
 ### Step 3 — Answer from business documents and clarify what is needed
 
-For the first sample, the assistant retrieves the current Service Guide and Preparation Guide. It explains that accessible carpets are vacuumed but carpet shampooing is not offered, and asks the customer to keep pets safely in a separate area. Source chips identify the guide, version and actual PDF page. After a sourced answer, open the first cited document in a right-hand desktop evidence pane, alongside the conversation, at its actual page and highlighted supporting passage; selecting another citation updates that pane. These are authored fictional company policies, not general cleaning claims or model guesses.
+For the first sample, the assistant retrieves the current Service Guide and Preparation Guide. It explains that accessible carpets are vacuumed but carpet shampooing is not offered, and asks the customer to keep pets safely in a separate area. Group supporting excerpts by actual document version/page, with one small paper preview and source label per group. Clicking the preview opens the shared animated centered document dialog at that page, with the cited supporting text highlighted in yellow on the original PDF or FAQ. These are authored fictional company policies, not general cleaning claims or model guesses.
 
 The oven is a supported catalogue add-on. Its price and extra duration come from the backend, even if a guide also mentions the service. Knowing that shampooing is excluded changes the customer's expectations without inventing a new product or an extra charge. The same conversation continues toward the reviewed booking; no separate chatbot journey is necessary.
 
@@ -197,25 +210,25 @@ Show the service, property size, add-ons, duration, line items, exact total and 
 
 The visitor can edit supported fields and see a refreshed server quote. Unknown information remains visibly unresolved. An expired catalogue version or workspace revision requires recomputation before proceeding.
 
-### Step 5 — Select an available preference and send the request
+### Step 5 — Select an available preference and book
 
 Return an interactive full-week calendar **inside the conversation**, with occupied periods, closed days, the requested date/time and free alternatives that fit the entire service duration, eligible staff, local business hours and already confirmed bookings. Always include useful visible structure for an availability answer, rather than only prose saying a time is busy. Display the visitor-local timezone beside the dates. A slot suggestion is not a reservation.
 
 In the guided busy-first-choice path, the initial valid working date/preference is occupied by this workspace's fictional existing appointments. Explain that conflict and show the same week, then suggest the following day if an eligible full-duration slot exists, otherwise the next eligible date. A clear card says, for example, **That time is booked. Saturday 09:00–13:30 is available. Use this time?** Selecting it updates the draft for review; it does not reserve or send anything. The open-week path starts from **When is this service free this week?** and shows the same kind of calendar without requiring an initial date. Section 7.2 defines consistent seeding and the guarantee's scope.
 
-The customer chooses a preferred option and submits a request. Status becomes **Awaiting review**. There is no temporary reservation/hold in v1. Explain the status near the submitted request instead of implying the booking is confirmed. Availability is checked again at approval.
+The customer chooses a preferred option, explicitly reviews the quote/time and selects **Book this clean**. The server rechecks availability and reserves the full appointment in one transaction. Only success produces a normal assistant confirmation and actual booking card; a compact optional Business-view invitation follows. Selecting a slot still creates no temporary reservation/hold. Older submitted requests remain awaiting review until explicitly booked, including from their matching Customer review card.
 
-### Step 6 — Switch to the business coordinator
+### Step 6 — Optionally explore the business side
 
-A consistent **Business view** control opens the same guest workspace. The visitor can see the incoming request, AI-prepared summary, review status and suggested assignment. Their customer choices are preserved.
+A consistent **Business view** control opens the same guest workspace. A small secondary invitation beneath the Customer booking card opens its details here. The visitor sees the same confirmed appointment, assigned cleaner and current status. Their customer choices are preserved; a perspective switch is not required to reserve the time.
 
-The coordinator reviews, edits if necessary, assigns a cleaner and confirms the quote/schedule. Changes that alter the agreed quote return to review; they are not silently treated as customer-approved. The demo can let the same visitor play both perspectives, with a clear handoff back to the customer.
+The coordinator can manage confirmed bookings and explicitly approve any older pending requests. Changes that alter the agreed quote return to review; they are not silently treated as customer-approved. The demo lets the same visitor play both perspectives without making that switch a Customer booking gate.
 
 **Documents** is a compact area in this business view. Inspect the sample guides and, optionally, replace one with a supported small document. Show processing/ready/failed status and the current version. The old ready version stays active until a replacement finishes; later relevant questions use the new version. Replacing a guide never changes catalogue prices, supported services, existing quotes or confirmed bookings. Existing answers keep their historical source/version labels and are not silently rewritten.
 
 ### Step 7 — Approve and reserve atomically
 
-On Confirm booking, the backend validates the current workspace, request revision, quote, staff and calendar interval. One PostgreSQL transaction confirms the request, creates the reservation and writes an activity receipt. For an authorized connected CRM destination with export consent, that same transaction records the pending CRM work with its exact account/connection binding. Without CRM, it records CRM not connected/skipped and creates no CRM outbox work.
+On **Book this clean**, or explicit approval of an older pending request, the backend validates the current workspace, request revision, quote, staff and calendar interval. One PostgreSQL transaction confirms the request, creates the reservation and writes an activity receipt and assistant confirmation. For an authorized connected CRM destination with export consent, that same transaction records the pending CRM work with its exact account/connection binding. Without CRM, it records CRM not connected/skipped and creates no CRM outbox work.
 
 If another approval occupied that time, return a useful conflict and alternatives. Do not overbook, trust an old screen, or ask the model to choose whether the database conflict is acceptable. Only an accepted commit produces **Booking confirmed**.
 
@@ -257,7 +270,7 @@ Customer view is a distinct chat frame that dynamically fits the available devic
 
 Use bounded, typed backend results to render these components. The model may choose a supported presentation/tool intent; it cannot inject executable markup, invent slots or invent document support. Cards, chips, text corrections and Business view read/write the same request and calendar. Stale cards remain understandable but require a fresh check before selection; a past date or superseded quote cannot silently become actionable.
 
-On desktop, keep the bounded chat alone until the visitor explicitly opens a source in the right-hand reader. The service availability chooser and quote review stay in the conversation; the full staff calendar appears only in Business view. On phones, keep the composer/actions reachable, use a readable wrapped seven-day chooser with expanded day times, and open sources in the narrow-screen reader. This responsive implementation requirement does not expand landing-only mobile Figma scope.
+Keep the bounded chat alone until the visitor explicitly opens a source in the centered document dialog. The service availability chooser and quote review stay in the conversation; the full staff calendar appears only in Business view. Review and booking/Business invitation cards remain at their conversation position when later questions arrive. On phones, keep the composer/actions reachable, use a readable wrapped seven-day chooser with expanded day times, and fit the same document dialog to the screen with internal scrolling and zoom. This responsive implementation requirement does not expand landing-only mobile Figma scope.
 
 ## 6. Customer and business surfaces
 
@@ -346,7 +359,7 @@ Two guided paths are required and discoverable through starters/question shortcu
 
 Persist the selected seed/scenario and its first resolved date atomically and idempotently. Materialization occurs only in a fresh, unshown scheduling scenario; retries, refresh, later messages, repeated availability queries and role switches cannot reseed or move blockers. Once any availability is shown or real guest requests/reservations exist, do not insert artificial appointments merely to turn a newly requested free time into a conflict. The guarantee applies to the guided initial busy path; it does not force every alternative or arbitrary free-text date to be unavailable. No confirmed reservation is displaced.
 
-The weekly card highlights the requested occupied date/time, shows all seven days with textual busy/free/closed labels, and proposes a small set of valid alternatives, preferably the following day if it fits. **Use this time** prepares the current draft revision; explicit quote/request review and coordinator approval still apply. Selecting a different service/add-on refreshes duration-dependent options; old cards cannot bypass availability rechecks. Do not imply a hold before approval. The existing labelled competing-approval race remains a separate recovery example, not the seeded first-choice story.
+The weekly card highlights the requested occupied date/time, shows all seven days with textual busy/free/closed labels, and proposes a small set of valid alternatives, preferably the following day if it fits. **Use this time** prepares the current draft revision; explicit quote/time review and the Customer booking command still apply. Selecting a different service/add-on refreshes duration-dependent options; old cards cannot bypass availability rechecks. Do not imply a hold before booking succeeds. The existing labelled competing-approval race remains a separate recovery example, not the seeded first-choice story.
 
 Validate reproducible first-choice occupancy and a usable alternative, open-week queries, free-text variations, full-duration/staff eligibility, unchanged fixture IDs across retries/refresh, local-zone correctness and equality between chat and coordinator results. These are future acceptance requirements, not test results for the file-only overview.
 
@@ -377,8 +390,8 @@ These are planned responsibilities, not implemented API endpoints or CLI command
 | Ask for a date or this week's free times | Resolve dates in the saved visitor-local zone, read the persistent seeded schedule and return a typed week card with actual occupied periods and valid full-duration alternatives. No fabricated model availability. |
 | Select a calendar/service card | Update the same versioned draft used by text edits/manual controls, refresh dependent quote/availability and prepare explicit review. No automatic request submission or reservation. |
 | Edit service/add-on/date | Prepare a revision, exact catalogue quote and eligible options. Previous quote/slot suggestions become stale when relevant inputs change. |
-| Accept and send request | Persist the reviewed snapshot and preference as Awaiting review. No reservation/temporary hold exists yet. |
-| Confirm from Business view | Check current versions/availability and atomically reserve, record idempotency and add consented destination-bound CRM work. A conflict leaves it unconfirmed. |
+| Review and book from Customer chat | Check current versions/availability and atomically reserve, record idempotency, append the assistant confirmation and add consented destination-bound CRM work. A conflict leaves no new request, reservation or success message. |
+| Submit/approve an older review-flow request | The retained request command stores an unreserved Awaiting review snapshot. Explicit Customer or Business approval uses the same reservation rules; a conflict leaves it unconfirmed. |
 | Reschedule/cancel/complete | Use the same validated domain rules and explicit review/confirmation. A failed replacement retains the old reservation. Queue CRM changes only for the authorized connected path. Completion does not claim real service or payment. |
 | Inspect a citation | Read the authorized original page/section/version without another model call or new embedding operation. |
 | Replace a document | Admit bounded processing; publish ready provenance/vectors atomically. Failure preserves the ready version and does not alter quotes/bookings. |
@@ -455,11 +468,11 @@ Two useful walkthroughs are: (1) ask the move-out/pets/carpet question, inspect 
 
 Initial public bounds to validate during implementation: at most three guest replacement documents per workspace, 2 MiB and ten pages per PDF, six ready sample documents, four retrieved passages per answer and a finite indexing/retrieval deadline. Bound total extracted text/chunks and aggregate ingestion/embedding usage too. These are planning limits, not measured capacity. A document replacement is an explicit action that may incur AI usage in live mode; merely viewing a source does not.
 
-### 9.3A Inspectable RAG answers and the source pane
+### 9.3A Inspectable RAG answers and the source dialog
 
-Keep the answer and its evidence together: conversation on the left; a real document reader on the right on desktop. After a grounded answer, automatically open its first citation and scroll to the actual cited PDF page/section. Highlight the supported sentence/passage using extracted text/page coordinates where available; preserve the original page and show a clearly labelled excerpt if precise highlighting cannot be resolved. Never draw a fabricated PDF screenshot or highlight an unrelated page. A Markdown/TXT source uses its real named section and excerpt rather than invented PDF pagination.
+Keep the answer and its evidence together in conversation history. Group actual citations by document version/page and show one paper preview per group. On explicit click, expand the preview into the existing animated centered reader at the cited PDF page/section. Highlight validated supporting excerpts in yellow using extracted text/page coordinates; preserve the original page and show a clearly labelled excerpt if precise highlighting cannot be resolved. Never draw a fabricated PDF screenshot or highlight an unrelated page. A Markdown/TXT source uses its original ordered text, named section and excerpt rather than invented PDF pagination. Fake and live citations consume this same authorized renderer.
 
-Each citation binds immutable document/version, source/page/section and retrieved passage identity. Citation selection switches the source without re-answering, re-embedding, losing the draft or changing the proposal. Support multiple citations, a clear selected state and close/reopen controls. Only passages actually authorized and supplied to this answer can be cited. A removed/unavailable historical source stays labelled unavailable; do not replace it with the current version. On short laptops allow the evidence pane to take the summary's space; on phones use a readable overlay/drawer. These are implemented responsive requirements even though Figma mobile scope is landing-only.
+Each citation binds immutable document/version, source/page/section and retrieved passage identity. Opening a source requires no re-answering, re-embedding, draft loss or proposal change. Support multiple cited passages on one page, actual page/zoom controls, close/reopen and focus return to the source opener. Only passages actually authorized and supplied to this answer can be cited. A removed/unavailable historical source stays labelled unavailable; do not replace it with the current version. On phones and short laptops, keep the dialog and close action inside the viewport, with internal document scrolling. These are implemented responsive requirements even though Figma mobile scope is landing-only.
 
 Visible evidence lets a visitor inspect whether an answer is supported. It is not, by itself, proof of retrieval correctness: the stored provenance, source authorization, retrieved-passage checks, grounded-answer evaluations and bounded real-provider acceptance in section 9.6 must pass. In live mode the curated questions traverse the real RAG pipeline; offline/fake previews remain explicitly labelled. Source viewing itself does not call the model or generate embeddings.
 
@@ -730,7 +743,7 @@ No account creation, API credential entry, paid provider test, domain purchase, 
 
 Use the selected direction in section 16.4: neutral surfaces and blue actions, Google Sans Flex, shared frosted-glass navigation/composer and rounded bubbles. The indexed landing rail and editable calendar hero remain. The owner rejected the initial saffron/violet draft; the revised Figma is directly owner-approved for implementation. The HTML's earlier ink/ocean, warm paper, coral and mint palette remains a historical illustration, not the current brand authority. Do not mechanically copy Roomedy's room visuals or Retailor's merchant theme.
 
-Prioritize the visual assistant: flexible conversation with service, supplies/method, source, quote and full-week calendar cards. Keep the current request, review and calendar connected rather than making chat a minor help widget beside a form wizard. Wide layouts may place the conversation and one relevant companion pane beside each other; short/mobile layouts flow naturally. Keep the composer and confirm actions reachable. Evidence chips open a readable source panel and return to the conversation without losing its draft. Documents stays a compact business-view area; visitors can finish the default sample without configuring it. Essential fields and quote assumptions belong near the task, not in repeated explanatory banners.
+Prioritize the visual assistant: flexible conversation with service, supplies/method, source, quote and full-week calendar cards. Keep the current request, review and calendar connected rather than making chat a minor help widget beside a form wizard. Keep the composer and confirm actions reachable on wide, short and mobile screens. Source paper previews open the shared centered document dialog and return focus to the conversation without losing its draft. Documents stays a compact business-view area; visitors can finish the default sample without configuring it. Essential fields and quote assumptions belong near the task, not in repeated explanatory banners.
 
 Animate coherent transitions between request, proposal, approval and reservation. Motion must remain interruptible and responsive, with useful loading and no invented percentages. Avoid perpetual large filters/parallax and arbitrary entrance delays. Respect accessibility and preserve useful content/focus if motion or assets fail.
 
@@ -821,7 +834,7 @@ The customer workspace has one component set with six states: Start, OpenDraft, 
 | Integration | OAuth state/session/account binding, denied/cancelled/capacity-limited connections, protected refresh, genuine no-call/no-task skipped CRM, no operator fallback, exact destination binding, duplicate delivery, ambiguous timeout, 429/backoff, revoked access, stale revisions and app-created-record cleanup. |
 | AI | Structured extraction, clarification, ordinary conversation, exact edits, unsupported request, injection, refusal, malformed/timeout and safe recovery. |
 | RAG / documents | Expected passage retrieval, supported answers and actual page/section citations; replacement/removal/failure recovery; cross-workspace scope; malicious documents; missing/conflicting evidence and unchanged deterministic quote authority. |
-| UI | Actual customer→coordinator→confirmed flow starting entirely from suggested prompts; question menu/follow-ups remain usable; cited answer and matching right-hand PDF page/highlight; connected/skipped/capacity states; mobile/short laptop/keyboard and required loading/error/refresh/cancel states. |
+| UI | Actual reviewed Customer booking and optional Business flow starting entirely from suggested prompts; question menu/follow-ups remain usable; paper citation and matching original PDF/FAQ highlights in the centered dialog; inline review/booking history; connected/skipped/capacity states; mobile/short laptop/keyboard and required loading/error/refresh/cancel states. |
 | Cloud | Exact built source/images, private API identity, queue OIDC, selected unattended maintenance trigger, Cloud SQL access, actual deployed migrations and bounded connection/instance settings. |
 
 Use fixtures and fakes for automated logic, with a real isolated PostgreSQL instance for database-specific invariants. SQLite is not evidence of PostgreSQL exclusion behaviour. Browser checks inspect the rendered result and actual action flow; they are not a reason to generate tests for every CSS value. Run focused checks while iterating and settled required gates after a cohesive change.
@@ -972,14 +985,14 @@ The four-file packet passed static HTML structure/ID checks, local document/sour
 <!-- build-progress:start -->
 ## Build command progress
 
-Current phase: **local workflow finished**
-Next action: Coding and local ticket-prefixed commit work is finished when the recorded five-commit sequence/clean tree is verified in Git. No active coding ticket. Real AI/visitor-CRM/hosted/human acceptance and any remote push/hosted CI remain separately authorized next lanes; see SBS-011 and COMMIT_PLAN.md.
+Current phase: **06-plan-commit**
+Next action: Write the complete file-level existing-work commit allocation, inspect staged snapshot integrity and commit it before beginning either audit.
 Active ticket: none
 Phase prompts: delegated during AFK
 Local commits approved: yes
 
 AFK mode: AFK-SESSION-001
-Provisional owner reviews: 04-decisions, 05-tickets, 09-visual-review, 10b-security-review
+Provisional owner reviews: 04-decisions, 05-tickets, 09-visual-review
 
 ### AFK decisions
 
@@ -1087,20 +1100,24 @@ Provisional owner reviews: 04-decisions, 05-tickets, 09-visual-review, 10b-secur
   Reason: Read-only STRIDE/general review of actual AI/CRM/Tasks/operator/public authority boundaries and targeted primary advisories confirmed no new substantial actionable local defect. Current detailed and PM artifacts preserve evidence, limits and historical findings; no app edits occurred during audit.
   Consequence / reversibility: Phase11 may skip additional fixes; owner security review remains outstanding. This is not a comprehensive scan or hosted/provider acceptance. Funded capacity/IAM/native behavior requires later authorized evidence.
   Owner review requested on return: yes. Evidence: docs/security/SECURITY_REVIEW.md#current-continuation-review--sbs-01215, docs/security/SECURITY_OVERVIEW.html, docs/tickets/SBS-009B-security-review.md, .runtime/screens/security-continuation-phone.png
+- **AFK-0027** (AFK-SESSION-001, 2026-10-24T13:57:49+00:00, 06-plan-commit): Continue active AFK-SESSION-001 under the owner's renewed24October instruction: commit all existing work from a file-level plan first, verify an empty worktree, then reopen quality/efficiency and full security audit with meaningful scoped repairs and local commits.
+  Reason: Direct human message: 'I'm in AFK mode ... any security audits you find that are meaningful, you can execute them right away in an execute valid loop ... you are allowed to stage and commit ... when the unstaged is completely empty and everything is committed, you can then start the security audit and the code quality audit'. Existing AFK state is still active and its Git permission is true; this renews the specific current scope without inventing a new session or result approval.
+  Consequence / reversibility: Use fake/injected providers and isolated PostgreSQL for audits, preserve the owner's manually enabled real-mode local app and secrets, and perform no paid/provider/account/cloud/push/scanner-export action. No delegation is authorized. Owner visual, HubSpot-native and paid manual review remains separate. Quality/security self-reviews remain provisional AFK decisions.
+  Owner review requested on return: yes. Evidence: human:current-thread/24October2026/security-quality-AFK-and-local-Git-request, docs/tickets/COMMIT_PLAN.md, docs/tickets/SBS-025-local-configuration.md
 
 - [x] 01-docs — Documentation (complete)
 - [x] 02-flow — Core flow (complete)
 - [x] 03-product — Product and design (complete)
 - [x] 04-decisions — Product decisions (provisional)
 - [x] 05-tickets — Ticket plan (provisional)
-- [x] 06-plan-commit — Planning commit (skipped)
+- [ ] 06-plan-commit — Planning commit (in_progress)
 - [x] 07-build — Execute and validate tickets (complete_local)
 - [x] 08-performance — Performance investigation (complete)
 - [x] 09-visual-review — Frontend visual approval checkpoint (provisional)
-- [x] 10a-quality — Quality audit and fixes (complete)
-- [x] 10b-security-review — Security audit and manual review (provisional)
-- [x] 11-security-fixes — Approved security fixes (skipped)
-- [x] 12-handoff — Final local handoff (complete_local)
+- [ ] 10a-quality — Quality audit and fixes (pending)
+- [ ] 10b-security-review — Security audit and manual review (pending)
+- [ ] 11-security-fixes — Approved security fixes (pending)
+- [ ] 12-handoff — Final local handoff (pending)
 
 This checklist records local work. Human approvals and unresolved external checks are preserved below; it does not authorize paid calls or deployment.
 
@@ -1109,7 +1126,7 @@ This checklist records local work. Human approvals and unresolved external check
   "schema_version": 3,
   "repo_root": "C:\\Users\\minat\\Work\\Choreograph",
   "main_document": "docs/CHOREOGRAPH.md",
-  "updated_at": "2026-10-22T19:59:13+00:00",
+  "updated_at": "2026-10-24T13:58:25+00:00",
   "context": {
     "PROJECT_NAME": {
       "value": "Choreograph",
@@ -1565,6 +1582,21 @@ This checklist records local work. Human approvals and unresolved external check
           "docs/tickets/SBS-009B-security-review.md",
           ".runtime/screens/security-continuation-phone.png"
         ]
+      },
+      {
+        "id": "AFK-0027",
+        "session_id": "AFK-SESSION-001",
+        "recorded_at": "2026-10-24T13:57:49+00:00",
+        "phase": "06-plan-commit",
+        "choice": "Continue active AFK-SESSION-001 under the owner's renewed24October instruction: commit all existing work from a file-level plan first, verify an empty worktree, then reopen quality/efficiency and full security audit with meaningful scoped repairs and local commits.",
+        "rationale": "Direct human message: 'I'm in AFK mode ... any security audits you find that are meaningful, you can execute them right away in an execute valid loop ... you are allowed to stage and commit ... when the unstaged is completely empty and everything is committed, you can then start the security audit and the code quality audit'. Existing AFK state is still active and its Git permission is true; this renews the specific current scope without inventing a new session or result approval.",
+        "consequence": "Use fake/injected providers and isolated PostgreSQL for audits, preserve the owner's manually enabled real-mode local app and secrets, and perform no paid/provider/account/cloud/push/scanner-export action. No delegation is authorized. Owner visual, HubSpot-native and paid manual review remains separate. Quality/security self-reviews remain provisional AFK decisions.",
+        "review_needed": true,
+        "evidence": [
+          "human:current-thread/24October2026/security-quality-AFK-and-local-Git-request",
+          "docs/tickets/COMMIT_PLAN.md",
+          "docs/tickets/SBS-025-local-configuration.md"
+        ]
       }
     ]
   },
@@ -1605,7 +1637,7 @@ This checklist records local work. Human approvals and unresolved external check
     "final_commit_identity": "git log owns the final documentation commit hash; it cannot be embedded in its own content."
   },
   "active_ticket": null,
-  "next_action": "Coding and local ticket-prefixed commit work is finished when the recorded five-commit sequence/clean tree is verified in Git. No active coding ticket. Real AI/visitor-CRM/hosted/human acceptance and any remote push/hosted CI remain separately authorized next lanes; see SBS-011 and COMMIT_PLAN.md.",
+  "next_action": "Write the complete file-level existing-work commit allocation, inspect staged snapshot integrity and commit it before beginning either audit.",
   "phases": [
     {
       "id": "01-docs",
@@ -1836,15 +1868,18 @@ This checklist records local work. Human approvals and unresolved external check
       "id": "06-plan-commit",
       "name": "Planning commit",
       "gate": null,
-      "status": "skipped",
+      "status": "in_progress",
       "prompt": {
-        "text": "Inspect the prepared Choreograph documentation and SBS ticket allocation for a coherent planning checkpoint. The template suggests ticket-zero staging/commit only when directly authorized. Current owner authorization covers AFK build execution, not Git writes, and the recorded Git permission is false. Preserve all work unstaged/uncommitted; skip this commit phase with that reason and retain the reviewable plan. Do not stage, commit, push or alter history.",
-        "sha256": "5cc7b4093d3a929339c7f6fa921671a0b25475254c4f2a96d0c45b72f5548175",
+        "text": "Prepare and execute the owner's specifically authorized existing-work Git checkpoint in C:/Users/minat/Work/Choreograph on the current branch, starting at c9cc03688f5cfbcdb77151251f4d9acdafe644c1. Reconcile all modified/untracked files from completed SBS-019–025 and earlier landing/visual feedback; retain every approved feature and source. First append an exact file-level allocation and local commit subjects with SBS ticket prefixes to docs/tickets/COMMIT_PLAN.md. This is a cohesive final-snapshot checkpoint, not invented historical intermediate revisions. Adopt current326 backend/73 Node/types/Ruff and source-fresh isolated Linux44-request/291-assertion evidence from SBS-025 and infra/release-evidence.json, recheck freshness and staged integrity, and perform focused verification only for an actual concern. Use explicit literal owned paths, inspect staged contents and compare actual secret values locally without printing/hashing them. Exclude ignored app-local credentials, .runtime receipts/screenshots, caches, dependency/virtualenv trees and database data. Preserve the existing real-mode API/runner/frontend, database and sibling apps; no new paid call, account/OAuth authorization, cloud operation, remote scanner export, push, history rewrite or branch switch is authorized. Record current AFK authority and the outcome truthfully; stage and make the planned cohesive local commits, with final documentation recording preceding hashes and its own identity via Git log. Confirm git status --porcelain is empty after all current work is committed. Only then begin the reopened quality/efficiency audit and later security audit. Human manual paid-demo/HubSpot/visual acceptance stays separate.",
+        "sha256": "71f282b4672e1b2011aa63ef63089d2031a4d629c7c1cda7d7e2843dc6483769",
         "context_sources": [
-          "docs/tickets/README.md",
-          "docs/CHOREOGRAPH.md",
+          "human:current-thread/24October2026/security-quality-AFK-and-local-Git-request",
           "AGENTS.md",
-          "human:latest AFK build instruction"
+          "docs/CHOREOGRAPH.md",
+          "docs/tickets/COMMIT_PLAN.md",
+          "docs/tickets/SBS-019-customer-booking.md",
+          "docs/tickets/SBS-025-local-configuration.md",
+          "infra/release-evidence.json"
         ],
         "status": "afk",
         "approval": null,
@@ -1857,7 +1892,28 @@ This checklist records local work. Human approvals and unresolved external check
       "blockers": [],
       "approval": null,
       "decision": null,
-      "reviews": [],
+      "reviews": [
+        {
+          "reopened_at": "2026-10-24T13:57:50+00:00",
+          "reason": "The owner explicitly requests a new file-level commit checkpoint for uncommitted SBS-019–025 work before any audit.",
+          "prior_status": "skipped",
+          "prior_prompt": {
+            "text": "Inspect the prepared Choreograph documentation and SBS ticket allocation for a coherent planning checkpoint. The template suggests ticket-zero staging/commit only when directly authorized. Current owner authorization covers AFK build execution, not Git writes, and the recorded Git permission is false. Preserve all work unstaged/uncommitted; skip this commit phase with that reason and retain the reviewable plan. Do not stage, commit, push or alter history.",
+            "sha256": "5cc7b4093d3a929339c7f6fa921671a0b25475254c4f2a96d0c45b72f5548175",
+            "context_sources": [
+              "docs/tickets/README.md",
+              "docs/CHOREOGRAPH.md",
+              "AGENTS.md",
+              "human:latest AFK build instruction"
+            ],
+            "status": "afk",
+            "approval": null,
+            "afk_session": "AFK-SESSION-001"
+          },
+          "prior_approval": null,
+          "prior_decision": null
+        }
+      ],
       "skip_reason": "No direct human authorization for Git staging or commits; preserve the reviewable plan unstaged."
     },
     {
@@ -2064,21 +2120,8 @@ This checklist records local work. Human approvals and unresolved external check
       "id": "10a-quality",
       "name": "Quality audit and fixes",
       "gate": null,
-      "status": "complete",
-      "prompt": {
-        "text": "Refresh Choreograph quality/efficiency/structure audit after SBS-012–015 and actual responsive review. First document the complete bounded plan in existing SBS-009A: inspect provider/runtime/admission ownership, new acceptance/readiness/cloud CLI composition, durable receipt lifecycle, migration/profile identity, dispatcher recovery, API/BFF contracts, fake/test isolation, private diagnostics and redundant/unused code. Preserve all business behavior, source authorization, exact cents/minutes, consent, unknown-outcome accounting, finite deadlines and designed motion. Fix only confirmed maintainability/reliability issues through execute/read-only-validate/independent-confirm/fix/revalidate; no cosmetic rewrite, extra abstraction or deletion of useful diagnostics. Specifically review whether AI acceptance marks success before persisting its reported-usage summary, and make final receipt state atomic if confirmed. Keep intentional domain/provider boundary separation and explicit secret/config ownership. Run focused checks and required settled gates appropriate to changes; update evidence and release freshness. No paid/account/cloud/publication/scanner-export/Git actions, no new agent delegation. Finish quality before proportionate read-only STRIDE/dependency audit.",
-        "sha256": "286bbd52ed455cf503073066f05ab460451f3d05775ba0f41a4ab75f407e01ff",
-        "context_sources": [
-          "AGENTS.md",
-          "docs/tickets/SBS-009A-quality.md",
-          "docs/tickets/SBS-015-integration-readiness.md",
-          "apps/backend/choreograph/acceptance.py",
-          "infra/release-evidence.json"
-        ],
-        "status": "afk",
-        "approval": null,
-        "afk_session": "AFK-SESSION-001"
-      },
+      "status": "pending",
+      "prompt": null,
       "evidence": [
         "docs/tickets/SBS-009A-quality.md#continuation10a-quality-plan--recorded-before-edits",
         "apps/backend/choreograph/acceptance.py",
@@ -2109,6 +2152,27 @@ This checklist records local work. Human approvals and unresolved external check
           },
           "prior_approval": null,
           "prior_decision": null
+        },
+        {
+          "reopened_at": "2026-10-24T13:57:51+00:00",
+          "reason": "The owner requests a fresh full quality and efficiency audit after material application changes since the prior review.",
+          "prior_status": "complete",
+          "prior_prompt": {
+            "text": "Refresh Choreograph quality/efficiency/structure audit after SBS-012–015 and actual responsive review. First document the complete bounded plan in existing SBS-009A: inspect provider/runtime/admission ownership, new acceptance/readiness/cloud CLI composition, durable receipt lifecycle, migration/profile identity, dispatcher recovery, API/BFF contracts, fake/test isolation, private diagnostics and redundant/unused code. Preserve all business behavior, source authorization, exact cents/minutes, consent, unknown-outcome accounting, finite deadlines and designed motion. Fix only confirmed maintainability/reliability issues through execute/read-only-validate/independent-confirm/fix/revalidate; no cosmetic rewrite, extra abstraction or deletion of useful diagnostics. Specifically review whether AI acceptance marks success before persisting its reported-usage summary, and make final receipt state atomic if confirmed. Keep intentional domain/provider boundary separation and explicit secret/config ownership. Run focused checks and required settled gates appropriate to changes; update evidence and release freshness. No paid/account/cloud/publication/scanner-export/Git actions, no new agent delegation. Finish quality before proportionate read-only STRIDE/dependency audit.",
+            "sha256": "286bbd52ed455cf503073066f05ab460451f3d05775ba0f41a4ab75f407e01ff",
+            "context_sources": [
+              "AGENTS.md",
+              "docs/tickets/SBS-009A-quality.md",
+              "docs/tickets/SBS-015-integration-readiness.md",
+              "apps/backend/choreograph/acceptance.py",
+              "infra/release-evidence.json"
+            ],
+            "status": "afk",
+            "approval": null,
+            "afk_session": "AFK-SESSION-001"
+          },
+          "prior_approval": null,
+          "prior_decision": null
         }
       ]
     },
@@ -2116,26 +2180,8 @@ This checklist records local work. Human approvals and unresolved external check
       "id": "10b-security-review",
       "name": "Security audit and manual review",
       "gate": "security",
-      "status": "provisional",
-      "prompt": {
-        "text": "Perform a fresh read-only Choreograph security review after SBS-012–015 and completed quality work. Inspect actual tracked/untracked source, migration/profile/manifest authority, public Next bridge/API/session/CSRF/origin/body/source boundaries, live AI SDK composition/tokenizers/durable spending/interaction leases and stale/reset fencing, visitor HubSpot app/account/token/destination/schema/export/uninstall authority, CRM request counters/ambiguous creates, Task metadata credentials/fixed endpoints/receipt verification/epochs/attempt horizons/leader health, and operator acceptance/cloud rendering/no-network defaults. Apply STRIDE, substantial abuse/DoS/secret/prompt-injection risks and current targeted primary dependency advisories to the actual configured paths. Preserve historical SEC-001–006 and their fixes; document new substantial findings with severity, concrete evidence, careful minimal fix/regression plans and an updated readable PM HTML. No implementation during the audit. Do not invent findings for minor style/preferences, infer deployed IAM/safety from fakes or claim a comprehensive vulnerability scan. Use public primary advisory research without uploading the dependency graph, secrets, repo metadata or running external scanners. No account/provider spending/cloud/Git actions. Under active AFK, finish both review artifacts and record a provisional justified selected-fixes/no-fixes/deferred disposition before phase11.",
-        "sha256": "4945442409a18a7c5e1b94b978e0572eb44fac66c0c45ea0becb303fc4285976",
-        "context_sources": [
-          "AGENTS.md",
-          "docs/security/SECURITY_REVIEW.md",
-          "docs/security/SECURITY_OVERVIEW.html",
-          "docs/tickets/SBS-009B-security-review.md",
-          "docs/tickets/SBS-009C-security-fixes.md",
-          "docs/tickets/SBS-009A-quality.md",
-          "docs/tickets/SBS-012-live-ai.md",
-          "docs/tickets/SBS-013-live-crm.md",
-          "docs/tickets/SBS-014-cloud-dispatch.md",
-          "docs/tickets/SBS-015-integration-readiness.md"
-        ],
-        "status": "afk",
-        "approval": null,
-        "afk_session": "AFK-SESSION-001"
-      },
+      "status": "pending",
+      "prompt": null,
       "evidence": [
         "docs/security/SECURITY_REVIEW.md#current-continuation-review--sbs-01215",
         "docs/security/SECURITY_OVERVIEW.html",
@@ -2144,7 +2190,7 @@ This checklist records local work. Human approvals and unresolved external check
       ],
       "blockers": [],
       "approval": null,
-      "decision": "no-fixes",
+      "decision": null,
       "reviews": [
         {
           "afk_review": {
@@ -2183,33 +2229,42 @@ This checklist records local work. Human approvals and unresolved external check
             "recorded_at": "2026-10-22T19:36:17+00:00"
           },
           "decision": "no-fixes"
+        },
+        {
+          "reopened_at": "2026-10-24T13:57:51+00:00",
+          "reason": "The owner requests a fresh full STRIDE, general and dependency audit with fake providers after quality completion.",
+          "prior_status": "provisional",
+          "prior_prompt": {
+            "text": "Perform a fresh read-only Choreograph security review after SBS-012–015 and completed quality work. Inspect actual tracked/untracked source, migration/profile/manifest authority, public Next bridge/API/session/CSRF/origin/body/source boundaries, live AI SDK composition/tokenizers/durable spending/interaction leases and stale/reset fencing, visitor HubSpot app/account/token/destination/schema/export/uninstall authority, CRM request counters/ambiguous creates, Task metadata credentials/fixed endpoints/receipt verification/epochs/attempt horizons/leader health, and operator acceptance/cloud rendering/no-network defaults. Apply STRIDE, substantial abuse/DoS/secret/prompt-injection risks and current targeted primary dependency advisories to the actual configured paths. Preserve historical SEC-001–006 and their fixes; document new substantial findings with severity, concrete evidence, careful minimal fix/regression plans and an updated readable PM HTML. No implementation during the audit. Do not invent findings for minor style/preferences, infer deployed IAM/safety from fakes or claim a comprehensive vulnerability scan. Use public primary advisory research without uploading the dependency graph, secrets, repo metadata or running external scanners. No account/provider spending/cloud/Git actions. Under active AFK, finish both review artifacts and record a provisional justified selected-fixes/no-fixes/deferred disposition before phase11.",
+            "sha256": "4945442409a18a7c5e1b94b978e0572eb44fac66c0c45ea0becb303fc4285976",
+            "context_sources": [
+              "AGENTS.md",
+              "docs/security/SECURITY_REVIEW.md",
+              "docs/security/SECURITY_OVERVIEW.html",
+              "docs/tickets/SBS-009B-security-review.md",
+              "docs/tickets/SBS-009C-security-fixes.md",
+              "docs/tickets/SBS-009A-quality.md",
+              "docs/tickets/SBS-012-live-ai.md",
+              "docs/tickets/SBS-013-live-crm.md",
+              "docs/tickets/SBS-014-cloud-dispatch.md",
+              "docs/tickets/SBS-015-integration-readiness.md"
+            ],
+            "status": "afk",
+            "approval": null,
+            "afk_session": "AFK-SESSION-001"
+          },
+          "prior_approval": null,
+          "prior_decision": "no-fixes"
         }
       ],
-      "selected_findings": [],
-      "afk_review": {
-        "session_id": "AFK-SESSION-001",
-        "decision_id": "AFK-0026",
-        "recorded_at": "2026-10-22T19:36:17+00:00"
-      }
+      "selected_findings": []
     },
     {
       "id": "11-security-fixes",
       "name": "Approved security fixes",
       "gate": null,
-      "status": "skipped",
-      "prompt": {
-        "text": "Apply only actual selected Choreograph security findings from the latest documented disposition. The SBS-012–015 continuation audit confirmed no new substantial actionable local finding, and active AFK provisionally selected no-fixes with an empty selection; therefore make no additional app/security change and record this phase as skipped. Preserve earlier SEC-001–006 remedies,227 backend/15 Node regression evidence, private diagnostics, domain/source/consent/grant/task authority and historical audit evidence. Do not invent fixes, owner acceptance, a comprehensive scan or provider/cloud proof. No spending/account/cloud/publication/messages/scanner export/Git actions. Proceed to source-fresh Linux handoff and exact outstanding owner prerequisites.",
-        "sha256": "de3e8cbac87d7f01eb1f5d6501c11a6afdd015d136387fb80ce5c2be907f5570",
-        "context_sources": [
-          "docs/security/SECURITY_REVIEW.md",
-          "docs/tickets/SBS-009B-security-review.md",
-          "docs/tickets/SBS-009C-security-fixes.md",
-          "docs/CHOREOGRAPH.md"
-        ],
-        "status": "afk",
-        "approval": null,
-        "afk_session": "AFK-SESSION-001"
-      },
+      "status": "pending",
+      "prompt": null,
       "evidence": [
         "docs/tickets/SBS-009C-security-fixes.md#continuation11-disposition",
         "docs/security/SECURITY_REVIEW.md"
@@ -2257,6 +2312,26 @@ This checklist records local work. Human approvals and unresolved external check
           },
           "prior_approval": null,
           "prior_decision": null
+        },
+        {
+          "reopened_at": "2026-10-24T13:57:52+00:00",
+          "reason": "The owner explicitly delegates meaningful scoped security repairs under AFK; select actual findings provisionally before executing them.",
+          "prior_status": "skipped",
+          "prior_prompt": {
+            "text": "Apply only actual selected Choreograph security findings from the latest documented disposition. The SBS-012–015 continuation audit confirmed no new substantial actionable local finding, and active AFK provisionally selected no-fixes with an empty selection; therefore make no additional app/security change and record this phase as skipped. Preserve earlier SEC-001–006 remedies,227 backend/15 Node regression evidence, private diagnostics, domain/source/consent/grant/task authority and historical audit evidence. Do not invent fixes, owner acceptance, a comprehensive scan or provider/cloud proof. No spending/account/cloud/publication/messages/scanner export/Git actions. Proceed to source-fresh Linux handoff and exact outstanding owner prerequisites.",
+            "sha256": "de3e8cbac87d7f01eb1f5d6501c11a6afdd015d136387fb80ce5c2be907f5570",
+            "context_sources": [
+              "docs/security/SECURITY_REVIEW.md",
+              "docs/tickets/SBS-009B-security-review.md",
+              "docs/tickets/SBS-009C-security-fixes.md",
+              "docs/CHOREOGRAPH.md"
+            ],
+            "status": "afk",
+            "approval": null,
+            "afk_session": "AFK-SESSION-001"
+          },
+          "prior_approval": null,
+          "prior_decision": null
         }
       ],
       "skip_reason": "The current provisional AFK security review selected no new fixes; no substantial new local finding was confirmed."
@@ -2265,26 +2340,8 @@ This checklist records local work. Human approvals and unresolved external check
       "id": "12-handoff",
       "name": "Final local handoff",
       "gate": null,
-      "status": "complete_local",
-      "prompt": {
-        "text": "Complete Choreograph's authorized remaining-coding handoff after SBS-012–015 and refreshed performance/visual/quality/security gates. Rebuild current non-root Linux images and run the isolated no-key smoke on owned temporary Docker resources with no host ports/development-volume/sibling changes; include migration0010/profile/corpus readiness and secret-free bootstrap. Confirm receipt/source freshness,227 backend/15 Node settled checks, current contract/type/Windows build and affected responsive review, owned hidden local services and preserved development data. Reconcile README/AGENTS/main-blueprint current prefix, queue, SBS-010/011/015, infra operations and audit boundaries while preserving historical ledger/prompts/hashes. All coding tickets must actually be complete locally; do not turn code gaps into account blockers. Specify exact remaining owner inputs: server-entered OpenAI key and finite currency/time approval with then-current models/rates; chosen visitor HubSpot app/client credentials/callback/distribution/account permissions and schema/export/cleanup/uninstall consent; funded Google project/billing/region/resources/backups/secrets/IAM and restricted deployment/publication approval; hosted CI/Git staging/commit/push scope only if requested; human runnable/security/Figma privacy/editing evidence. Keep all actual real-provider/hosted checks unchecked until performed. Prepare reviewable commands/configuration/limits and clear next lane. Do not execute paid/cloud/account/publication/scanner-export/Git actions or ask ordinary questions under AFK. Record final local completion separately from real/hosted/owner acceptance, provisional AFK decisions, exact next action and Git state.",
-        "sha256": "1bbbf49bdfaa486340b94553ae28ba216e803af513692faaf8267e3202791096",
-        "context_sources": [
-          "AGENTS.md",
-          "README.md",
-          "docs/CHOREOGRAPH.md",
-          "docs/tickets/README.md",
-          "docs/tickets/SBS-010-release.md",
-          "docs/tickets/SBS-011-external-acceptance.md",
-          "docs/tickets/SBS-015-integration-readiness.md",
-          "docs/security/SECURITY_REVIEW.md",
-          "infra/README.md",
-          "infra/release-evidence.json"
-        ],
-        "status": "afk",
-        "approval": null,
-        "afk_session": "AFK-SESSION-001"
-      },
+      "status": "pending",
+      "prompt": null,
       "evidence": [
         "docs/tickets/README.md",
         "docs/tickets/SBS-010-release.md#current-continuation-receipt--sbs-01215--final-phase12",
@@ -2358,6 +2415,32 @@ This checklist records local work. Human approvals and unresolved external check
               "docs/tickets/SBS-011-external-acceptance.md",
               "infra/README.md",
               "AGENTS.md"
+            ],
+            "status": "afk",
+            "approval": null,
+            "afk_session": "AFK-SESSION-001"
+          },
+          "prior_approval": null,
+          "prior_decision": null
+        },
+        {
+          "reopened_at": "2026-10-24T13:57:53+00:00",
+          "reason": "Prepare the fresh audited, validated and locally committed handoff; earlier receipts remain historical.",
+          "prior_status": "complete_local",
+          "prior_prompt": {
+            "text": "Complete Choreograph's authorized remaining-coding handoff after SBS-012–015 and refreshed performance/visual/quality/security gates. Rebuild current non-root Linux images and run the isolated no-key smoke on owned temporary Docker resources with no host ports/development-volume/sibling changes; include migration0010/profile/corpus readiness and secret-free bootstrap. Confirm receipt/source freshness,227 backend/15 Node settled checks, current contract/type/Windows build and affected responsive review, owned hidden local services and preserved development data. Reconcile README/AGENTS/main-blueprint current prefix, queue, SBS-010/011/015, infra operations and audit boundaries while preserving historical ledger/prompts/hashes. All coding tickets must actually be complete locally; do not turn code gaps into account blockers. Specify exact remaining owner inputs: server-entered OpenAI key and finite currency/time approval with then-current models/rates; chosen visitor HubSpot app/client credentials/callback/distribution/account permissions and schema/export/cleanup/uninstall consent; funded Google project/billing/region/resources/backups/secrets/IAM and restricted deployment/publication approval; hosted CI/Git staging/commit/push scope only if requested; human runnable/security/Figma privacy/editing evidence. Keep all actual real-provider/hosted checks unchecked until performed. Prepare reviewable commands/configuration/limits and clear next lane. Do not execute paid/cloud/account/publication/scanner-export/Git actions or ask ordinary questions under AFK. Record final local completion separately from real/hosted/owner acceptance, provisional AFK decisions, exact next action and Git state.",
+            "sha256": "1bbbf49bdfaa486340b94553ae28ba216e803af513692faaf8267e3202791096",
+            "context_sources": [
+              "AGENTS.md",
+              "README.md",
+              "docs/CHOREOGRAPH.md",
+              "docs/tickets/README.md",
+              "docs/tickets/SBS-010-release.md",
+              "docs/tickets/SBS-011-external-acceptance.md",
+              "docs/tickets/SBS-015-integration-readiness.md",
+              "docs/security/SECURITY_REVIEW.md",
+              "infra/README.md",
+              "infra/release-evidence.json"
             ],
             "status": "afk",
             "approval": null,
