@@ -105,7 +105,7 @@ def compose_ai(settings, engine, *, assistant_provider=None, response_client=Non
             embedding_client = _client(config.api_key, transport=embedding_transport,
                                        response_bytes=524_288, owned=owned)
         assistant = OpenAITransport(model=config.grant.response_model, client=response_client,
-                                    authorized=True, tokenizer=response_tokenizer)
+                                    authorized=True, tokenizer=response_tokenizer,reasoning_effort=config.reasoning_effort)
         # Even an injected SDK client needs durable admission in composed live mode.
         assistant.requires_admission = True
         embedder = OpenAIEmbedding(config.spec, client=embedding_client, authorized=True,

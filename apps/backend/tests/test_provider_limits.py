@@ -7,7 +7,7 @@ import pytest
 from openai import OpenAI
 
 from choreograph.errors import DomainError
-from choreograph.providers import RESPONSE_BYTES, BoundedOpenAIClient, OpenAITransport
+from choreograph.providers import RESPONSE_BYTES, RESPONSE_SECONDS, BoundedOpenAIClient, OpenAITransport
 
 
 class CountedStream(httpx.SyncByteStream):
@@ -44,7 +44,7 @@ def invoke(stream, *, status=200, headers=None, clock=None):
     def handle(request):
         calls.append(request)
         assert request.headers['accept-encoding'] == 'identity'
-        assert request.extensions['timeout']['read'] == 1
+        assert request.extensions['timeout']['read'] == RESPONSE_SECONDS
         return httpx.Response(status, headers={'content-type': 'application/json', **(headers or {})}, stream=stream)
 
     client = BoundedOpenAIClient(transport=httpx.MockTransport(handle), **({'clock': clock} if clock else {}))
@@ -118,3 +118,19 @@ def test_valid_envelope_with_late_eof_still_exceeds_response_budget():
     with pytest.raises(DomainError) as error:
         invoke(stream, clock=lambda: now[0])
     assert error.value.code == 'ASSISTANT_TIMEOUT' and stream.closed
+
+
+def test_nonstreaming_first_byte_may_take_longer_than_one_second_within_budget():
+    now=[0]
+    def advance():now[0]+=2
+    stream=CountedStream(envelope(),advance=advance)
+    result,_=invoke(stream,clock=lambda:now[0])
+    assert result.intent=='greeting' and 1<now[0]<RESPONSE_SECONDS and stream.closed
+
+
+@pytest.mark.parametrize('status,code',[(401,'ASSISTANT_CREDENTIALS'),(403,'ASSISTANT_ACCESS_DENIED'),
+    (404,'ASSISTANT_MODEL_UNAVAILABLE'),(400,'ASSISTANT_CONFIGURATION'),(429,'ASSISTANT_BUSY')])
+def test_provider_http_failures_remain_fixed_private_diagnostics_without_retry(status,code):
+    stream=CountedStream(b'{"error":{"message":"private-provider-body-marker","type":"invalid_request_error"}}')
+    with pytest.raises(DomainError) as error:invoke(stream,status=status)
+    assert error.value.code==code and 'private-provider-body-marker' not in error.value.message and stream.closed

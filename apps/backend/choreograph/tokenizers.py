@@ -13,6 +13,7 @@ from pathlib import Path
 TOKENIZER_VERSION = '0.14.0'
 ASSET_DIRECTORY = Path(__file__).resolve().parents[3] / 'assets' / 'tokenizers'
 MAX_ASSET_BYTES = 4_194_304
+RESPONSE_COUNTER = 'utf8-upper-v1'
 ASSETS = {
     'cl100k_base': {
         'url': 'https://openaipublic.blob.core.windows.net/encodings/cl100k_base.tiktoken',
@@ -53,6 +54,12 @@ class LocalTokenizer:
         return self._encoding.decode(tokens, errors=errors)
 
 
+class UTF8Counter:
+    """Conservative response admission, without guessing a model's BPE mapping."""
+    name=RESPONSE_COUNTER
+    def encode(self,text):return text.encode('utf-8')
+
+
 def verified_bytes(name, directory=ASSET_DIRECTORY):
     if name not in ASSETS:
         raise ValueError('TOKENIZER_NOT_SUPPORTED')
@@ -68,6 +75,7 @@ def verified_bytes(name, directory=ASSET_DIRECTORY):
 
 def load_tokenizer(name, directory=ASSET_DIRECTORY):
     """Only the selected, SHA-verified local vocabulary can construct an encoding."""
+    if name==RESPONSE_COUNTER:return UTF8Counter()
     data = verified_bytes(name, directory)
     if version('tiktoken') != TOKENIZER_VERSION:
         raise ValueError('TOKENIZER_VERSION_UNSUPPORTED')

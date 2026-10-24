@@ -10,9 +10,11 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session, defer
 
 from . import ai_admission, assistant, knowledge, service
+from .assistant_context import bind_context, turn_context
 from .contracts import MutationView
 from .errors import DomainError
 from .models import DocumentVersion, Manifest
+from .verification import require_verification
 
 OPERATION_SECONDS = 55
 
@@ -26,6 +28,7 @@ class Snapshot:
     timezone: str
     draft: dict = field(repr=False)
     local_date: str
+    conversation: dict = field(repr=False,default_factory=dict)
 
 
 def _deadline(deadline):
@@ -51,9 +54,12 @@ def _snapshot(app, db, workspace, body, request, operation, payload):
     knowledge.attach_samples(db, workspace)
     manifest = {row.slot: str(row.version_id) for row in db.scalars(
         select(Manifest).where(Manifest.workspace_id == workspace.id))}
+    if operation=='chat' and profile.provider!='fake' and len(manifest)!=len(knowledge.SLOTS):
+        raise DomainError('KNOWLEDGE_NOT_READY','Juniper’s document library is not ready yet. Please try again shortly.',503)
     return Snapshot(ai_admission.AttemptScope(workspace.id, workspace.generation, key, workspace.revision),
                     fingerprint, profile, manifest, workspace.timezone, copy.deepcopy(workspace.draft),
-                    app.state.clock().astimezone(ZoneInfo(workspace.timezone)).date().isoformat()), None
+                    app.state.clock().astimezone(ZoneInfo(workspace.timezone)).date().isoformat(),
+                    turn_context(db,workspace) if operation=='chat' else {}), None
 
 
 def _guard(app, request, body, claim, deadline):
@@ -80,17 +86,21 @@ def chat(app, request, body):
             return MutationView(state=app.state.full_view(db, workspace, token), **previous)
         if len(workspace.messages) >= 60:
             raise DomainError('CHAT_LIMIT', 'This demo has reached its conversation limit. Start a new demo.', 429)
+    require_verification(app,request,'assistant')
     claim = ai_admission.claim_interaction(app.state.engine, snapshot.scope, operation='chat',
         request_hash=snapshot.request_hash, profile_id=snapshot.profile.profile_id,
         manifest_ids=snapshot.manifest_ids, now=app.state.clock())
     try:
         scoped = app.state.ai_runtime.for_scope(snapshot.scope, clock=app.state.clock, deadline=deadline)
+        provider = bind_context(scoped.assistant,snapshot.conversation)
         _guard(app, request, body, claim, deadline)
-        intent = scoped.assistant.interpret(body.text, snapshot.draft, snapshot.timezone, snapshot.local_date)
+        intent = provider.interpret(body.text, snapshot.draft, snapshot.timezone, snapshot.local_date)
         _guard(app, request, body, claim, deadline)
         hits = []
         output = None
         if intent.guide_question and intent.intent != 'handoff':
+            if len(snapshot.manifest_ids)!=len(knowledge.SLOTS):
+                raise DomainError('KNOWLEDGE_NOT_READY','Juniper’s document library is not ready yet. Please try again shortly.',503)
             # No guest source or database connection is held while embedding.
             vector = knowledge.query_embedding(scoped.embedder, intent.guide_question)
             _guard(app, request, body, claim, deadline)
@@ -99,7 +109,7 @@ def chat(app, request, body):
                 ai_admission.check_interaction(db, claim, workspace, app.state.clock())
                 hits = knowledge.retrieve(db, workspace, intent.guide_question,
                                           vector=vector, spec=snapshot.profile)
-            output = scoped.assistant.evidence(intent.guide_question, hits)
+            output = provider.evidence(intent.guide_question, hits) if hits else assistant.GroundedOutput(status='insufficient',claims=[])
             _guard(app, request, body, claim, deadline)
         with Session(app.state.engine, expire_on_commit=False) as db, db.begin():
             workspace, token = app.state.authorize(request, db, body)
@@ -138,6 +148,7 @@ def replace_document(app, slot, body, request):
         if current is None:
             raise DomainError('DOCUMENT_UNAVAILABLE', 'Prepare the sample pack first.', 503)
         title, expected = current.title, current.id
+    require_verification(app,request,'documents')
     claim = ai_admission.claim_interaction(app.state.engine, snapshot.scope, operation='replace',
         request_hash=snapshot.request_hash, profile_id=snapshot.profile.profile_id,
         manifest_ids=snapshot.manifest_ids, now=app.state.clock())

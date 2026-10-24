@@ -24,7 +24,7 @@ def test_fake_composition_is_inert_and_preserves_explicit_assistant_override(mon
         raise AssertionError('Fake composition must not read vocabularies or construct clients')
     monkeypatch.setattr(composition, 'load_tokenizer', denied)
     monkeypatch.setattr(composition, '_client', denied)
-    settings = Settings.parse({**live_values(), 'CHOREOGRAPH_PROFILE': 'fake'}, testing=True)
+    settings = Settings.parse({**live_values(), 'FAKE_MODE':'true'}, testing=True)
     assistant = object()
     runtime = composition.compose_ai(settings, object(), assistant_provider=assistant)
     scoped = runtime.for_scope(AttemptScope(uuid4(), 1, str(uuid4())))
@@ -72,7 +72,7 @@ class CountingTransport(httpx.MockTransport):
         return httpx.Response(200, json={
             'id': 'synthetic-response', 'object': 'response', 'created_at': 0,
             'status': 'completed', 'model': 'operator-response-model',
-            'output': [{'type': 'message', 'id': 'synthetic-message', 'role': 'assistant',
+            'output': [{'type': 'message', 'id': 'synthetic-message', 'role': 'assistant', 'status':'completed',
                         'content': [{'type': 'output_text', 'text': '{"status":"insufficient","claims":[]}',
                                      'annotations': []}]}],
             'usage': {'input_tokens': 10, 'output_tokens': 10, 'total_tokens': 20},

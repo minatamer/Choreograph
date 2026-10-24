@@ -4,6 +4,7 @@ from uuid import uuid4
 
 import pytest
 from fastapi.testclient import TestClient
+from llama_index.core.schema import NodeWithScore, TextNode
 from sqlalchemy.orm import Session
 from test_requests import NOW, begin, command
 
@@ -15,6 +16,19 @@ from choreograph.providers import GroundedOutput, Interpretation, OpenAITranspor
 
 def setup_pack(database):
     with Session(database[0]) as db,db.begin():knowledge.prepare_samples(db,NOW)
+
+
+def test_fake_document_examples_ignore_generic_verb_matches():
+    safety=TextNode(id_=str(uuid4()),text='Pest removal and mould remediation are excluded.',metadata={'section':'Excluded work'})
+    preparation=TextNode(id_=str(uuid4()),text='For an oven clean, remove food and let the appliance cool.',metadata={'section':'Oven preparation'})
+    result=assistant.FakeAssistant().evidence('Do you remove mould or pests?',[
+        NodeWithScore(node=preparation),NodeWithScore(node=safety)])
+    assert result.status=='supported' and [claim.passage_id for claim in result.claims]==[safety.id_]
+    access=TextNode(id_=str(uuid4()),text='Arrange access with the coordinator before the appointment.',metadata={'section':'Access'})
+    availability=TextNode(id_=str(uuid4()),text='The preferred time is reviewed before assigning a cleaner.',metadata={'section':'Availability'})
+    result=assistant.FakeAssistant().evidence('How do I arrange access for the cleaner?',[
+        NodeWithScore(node=availability),NodeWithScore(node=access)])
+    assert [claim.passage_id for claim in result.claims]==[access.id_]
 
 
 def send(c,h,s,text):

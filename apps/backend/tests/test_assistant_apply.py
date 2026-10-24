@@ -58,7 +58,8 @@ def test_apply_uses_supplied_evidence_without_provider_retrieval_or_admission(da
         assert quote['cents']==18500 and quote['minutes']==270
         reply=workspace.messages[-1]
         assert reply['claims'][0]['excerpt']==hit.node.text and reply['claims'][0]['passage_id']==hit.node.id_
-        assert 'quote' in reply['cards'] and len(reply['suggestions'])==3
+        assert 'quote' in reply['cards']
+        assert reply['suggestions'][0]['text']=='When is this service free this week?'
         assert len(workspace.messages)==2 and workspace.messages[0]['revision']==revision
         assert reply['revision']==workspace.revision==revision+1
         for model in (Enquiry,Outbox):
