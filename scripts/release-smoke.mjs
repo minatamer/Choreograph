@@ -14,7 +14,7 @@ const tags = {frontend: `choreograph-frontend:${owner}`, backend: `choreograph-a
 const images = {};
 const env = {...process.env,
   POSTGRES_DB: 'choreograph_release', POSTGRES_USER: 'choreograph', POSTGRES_PASSWORD: randomBytes(24).toString('hex'),
-  CHOREOGRAPH_PROFILE: 'fake', CHOREOGRAPH_ORIGIN: 'http://frontend:8080',
+  FAKE_MODE: 'true', PAID_DEMO_ENABLED: 'false', CHOREOGRAPH_ORIGIN: 'http://frontend:8080',
   CHOREOGRAPH_BRIDGE_SECRET: randomBytes(32).toString('hex'), CHOREOGRAPH_TOKEN_KEY: randomBytes(32).toString('base64url') + '=',
   CHOREOGRAPH_API_URL: 'http://api:8080', CHOREOGRAPH_API_AUTH: 'none',
   CHOREOGRAPH_TASK_URL: 'https://worker.example.invalid/internal/tasks/crm',
@@ -22,7 +22,7 @@ const env = {...process.env,
   CHOREOGRAPH_TASK_SERVICE_EMAIL: 'release-task@test-project.iam.gserviceaccount.com',
 };
 env.CHOREOGRAPH_DATABASE_URL = `postgresql+psycopg://choreograph:${env.POSTGRES_PASSWORD}@postgres:5432/choreograph_release`;
-const backendNames = ['CHOREOGRAPH_DATABASE_URL','CHOREOGRAPH_ORIGIN','CHOREOGRAPH_BRIDGE_SECRET','CHOREOGRAPH_TOKEN_KEY','CHOREOGRAPH_PROFILE'];
+const backendNames = ['CHOREOGRAPH_DATABASE_URL','CHOREOGRAPH_ORIGIN','CHOREOGRAPH_BRIDGE_SECRET','CHOREOGRAPH_TOKEN_KEY','FAKE_MODE','PAID_DEMO_ENABLED'];
 const frontendNames = ['CHOREOGRAPH_ORIGIN','CHOREOGRAPH_BRIDGE_SECRET','CHOREOGRAPH_API_URL','CHOREOGRAPH_API_AUTH'];
 const ids = [];
 let network, stage = 'fingerprint';
