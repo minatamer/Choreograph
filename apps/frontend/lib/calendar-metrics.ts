@@ -2,12 +2,17 @@ import type {SessionState} from './api';
 
 export function addDays(day:string,offset:number){const date=new Date(day+'T12:00:00Z');date.setUTCDate(date.getUTCDate()+offset);return date.toISOString().slice(0,10);}
 export function localDay(instant:string|number,zone:string){
+ return localDayReader(zone)(instant);
+}
+/** Share one formatter within a calculation; never cache guest/locale state globally. */
+export function localDayReader(zone:string){
  const formatter=new Intl.DateTimeFormat('en-CA',{year:'numeric',month:'2-digit',day:'2-digit',timeZone:zone});
- return dayWith(formatter,new Date(instant));
+ return (instant:string|number)=>dayWith(formatter,new Date(instant));
 }
 /** The Business calendar keeps cancelled history; only availability/hours exclude it. */
 export function appointmentsForDay(events:SessionState['calendar'],day:string,zone:string){
- return events.filter(event=>localDay(event.starts_at,zone)===day);
+ const readDay=localDayReader(zone);
+ return events.filter(event=>readDay(event.starts_at)===day);
 }
 function dayWith(formatter:Intl.DateTimeFormat,date:Date){const parts=formatter.formatToParts(date);const get=(key:string)=>parts.find(part=>part.type===key)?.value;return `${get('year')}-${get('month')}-${get('day')}`;}
 

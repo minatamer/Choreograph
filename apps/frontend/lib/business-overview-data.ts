@@ -1,5 +1,5 @@
 import type {SessionState} from './api';
-import {addDays,calendarDayBounds,calendarWeek,localDay} from './calendar-metrics.ts';
+import {addDays,calendarDayBounds,calendarWeek,localDayReader} from './calendar-metrics.ts';
 import {appointmentPresentation} from './appointment-status.ts';
 
 type Event=SessionState['calendar'][number];
@@ -13,19 +13,19 @@ export function weekOf(day:string){
 
 /** Display-only clock; elapsed time never changes a stored booking status. */
 export function overviewAgenda(events:Event[],zone:string,now:number){
- const today=localDay(now,zone),valid=events.filter(validInterval);
+ const readDay=localDayReader(zone),today=readDay(now),valid=events.filter(validInterval);
  return {
   today,
-  agenda:valid.filter(event=>event.state!=='cancelled'&&localDay(event.starts_at,zone)<=today&&localDay(Date.parse(event.ends_at)-1,zone)>=today).sort(chronological),
+  agenda:valid.filter(event=>event.state!=='cancelled'&&readDay(event.starts_at)<=today&&readDay(Date.parse(event.ends_at)-1)>=today).sort(chronological),
   upcoming:valid.filter(event=>appointmentPresentation(event).status==='confirmed'&&Date.parse(event.ends_at)>now).sort(chronological),
  };
 }
 
 /** Service counts use start dates; staff hours split actual intervals at local midnight. */
 export function overviewWeek(events:Event[],week:string,zone:string){
- const valid=events.filter(validInterval),end=addDays(week,7),services=new Map<string,number>();
+ const readDay=localDayReader(zone),valid=events.filter(validInterval),end=addDays(week,7),services=new Map<string,number>();
  for(const event of valid){
-  const display=appointmentPresentation(event),day=localDay(event.starts_at,zone);
+  const display=appointmentPresentation(event),day=readDay(event.starts_at);
   if(display.status==='blocked'||display.status==='cancelled'||day<week||day>=end)continue;
   services.set(display.title,(services.get(display.title)??0)+1);
  }

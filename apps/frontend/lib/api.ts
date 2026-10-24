@@ -1,4 +1,6 @@
 import type {components} from './generated/api';
+import {appointmentReader,clockReader} from './timezone';
+export {appointmentReader,clockReader};
 export type SessionState=components['schemas']['SessionView'];
 export type Mutation=components['schemas']['MutationView'];
 export type Week=components['schemas']['WeekView'];
@@ -26,5 +28,5 @@ export async function api<T>(path:string,options:{method?:string;body?:unknown;c
 }
 export function money(cents:number){return new Intl.NumberFormat(undefined,{style:'currency',currency:'USD',maximumFractionDigits:2}).format(cents/100);}
 export function duration(minutes:number){return `${Math.floor(minutes/60)}h${minutes%60?' '+minutes%60+'m':''}`;}
-export function clockTime(value:string,zone:string){return new Intl.DateTimeFormat(undefined,{hour:'2-digit',minute:'2-digit',timeZone:zone}).format(new Date(value));}
-export function appointment(value:string,zone:string){return new Intl.DateTimeFormat(undefined,{weekday:'short',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit',timeZone:zone}).format(new Date(value));}
+export function clockTime(value:string,zone:string){return clockReader(zone)(value);}
+export function appointment(value:string,zone:string){return appointmentReader(zone)(value);}

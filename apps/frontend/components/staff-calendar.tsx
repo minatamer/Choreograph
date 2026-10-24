@@ -2,7 +2,7 @@
 import {weekUtcOffset} from '@/lib/timezone';
 import {useEffect,useId,useRef,useState} from 'react';
 import {AnimatePresence,LayoutGroup,motion} from 'motion/react';
-import {appointment,clockTime,type SessionState} from '@/lib/api';
+import {appointmentReader,clockReader,type SessionState} from '@/lib/api';
 import {addDays,appointmentsForDay} from '@/lib/calendar-metrics';
 import {appointmentPresentation,appointmentVisible,type CalendarStatus} from '@/lib/appointment-status';
 import {CalendarEventDialog,calendarSpring,cleanerName} from './calendar-event-dialog';
@@ -19,6 +19,7 @@ export function StaffCalendar({state,week,onWeek,pending,onClear,visible,onVisib
   async function clear(id:string){const accepted=await onClear(id);if(accepted){setSelectedId(null);setNotice('Removed from calendar.');}return accepted;}
   if(!week)return null;
   const days=Array.from({length:7},(_,index)=>addDays(week,index));
+  const readClock=clockReader(state.timezone),readAppointment=appointmentReader(state.timezone);
   return <LayoutGroup id={group}><section className="staff-calendar" data-tour="calendar">
     <div className="card-heading"><div><span className="eyebrow blue-text">The whole picture</span><h2>Staff calendar</h2><small>Timezone: {weekUtcOffset(state.timezone,week)}</small></div><div className="week-navigation"><button aria-label="Previous staff week" disabled={week<=first} onClick={()=>onWeek(addDays(week,-7))}>←</button><button aria-label="Next staff week" disabled={week>=(state.calendar_last_week_start??first)} onClick={()=>onWeek(addDays(week,7))}>→</button></div></div>
     <div className="staff-calendar-key"><p className="week-label">Week of {new Intl.DateTimeFormat(undefined,{month:'short',day:'numeric',timeZone:'UTC'}).format(new Date(week+'T12:00:00Z'))}</p><CalendarFilters visible={visible} onChange={onVisibilityChange}/></div>
@@ -29,7 +30,7 @@ export function StaffCalendar({state,week,onWeek,pending,onClear,visible,onVisib
         const all=events.filter(event=>event.staff_id===staff),shown=all.filter(event=>appointmentVisible(event,visible));
         return <div key={staff} className="staff-lane"><strong>{cleanerName(staff)}</strong>{shown.length?shown.map(event=>{
           const display=appointmentPresentation(event);
-          return <motion.button type="button" key={event.id} layoutId={event.id} className={`staff-event ${display.status}`} style={{borderRadius:10}} initial={{opacity:0,y:8}} animate={{opacity:1,y:0}} transition={calendarSpring} whileHover={{y:-2}} whileTap={{scale:.98}} aria-haspopup="dialog" aria-expanded={selected?.id===event.id} aria-label={`View ${display.title}, ${display.label}, ${cleanerName(staff)}, ${appointment(event.starts_at,state.timezone)}–${clockTime(event.ends_at,state.timezone)}`} onClick={click=>{opener.current=click.currentTarget;setSelectedId(event.id);}}><span>{clockTime(event.starts_at,state.timezone)}–{clockTime(event.ends_at,state.timezone)}</span><small>{display.title}</small><span className="staff-event-status"><span aria-hidden="true">{display.symbol}</span>{display.label}</span><span className="staff-event-open" aria-hidden="true">↗</span></motion.button>;
+          return <motion.button type="button" key={event.id} layoutId={event.id} className={`staff-event ${display.status}`} style={{borderRadius:10}} initial={{opacity:0,y:8}} animate={{opacity:1,y:0}} transition={calendarSpring} whileHover={{y:-2}} whileTap={{scale:.98}} aria-haspopup="dialog" aria-expanded={selected?.id===event.id} aria-label={`View ${display.title}, ${display.label}, ${cleanerName(staff)}, ${readAppointment(event.starts_at)}–${readClock(event.ends_at)}`} onClick={click=>{opener.current=click.currentTarget;setSelectedId(event.id);}}><span>{readClock(event.starts_at)}–{readClock(event.ends_at)}</span><small>{display.title}</small><span className="staff-event-status"><span aria-hidden="true">{display.symbol}</span>{display.label}</span><span className="staff-event-open" aria-hidden="true">↗</span></motion.button>;
         }):<small className="staff-free">{all.length?'Hidden by filters':new Date(day+'T12:00:00Z').getUTCDay()===0?'Closed':'No appointments'}</small>}</div>;
       })}</article>;
     })}</div></div><p className="calendar-notice" role="status">{notice||(!visible.size?'Choose a status above to show appointments.':'')}</p>
