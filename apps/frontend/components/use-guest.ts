@@ -1,8 +1,10 @@
 'use client';
 import {useCallback,useEffect,useRef,useState} from 'react';
 import {api,ApiError,type SessionState,type Mutation} from '@/lib/api';
+import type {Verify} from './verification-provider';
+import type {VerificationAction} from '@/lib/turnstile';
 type Operation={path:string;method:string;body:unknown;key:string;csrf:string;chatText?:string};
-export function useGuest(autoInitialize=true){
+export function useGuest(autoInitialize=true,verify?:Verify){
   const [state,setState]=useState<SessionState|null>(null);
   const [pending,setPending]=useState(false);
   const [error,setError]=useState<{code:string;message:string}|null>(null);
@@ -54,7 +56,18 @@ export function useGuest(autoInitialize=true){
       try{detected??=Intl.DateTimeFormat().resolvedOptions().timeZone;}catch{}
       let value:SessionState;
       if(detected){
-        value=await api<SessionState>('session',{method:'POST',body:{timezone:detected,restart},signal:controller.signal});
+        let restored:SessionState|undefined;
+        if(!restart){try{restored=await api<SessionState>('session',{signal:controller.signal});}
+          catch(problem){if(!(problem instanceof ApiError)||problem.status!==401)throw problem;}}
+        if(restored)value=restored;
+        else{const key=crypto.randomUUID();let proof=await verify?.('workspace',key,controller.signal);
+          const options={method:'POST',body:{timezone:detected,restart},key,signal:controller.signal};
+          try{value=await api<SessionState>('session',{...options,proof});}
+          catch(problem){
+            if(!(problem instanceof ApiError)||problem.code!=='VERIFICATION_REQUIRED'||!verify)throw problem;
+            proof=await verify('workspace',key,controller.signal,true);
+            value=await api<SessionState>('session',{...options,proof});
+          }}
       }else{
         try{value=await api<SessionState>('session',{signal:controller.signal});}
         catch(error){if(error instanceof ApiError&&error.status===401){setState(null);last.current=null;setNeedsZone(true);return;}throw error;}
@@ -62,20 +75,30 @@ export function useGuest(autoInitialize=true){
       if(tag===serial.current){setState(value);setNeedsZone(false);}
     }catch(error){if(tag===serial.current&&!controller.signal.aborted)showFailure(error);}
     finally{if(tag===serial.current)setPending(false);}
-  },[showFailure]);
+  },[showFailure,verify]);
   useEffect(()=>{if(autoInitialize)void initialize();return()=>{active.current?.abort();serial.current++;};},[autoInitialize,initialize]);
   const perform=useCallback(async(operation:Operation)=>{
     active.current?.abort();const controller=new AbortController();active.current=controller;const tag=++serial.current;
     last.current=operation;setPending(true);setError(null);
     try{
-      const value=await api<Mutation|SessionState>(operation.path,{...operation,signal:controller.signal});
+      const action:VerificationAction|undefined=operation.path==='chat'?'assistant':operation.path==='reset'?'workspace':/^documents\/[^/]+\/replace$/.test(operation.path)?'documents':undefined;
+      let proof=action?await verify?.(action,operation.key,controller.signal):undefined;
+      let value:Mutation|SessionState;
+      try{value=await api<Mutation|SessionState>(operation.path,{...operation,proof,signal:controller.signal});}
+      catch(problem){
+        if(!(problem instanceof ApiError)||problem.code!=='VERIFICATION_REQUIRED'||!action||!verify)throw problem;
+        // This fixed error is returned before paid/business work. One explicit
+        // human recovery can reuse the unchanged command key; no provider retry.
+        proof=await verify(action,operation.key,controller.signal,true);
+        value=await api<Mutation|SessionState>(operation.path,{...operation,proof,signal:controller.signal});
+      }
       const next='state'in value?value.state:value;
       if(tag!==serial.current||controller.signal.aborted)return null;
       setState(next);
       return value;
     }catch(error){if(tag===serial.current&&!controller.signal.aborted)showFailure(error);return null;}
     finally{if(tag===serial.current)setPending(false);}
-  },[showFailure]);
+  },[showFailure,verify]);
   const mutate=useCallback((path:string,fields:Record<string,unknown>,method='POST')=>{
     if(!state)return Promise.resolve(null);
     return perform({path,method,body:{generation:state.generation,revision:state.revision,...fields},key:crypto.randomUUID(),csrf:state.csrf,

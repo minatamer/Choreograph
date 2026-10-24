@@ -3,6 +3,9 @@ import assert from 'node:assert/strict';
 import {approvedRoute,boundedBody} from '../apps/frontend/lib/bridge.ts';
 test('bridge permits the guest vocabulary and rejects arbitrary/internal destinations',()=>{
   assert.equal(approvedRoute('POST',['session']),true);
+  assert.equal(approvedRoute('POST',['bookings']),true);
+  assert.equal(approvedRoute('GET',['bookings']),false);
+  assert.equal(approvedRoute('POST',['bookings','extra']),false);
   assert.equal(approvedRoute('GET',['documents','12345678-1234-1234-1234-123456789abc','source']),true);
   for(const segments of [['internal','tick'],['https:','example.com'],['..','health'],['documents','../x','source'],['crm','admin'],['session','extra']])
     assert.equal(approvedRoute('GET',segments),false);

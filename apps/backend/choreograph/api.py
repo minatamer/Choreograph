@@ -29,6 +29,7 @@ from .contracts import (
     StartSession,
     SubmitCommand,
     Summary,
+    VerificationView,
     WeekView,
 )
 from .errors import DomainError
@@ -42,6 +43,7 @@ from .sessions import (
     require_generation,
 )
 from .settings import Settings
+from .verification import TurnstileVerifier, require_verification
 
 
 class Boundary:
@@ -91,7 +93,7 @@ class Boundary:
         return await self.app(scope, receive, send)
 
 
-def create_app(settings: Settings, engine=None, clock=None,assistant_provider=None,crm_provider=None,ai_runtime=None) -> FastAPI:
+def create_app(settings: Settings, engine=None, clock=None,assistant_provider=None,crm_provider=None,ai_runtime=None,verification_provider=None) -> FastAPI:
     from .composition import compose_ai
     from .crm_composition import compose_crm
     runtime = ai_runtime or compose_ai(settings, engine, assistant_provider=assistant_provider, clock=clock)
@@ -100,15 +102,24 @@ def create_app(settings: Settings, engine=None, clock=None,assistant_provider=No
     except BaseException:
         if ai_runtime is None:runtime.close()
         raise
+    try:
+        verifier=verification_provider if verification_provider is not None else TurnstileVerifier(settings.turnstile) if settings.turnstile else None
+    except BaseException:
+        if crm_provider is None:crm_runtime.close()
+        if ai_runtime is None:runtime.close()
+        raise
     @asynccontextmanager
     async def lifespan(_app):
         try:
             yield
         finally:
             try:
-                if crm_provider is None:crm_runtime.close()
+                if verification_provider is None and verifier is not None:verifier.close()
             finally:
-                if ai_runtime is None:runtime.close()
+                try:
+                    if crm_provider is None:crm_runtime.close()
+                finally:
+                    if ai_runtime is None:runtime.close()
     app = FastAPI(title="Choreograph guest API", version="0.1.0", docs_url=None, redoc_url=None,
                   openapi_url=None, lifespan=lifespan)
     app.state.settings = settings
@@ -117,6 +128,7 @@ def create_app(settings: Settings, engine=None, clock=None,assistant_provider=No
     app.state.ai_runtime = runtime
     app.state.assistant = runtime.assistant
     app.state.crm=crm_runtime
+    app.state.verification=verifier
     app.add_middleware(Boundary, settings=settings)
 
     def unit_of_work():
@@ -172,6 +184,7 @@ def create_app(settings: Settings, engine=None, clock=None,assistant_provider=No
         from . import knowledge
         knowledge.attach_samples(db,workspace)
         state=view(workspace,token)
+        service.bind_booking_messages(db,workspace,state.messages)
         from .contracts import DocumentView
         state.documents=[DocumentView(**item) for item in knowledge.documents(db,workspace)]
         state.replacements_left=3-workspace.ingestion_attempts
@@ -221,8 +234,15 @@ def create_app(settings: Settings, engine=None, clock=None,assistant_provider=No
                 raise DomainError('KNOWLEDGE_NOT_READY', 'The front desk is being prepared. Please try again later.', 503)
         return create_workspace(db, zone, app.state.clock(), embedding_profile_id=runtime.spec.profile_id)
 
+    @app.get('/v1/verification',response_model=VerificationView)
+    def verification_config(response:Response):
+        response.headers['cache-control']='no-store'
+        return VerificationView(enabled=verifier is not None,site_key=settings.turnstile.site_key if settings.turnstile else None,
+                                required=settings.profile=='live' or verifier is not None)
+
     @app.post('/v1/session', response_model=SessionView)
     def start_session(body: StartSession, request: Request, response: Response, db=Depends(unit_of_work, scope='function')):
+        require_verification(app,request,'workspace')
         token = request.cookies.get(COOKIE)
         if token:
             try:
@@ -257,6 +277,7 @@ def create_app(settings: Settings, engine=None, clock=None,assistant_provider=No
 
     @app.post('/v1/reset', response_model=SessionView)
     def reset_session(body: ResetSession, request: Request, response: Response, db=Depends(unit_of_work, scope='function')):
+        require_verification(app,request,'workspace')
         token = request.cookies.get(COOKIE)
         workspace = find_workspace(db, token, app.state.clock(), lock=True, allow_retired=True)
         require_csrf(token, request.headers.get('x-csrf-token'), settings.bridge_secret)
@@ -300,6 +321,13 @@ def create_app(settings: Settings, engine=None, clock=None,assistant_provider=No
         workspace,token=authorize(request,db,body)
         result=service.idempotent(db,workspace,request.headers.get('idempotency-key'),'submit',body.model_dump(mode='json'),
                                   lambda:service.submit_request(db,workspace,body.revision,app.state.clock()))
+        return MutationView(state=full_view(db,workspace,token),**result)
+
+    @app.post('/v1/bookings',response_model=MutationView)
+    def book_clean(body:SubmitCommand,request:Request,db=Depends(unit_of_work,scope='function')):
+        workspace,token=authorize(request,db,body)
+        result=service.idempotent(db,workspace,request.headers.get('idempotency-key'),'book',body.model_dump(mode='json'),
+                                  lambda:service.book_from_chat(db,workspace,body.revision,app.state.clock()))
         return MutationView(state=full_view(db,workspace,token),**result)
 
     @app.post('/v1/chat',response_model=MutationView)

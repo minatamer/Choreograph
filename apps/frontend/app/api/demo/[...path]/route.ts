@@ -23,6 +23,8 @@ async function bridge(request: NextRequest, context: {params: Promise<{path:stri
   for (const key of ['content-type','x-csrf-token','idempotency-key']) {
     const value=request.headers.get(key); if(value) headers.set(key,value);
   }
+  const proof=request.headers.get('x-turnstile-token');
+  if(proof&&proof.length<=2048)headers.set('x-turnstile-token',proof);
   const max = path[0] === 'documents' ? 2_850_000 : 16_384;
   let body: Uint8Array | undefined;
   if (!['GET','HEAD'].includes(request.method)) {
