@@ -7,7 +7,7 @@ import time
 from dataclasses import asdict, replace
 from datetime import UTC, datetime
 from pathlib import Path
-from uuid import UUID, uuid5
+from uuid import UUID, uuid4, uuid5
 
 from sqlalchemy import or_, select
 from sqlalchemy.exc import IntegrityError
@@ -148,10 +148,15 @@ def _client(settings,engine,runtime,token,clock):
     from fastapi.testclient import TestClient
 
     from .api import create_app
-    client=TestClient(create_app(settings,engine,clock,ai_runtime=runtime))
+    # This bounded, operator-authorized in-process lane is not a public browser
+    # or a Cloudflare acceptance result. No listener/header can enable this seam.
+    proof=uuid4().hex
+    class OperatorVerification:
+        def verify(self,value,action,binding):return value==proof and action in {'workspace','assistant','documents'}
+    client=TestClient(create_app(settings,engine,clock,ai_runtime=runtime,verification_provider=OperatorVerification()))
     client.cookies.set(COOKIE,token)
     return client,{'x-choreograph-bridge':settings.bridge_secret,'origin':settings.origin,
-                   'x-csrf-token':csrf_token(token,settings.bridge_secret)}
+                   'x-csrf-token':csrf_token(token,settings.bridge_secret),'x-turnstile-token':proof}
 
 
 def _command(client,headers,state,run_id,label,path,fields):
@@ -352,6 +357,7 @@ def main():
     from dotenv import dotenv_values
 
     from .db import build_engine
+    from .runtime_config import configuration_values
     from .settings import Settings
     parser=argparse.ArgumentParser(description='Prepare a finite plan; real execution requires later owner authorization.')
     parser.add_argument('lane',choices=['ai','crm']);parser.add_argument('step',choices=['init-db','prepare','evaluate','sync','cleanup'])
@@ -368,8 +374,9 @@ def main():
         if args.step=='init-db':
             if args.lane!='ai':raise ValueError('ACCEPTANCE_STEP_INVALID')
             print(json.dumps(initialize_database(values,args.run_id)));return
+        values=configuration_values(values)
         values['CHOREOGRAPH_CRM_PROVIDER']='disabled' if args.lane=='ai' else 'hubspot'
-        if args.lane=='crm':values['CHOREOGRAPH_PROFILE']='fake'
+        if args.lane=='crm':values['FAKE_MODE']='true'
         settings=Settings.parse(values)
         from sqlalchemy.engine import make_url
         url=make_url(settings.database_url)

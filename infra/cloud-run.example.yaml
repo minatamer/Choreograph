@@ -97,8 +97,10 @@ spec:
               cpu: "1"
               memory: 512Mi
           env:
-            - name: CHOREOGRAPH_PROFILE
-              value: fake
+            - name: FAKE_MODE
+              value: "true"
+            - name: PAID_DEMO_ENABLED
+              value: "false"
             - name: CHOREOGRAPH_ORIGIN
               value: https://REPLACE_FRONTEND_SERVICE_ORIGIN.run.app
             - name: CHOREOGRAPH_DATABASE_URL
@@ -162,8 +164,10 @@ spec:
               cpu: "1"
               memory: 512Mi
           env:
-            - name: CHOREOGRAPH_PROFILE
-              value: fake
+            - name: FAKE_MODE
+              value: "true"
+            - name: PAID_DEMO_ENABLED
+              value: "false"
             - name: CHOREOGRAPH_ORIGIN
               value: https://REPLACE_FRONTEND_SERVICE_ORIGIN.run.app
             - name: CHOREOGRAPH_TASK_URL
@@ -230,8 +234,10 @@ spec:
                   cpu: "1"
                   memory: 512Mi
               env:
-                - name: CHOREOGRAPH_PROFILE
-                  value: fake
+                - name: FAKE_MODE
+                  value: "true"
+                - name: PAID_DEMO_ENABLED
+                  value: "false"
                 - name: CHOREOGRAPH_ORIGIN
                   value: https://REPLACE_FRONTEND_SERVICE_ORIGIN.run.app
                 - name: CHOREOGRAPH_DATABASE_URL
@@ -280,8 +286,10 @@ spec:
                   cpu: "1"
                   memory: 512Mi
               env:
-                - name: CHOREOGRAPH_PROFILE
-                  value: fake
+                - name: FAKE_MODE
+                  value: "true"
+                - name: PAID_DEMO_ENABLED
+                  value: "false"
                 - name: CHOREOGRAPH_ORIGIN
                   value: https://REPLACE_FRONTEND_SERVICE_ORIGIN.run.app
                 - name: CHOREOGRAPH_DATABASE_URL
@@ -326,8 +334,10 @@ spec:
                   cpu: "1"
                   memory: 512Mi
               env:
-                - name: CHOREOGRAPH_PROFILE
-                  value: fake
+                - name: FAKE_MODE
+                  value: "true"
+                - name: PAID_DEMO_ENABLED
+                  value: "false"
                 - name: CHOREOGRAPH_ORIGIN
                   value: https://REPLACE_FRONTEND_SERVICE_ORIGIN.run.app
                 - name: CHOREOGRAPH_DATABASE_URL
@@ -335,8 +345,6 @@ spec:
                     secretKeyRef:
                       name: REPLACE_APPLICATION_DATABASE_URL_SECRET_NAME
                       key: "REPLACE_PINNED_APPLICATION_DATABASE_URL_SECRET_VERSION"
-                - name: CHOREOGRAPH_CRM_PROVIDER
-                  value: disabled
                 - name: CHOREOGRAPH_BRIDGE_SECRET
                   value: REPLACE_THROWAWAY_SETTINGS_ONLY_32_PLUS_CHARACTERS
                 - name: CHOREOGRAPH_TOKEN_KEY

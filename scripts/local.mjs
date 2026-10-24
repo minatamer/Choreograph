@@ -16,13 +16,17 @@ const receiptPath = path.join(runtime, 'services.json');
 export function localEnvironment(ambient, source, service='api') {
   const explicit=parseEnv(source);
   if(service==='frontend'){
-    const allowed=new Set(['CHOREOGRAPH_API_URL','CHOREOGRAPH_API_AUTH','CHOREOGRAPH_API_AUDIENCE','CHOREOGRAPH_ORIGIN','CHOREOGRAPH_BRIDGE_SECRET']);
+    const allowed=new Set(['CHOREOGRAPH_API_URL','CHOREOGRAPH_ORIGIN','CHOREOGRAPH_BRIDGE_SECRET']);
     if(Object.keys(explicit).some(key=>!allowed.has(key)))throw new Error('Frontend configuration accepts only server bridge settings.');
     if((explicit.CHOREOGRAPH_BRIDGE_SECRET??'').length<32)throw new Error('Frontend bridge secret is missing or invalid. Run the local setup.');
   }
+  else {
+    const allowed=new Set(['FAKE_MODE','PAID_DEMO_ENABLED','OPENAI_API_KEY','TURNSTILE_SITE_KEY','TURNSTILE_SECRET_KEY','CHOREOGRAPH_DB_PASSWORD','CHOREOGRAPH_DATABASE_URL','CHOREOGRAPH_ORIGIN','CHOREOGRAPH_BRIDGE_SECRET','CHOREOGRAPH_TOKEN_KEY','CHOREOGRAPH_HUBSPOT_CLIENT_SECRET']);
+    if(Object.keys(explicit).some(key=>!allowed.has(key)))throw new Error('Fixed backend settings moved to code. Run scripts/setup.py to migrate local configuration.');
+  }
   const origin=explicit.CHOREOGRAPH_ORIGIN??'http://127.0.0.1:45860';
   if(!['http://localhost:45860','http://127.0.0.1:45860'].includes(origin))throw new Error('Local origin must use the repository frontend port.');
-  const inherited=Object.fromEntries(Object.entries(ambient).filter(([key])=>!/^CHOREOGRAPH_|^OPENAI_|^HUBSPOT_/i.test(key)));
+  const inherited=Object.fromEntries(Object.entries(ambient).filter(([key])=>!/^CHOREOGRAPH_|^OPENAI_|^HUBSPOT_|^TURNSTILE_|^FAKE_MODE$|^PAID_DEMO_ENABLED$/i.test(key)));
   return {...inherited,...explicit,NEXT_TELEMETRY_DISABLED:'1',PYTHONUNBUFFERED:'1',CHOREOGRAPH_ORIGIN:origin};
 }
 

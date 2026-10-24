@@ -8,11 +8,13 @@ import path from 'node:path';
 import { assertFree, identity, owned, root, localEnvironment } from './local.mjs';
 
 test('local app configuration is explicit and displays the OAuth origin',()=>{
-  const env=localEnvironment({PATH:'retained',CHOREOGRAPH_PROFILE:'live',OPENAI_API_KEY:'ambient',HUBSPOT_CLIENT_ID:'ambient'},'CHOREOGRAPH_PROFILE=fake\nCHOREOGRAPH_ORIGIN=http://localhost:45860\n');
-  assert.equal(env.PATH,'retained');assert.equal(env.CHOREOGRAPH_PROFILE,'fake');
+  const env=localEnvironment({PATH:'retained',CHOREOGRAPH_PROFILE:'live',OPENAI_API_KEY:'ambient',HUBSPOT_CLIENT_ID:'ambient'},'FAKE_MODE=true\nPAID_DEMO_ENABLED=false\nCHOREOGRAPH_ORIGIN=http://localhost:45860\n');
+  assert.equal(env.PATH,'retained');assert.equal(env.FAKE_MODE,'true');assert.equal(env.CHOREOGRAPH_PROFILE,undefined);
   assert.equal(env.OPENAI_API_KEY,undefined);assert.equal(env.HUBSPOT_CLIENT_ID,undefined);
   assert.equal(env.CHOREOGRAPH_ORIGIN,'http://localhost:45860');
   assert.throws(()=>localEnvironment({},'CHOREOGRAPH_ORIGIN=https://elsewhere.example'),/Local origin/);
+  assert.throws(()=>localEnvironment({},'CHOREOGRAPH_PROFILE=live'),/moved to code/);
+  assert.throws(()=>localEnvironment({},'CHOREOGRAPH_AI_EMBEDDING_DIMENSIONS=64'),/moved to code/);
 });
 
 test('frontend loads only its app-local bridge settings and drops inherited backend credentials',()=>{

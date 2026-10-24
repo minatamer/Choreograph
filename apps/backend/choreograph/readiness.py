@@ -11,19 +11,44 @@ from sqlalchemy import func, select, text
 from sqlalchemy.orm import Session
 
 from .ai_admission import FAKE_SPEC
-from .ai_config import POSITIVE_GRANT_FIELDS
+from .ai_config import POSITIVE_GRANT_FIELDS, runtime_values
 from .models import Chunk, DocumentVersion
+from .runtime_config import configuration_values
 from .settings import Settings
 
 ROOT=Path(__file__).resolve().parents[3]
 BASE_FIELDS=('CHOREOGRAPH_DATABASE_URL','CHOREOGRAPH_BRIDGE_SECRET','CHOREOGRAPH_TOKEN_KEY')
-AI_FIELDS=('CHOREOGRAPH_OPENAI_API_KEY','CHOREOGRAPH_AI_RESPONSE_MODEL','CHOREOGRAPH_AI_EMBEDDING_MODEL',
+AI_FIELDS=('OPENAI_API_KEY','CHOREOGRAPH_AI_RESPONSE_MODEL','CHOREOGRAPH_AI_EMBEDDING_MODEL',
     'CHOREOGRAPH_AI_RESPONSE_TOKENIZER','CHOREOGRAPH_AI_EMBEDDING_TOKENIZER','CHOREOGRAPH_AI_EMBEDDING_DIMENSIONS',
     'CHOREOGRAPH_AI_CHUNKER','CHOREOGRAPH_AI_GRANT_ID','CHOREOGRAPH_AI_EXPIRES_AT',
     *('CHOREOGRAPH_AI_'+field.upper() for field in POSITIVE_GRANT_FIELDS))
 CRM_FIELDS=('CHOREOGRAPH_HUBSPOT_APP_ID','CHOREOGRAPH_HUBSPOT_CLIENT_ID','CHOREOGRAPH_HUBSPOT_CLIENT_SECRET',
     'CHOREOGRAPH_HUBSPOT_REDIRECT_URI','CHOREOGRAPH_HUBSPOT_DISTRIBUTION','CHOREOGRAPH_HUBSPOT_CAPACITY',
     'CHOREOGRAPH_CRM_GRANT_ID','CHOREOGRAPH_CRM_EXPIRES_AT','CHOREOGRAPH_CRM_REQUESTS','CHOREOGRAPH_CRM_WORKSPACE_REQUESTS')
+
+
+def hubspot_report(values, *, application=None):
+    """CRM configuration only: an expired paid-AI grant cannot hide its diagnosis."""
+    from .crm_config import parse_live_crm
+    try:values=configuration_values(values,application=application)
+    except ValueError as error:
+        return {'mode':'read-only-hubspot-readiness','provider_calls':0,'configuration_ready':False,
+                'ai_independent':True,'missing':[],'changes_required':[],'code':str(error)}
+    origin=values.get('CHOREOGRAPH_ORIGIN','http://127.0.0.1:45860')
+    changes=[]
+    if values.get('CHOREOGRAPH_CRM_PROVIDER','disabled')!='hubspot':changes.append('REGISTER_CHOREOGRAPH_OAUTH_APP')
+    if origin=='http://127.0.0.1:45860':changes.append('CHOREOGRAPH_ORIGIN')
+    result={'mode':'read-only-hubspot-readiness','provider_calls':0,'configuration_ready':False,
+            'ai_independent':True,'missing':[name for name in CRM_FIELDS if not values.get(name)],
+            'changes_required':changes,'local_callback':'http://localhost:45860/auth/hubspot/callback',
+            'settings_file':'choreograph/runtime_config.py'}
+    if 'REGISTER_CHOREOGRAPH_OAUTH_APP' in changes:result['code']='CRM_DISABLED';return result
+    try:parse_live_crm(values,origin)
+    except ValueError as error:
+        result['code']=str(error) if re.fullmatch(r'[A-Z_]{3,80}',str(error)) else 'CRM_CONFIGURATION_INVALID'
+        return result
+    result['configuration_ready']=True;result['code']='CRM_CONFIGURATION_VALID'
+    return result
 
 
 def expected_head():
@@ -70,8 +95,12 @@ def database_status(engine,spec):
 
 
 def report(values,*,engine=None):
+    try:values=runtime_values(configuration_values(values))
+    except ValueError as error:return {'mode':'read-only-readiness','provider_calls':0,'missing':[],
+        'configuration':{'ready':False,'code':str(error)},'corpus':corpus_status(),
+        'database':{'ready':False,'code':'DATABASE_NOT_CHECKED'}}
     required=list(BASE_FIELDS)
-    if values.get('CHOREOGRAPH_PROFILE','fake')=='live':required.extend(AI_FIELDS)
+    if values.get('FAKE_MODE','true')=='false':required.extend(AI_FIELDS)
     if values.get('CHOREOGRAPH_CRM_PROVIDER','fake')=='hubspot':required.extend(CRM_FIELDS)
     missing=[name for name in required if not values.get(name)]
     result={'mode':'read-only-readiness','provider_calls':0,'missing':missing,'configuration':{'ready':False},
@@ -82,10 +111,10 @@ def report(values,*,engine=None):
         return result
     result['configuration']={'ready':True,'code':'CONFIGURATION_VALID','ai':settings.profile,'crm':settings.crm_provider}
     if settings.live_ai:
-        from .tokenizers import verified_bytes
+        from .tokenizers import RESPONSE_COUNTER, verified_bytes
         try:
             for name in {settings.live_ai.response_tokenizer,settings.live_ai.spec.tokenizer}:
-                verified_bytes(name,settings.live_ai.tokenizer_directory)
+                if name!=RESPONSE_COUNTER:verified_bytes(name,settings.live_ai.tokenizer_directory)
         except ValueError:result['configuration']={'ready':False,'code':'TOKENIZER_ASSET_INVALID'}
     if engine is not None:result['database']=database_status(engine,settings.live_ai.spec if settings.live_ai else FAKE_SPEC)
     return result
@@ -97,12 +126,18 @@ def main():
     parser.add_argument('--env-file',type=Path,default=ROOT/'apps/backend/.env.example')
     parser.add_argument('--database',action='store_true',help='Explicit read-only SQL check')
     parser.add_argument('--require-ready',action='store_true')
+    parser.add_argument('--hubspot-only',action='store_true',help='CRM configuration only; no AI grant, provider or SQL access')
     args=parser.parse_args();values={key:value for key,value in dotenv_values(args.env_file,interpolate=False).items() if value is not None}
+    if args.hubspot_only:
+        if args.database:parser.error('--hubspot-only cannot be combined with --database')
+        result=hubspot_report(values);print(json.dumps(result))
+        if args.require_ready and not result['configuration_ready']:raise SystemExit(2)
+        return
     engine=None
     try:
         if args.database:
             from .db import build_engine
-            engine=build_engine(Settings.parse(values))
+            engine=build_engine(Settings.parse(configuration_values(values)))
         result=report(values,engine=engine);print(json.dumps(result))
         if args.require_ready and not (result['configuration']['ready'] and result['corpus']['ready'] and
                 (not args.database or result['database']['ready'])):raise SystemExit(2)

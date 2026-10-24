@@ -7,8 +7,10 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from urllib.parse import parse_qs, urlsplit
 
-from .ai_config import LiveAIConfig, parse_live_ai
+from .ai_config import LiveAIConfig, parse_live_ai, runtime_values
 from .crm_config import LiveCRMConfig, parse_live_crm
+from .verification import TurnstileConfig
+from .verification import configuration as turnstile_configuration
 
 
 @dataclass(frozen=True)
@@ -22,14 +24,14 @@ class Settings:
     live_ai: LiveAIConfig | None = field(default=None, repr=False)
     crm_provider: str = 'disabled'
     live_crm: LiveCRMConfig | None = field(default=None, repr=False)
+    turnstile: TurnstileConfig | None = field(default=None, repr=False)
 
     @classmethod
     def parse(cls, values: Mapping[str, str], *, testing: bool = False) -> "Settings":
-        profile = values.get("CHOREOGRAPH_PROFILE", "fake")
+        values=runtime_values(values)
+        profile = 'fake' if values.get('FAKE_MODE', 'true') == 'true' else 'live'
         if testing and profile != "fake":
             raise ValueError("TEST_PROVIDER_FORBIDDEN")
-        if profile not in {"fake", "live"}:
-            raise ValueError("LIVE_ACCEPTANCE_NOT_CONFIGURED")
         db = values.get("CHOREOGRAPH_DATABASE_URL", "")
         parsed = urlsplit(db)
         query = parse_qs(parsed.query, keep_blank_values=True)
@@ -64,14 +66,15 @@ class Settings:
         if testing and crm_provider=='hubspot':raise ValueError('TEST_PROVIDER_FORBIDDEN')
         live_ai = parse_live_ai(values) if profile == 'live' else None
         live_crm=parse_live_crm(values,origin) if crm_provider=='hubspot' else None
-        return cls(db, origin, secret, key, profile, testing, live_ai, crm_provider, live_crm)
+        return cls(db, origin, secret, key, profile, testing, live_ai, crm_provider, live_crm,turnstile_configuration(values,origin))
 
 
 def load_local() -> Settings:
     from dotenv import dotenv_values
     backend = Path(__file__).resolve().parents[1]
     values = {key: value for key, value in dotenv_values(backend / ".env.local",interpolate=False).items() if value is not None}
-    settings=Settings.parse(values)
+    from .runtime_config import configuration_values
+    settings=Settings.parse(configuration_values(values))
     from sqlalchemy.engine import make_url
     url=make_url(settings.database_url)
     if (url.host not in {'localhost','127.0.0.1'} or url.port!=45862 or url.database!='choreograph' or url.query or
@@ -85,4 +88,5 @@ def load_environment(values: Mapping[str, str] | None = None) -> Settings:
     if values is None:
         import os
         values = os.environ
-    return Settings.parse(values)
+    from .runtime_config import configuration_values
+    return Settings.parse(configuration_values(values))

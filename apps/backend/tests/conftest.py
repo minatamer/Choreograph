@@ -35,7 +35,7 @@ def database():
     with admin.connect() as connection:
         connection.exec_driver_sql(f'CREATE DATABASE "{name}"')
     url = source.set(database=name).render_as_string(hide_password=False)
-    settings = Settings.parse({'CHOREOGRAPH_DATABASE_URL': url, 'CHOREOGRAPH_PROFILE': 'fake',
+    settings = Settings.parse({'CHOREOGRAPH_DATABASE_URL': url, 'FAKE_MODE':'true',
                                'CHOREOGRAPH_BRIDGE_SECRET': 'test-only-' + 'x'*40,
                                'CHOREOGRAPH_TOKEN_KEY': base64.urlsafe_b64encode(bytes(32)).decode()}, testing=True)
     engine = build_engine(settings)

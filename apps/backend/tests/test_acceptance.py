@@ -75,8 +75,8 @@ def runtime_for(engine,now):
 
 def test_readiness_dry_run_and_bootstrap_do_not_construct_providers(monkeypatch):
     monkeypatch.setattr('choreograph.composition.compose_ai',lambda *_:pytest.fail('network composition'))
-    result=readiness.report({'CHOREOGRAPH_PROFILE':'live'})
-    assert result['provider_calls']==0 and 'CHOREOGRAPH_OPENAI_API_KEY' in result['missing']
+    result=readiness.report({'FAKE_MODE':'false'})
+    assert result['provider_calls']==0 and 'OPENAI_API_KEY' in result['missing']
     assert result['corpus']['ready']
     assert acceptance.dry_plan('ai','evaluate')['limits']['ingest_embed']==24
     client=TestClient(release.application('bootstrap',None,None,{}))

@@ -149,8 +149,8 @@ def test_unattended_cycle_expires_private_sources_and_only_enqueues_cleanup(isol
 
 def test_dispatcher_filters_provider_secrets_and_status_never_constructs_google_client(isolated,monkeypatch,capsys):
     from choreograph import dispatcher
-    values={'CHOREOGRAPH_DATABASE_URL':isolated[1].database_url,'CHOREOGRAPH_PROFILE':'live',
-        'CHOREOGRAPH_OPENAI_API_KEY':'synthetic-must-be-ignored','CHOREOGRAPH_CRM_PROVIDER':'hubspot',
+    values={'CHOREOGRAPH_DATABASE_URL':isolated[1].database_url,'FAKE_MODE':'false',
+        'OPENAI_API_KEY':'synthetic-must-be-ignored','CHOREOGRAPH_CRM_PROVIDER':'hubspot',
         'CHOREOGRAPH_TASKS_ENABLED':'true','CHOREOGRAPH_TASK_PROJECT':CONFIG.project,
         'CHOREOGRAPH_TASK_REGION':CONFIG.region,'CHOREOGRAPH_TASK_QUEUE':CONFIG.queue,
         'CHOREOGRAPH_TASK_URL':CONFIG.target.url,'CHOREOGRAPH_TASK_AUDIENCE':CONFIG.target.audience,

@@ -9,15 +9,15 @@ from choreograph.settings import load_environment
 
 def values():
     return {'CHOREOGRAPH_DATABASE_URL': 'postgresql+psycopg://fixture:fixture@127.0.0.1:45862/choreograph_test_release',
-            'CHOREOGRAPH_PROFILE': 'fake', 'CHOREOGRAPH_BRIDGE_SECRET': 'x' * 40,
+            'FAKE_MODE':'true', 'CHOREOGRAPH_BRIDGE_SECRET': 'x' * 40,
             'CHOREOGRAPH_TOKEN_KEY': base64.urlsafe_b64encode(bytes(32)).decode()}
 
 
 def test_container_configuration_is_explicit_and_live_fails_closed(monkeypatch):
     monkeypatch.setenv('CHOREOGRAPH_PROFILE', 'real')
     assert load_environment(values()).profile == 'fake'
-    with pytest.raises(ValueError, match='LIVE_ACCEPTANCE_NOT_CONFIGURED'):
-        load_environment({**values(), 'CHOREOGRAPH_PROFILE': 'real'})
+    with pytest.raises(ValueError, match='AI_MODE_SWITCH_INVALID'):
+        load_environment({**values(), 'FAKE_MODE':'invalid'})
     socket = 'postgresql+psycopg://fixture:fixture@/choreograph?host=/cloudsql/test-project:us-central1:test-instance'
     assert load_environment({**values(), 'CHOREOGRAPH_DATABASE_URL': socket}).database_url == socket
     for suffix in ('/tmp/socket', '/cloudsql/../../socket', '/cloudsql/project:region:instance/extra'):

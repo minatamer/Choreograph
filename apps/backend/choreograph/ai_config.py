@@ -5,7 +5,7 @@ from dataclasses import dataclass, field
 from datetime import UTC, datetime
 
 from .ai_admission import EmbeddingSpec, GrantSpec
-from .tokenizers import ASSET_DIRECTORY
+from .tokenizers import ASSET_DIRECTORY, RESPONSE_COUNTER
 
 POSITIVE_GRANT_FIELDS = (
     'requests', 'input_tokens', 'output_tokens', 'vectors', 'cost_micros',
@@ -17,6 +17,15 @@ SUPPORTED_TOKENIZERS = frozenset({'cl100k_base', 'o200k_base'})
 LIVE_CHUNKER = 'llama-token-section-v4'
 
 
+def runtime_values(values:Mapping[str,str]):
+    """Validate the only two public mode controls; no legacy aliases."""
+    result=dict(values)
+    for name in ('FAKE_MODE','PAID_DEMO_ENABLED'):
+        if name in result and result[name] not in {'true','false'}:
+            raise ValueError('AI_MODE_SWITCH_INVALID')
+    return result
+
+
 @dataclass(frozen=True)
 class LiveAIConfig:
     api_key: str = field(repr=False)
@@ -24,6 +33,7 @@ class LiveAIConfig:
     tokenizer_directory: str
     spec: EmbeddingSpec
     grant: GrantSpec
+    reasoning_effort:str|None=None
 
 
 def _identifier(values, name, *, maximum=100):
@@ -46,9 +56,9 @@ def _positive(values, name):
 
 def parse_live_ai(values: Mapping[str, str], *, now: datetime | None = None) -> LiveAIConfig:
     """Require every spending input; flags or inherited SDK defaults are insufficient."""
-    if values.get('CHOREOGRAPH_AI_PAID_ENABLED') != 'true':
+    if values.get('PAID_DEMO_ENABLED') != 'true':
         raise ValueError('LIVE_AI_NOT_ENABLED')
-    key = values.get('CHOREOGRAPH_OPENAI_API_KEY', '')
+    key = values.get('OPENAI_API_KEY', '')
     if not isinstance(key, str) or not key or len(key) > 512 or any(char.isspace() for char in key):
         raise ValueError('LIVE_AI_CONFIGURATION_INVALID')
     try:
@@ -66,7 +76,7 @@ def parse_live_ai(values: Mapping[str, str], *, now: datetime | None = None) -> 
     embedding_tokenizer = _identifier(values, 'CHOREOGRAPH_AI_EMBEDDING_TOKENIZER')
     chunker = _identifier(values, 'CHOREOGRAPH_AI_CHUNKER')
     directory = values.get('CHOREOGRAPH_AI_TOKENIZER_DIRECTORY', str(ASSET_DIRECTORY))
-    if (response_tokenizer not in SUPPORTED_TOKENIZERS or embedding_tokenizer not in SUPPORTED_TOKENIZERS
+    if (response_tokenizer not in SUPPORTED_TOKENIZERS|{RESPONSE_COUNTER} or embedding_tokenizer not in SUPPORTED_TOKENIZERS
             or chunker != LIVE_CHUNKER or not isinstance(directory, str) or not directory
             or len(directory) > 4096 or '://' in directory or '\x00' in directory):
         raise ValueError('LIVE_AI_CONFIGURATION_INVALID')
@@ -84,5 +94,8 @@ def parse_live_ai(values: Mapping[str, str], *, now: datetime | None = None) -> 
         grant_id=_identifier(values, 'CHOREOGRAPH_AI_GRANT_ID', maximum=80),
         expires_at=expires, response_model=response_model, embedding_model=embedding_model, **limits,
     )
+    reasoning=values.get('CHOREOGRAPH_AI_REASONING_EFFORT') or None
+    if reasoning is not None and reasoning not in {'none','low','medium','high','xhigh','max'}:
+        raise ValueError('LIVE_AI_CONFIGURATION_INVALID')
     return LiveAIConfig(api_key=key, response_tokenizer=response_tokenizer,
-                        tokenizer_directory=directory, spec=spec, grant=grant)
+                        tokenizer_directory=directory, spec=spec, grant=grant,reasoning_effort=reasoning)

@@ -16,7 +16,6 @@ class LiveCRMConfig:
 
 
 def parse_live_crm(values, origin, *, now=None):
-    if values.get('CHOREOGRAPH_CRM_ENABLED')!='true':raise ValueError('CRM_NOT_ENABLED')
     app_id=values.get('CHOREOGRAPH_HUBSPOT_APP_ID','')
     client=values.get('CHOREOGRAPH_HUBSPOT_CLIENT_ID','')
     secret=values.get('CHOREOGRAPH_HUBSPOT_CLIENT_SECRET','')

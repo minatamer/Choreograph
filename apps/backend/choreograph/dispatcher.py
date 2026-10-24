@@ -76,7 +76,7 @@ def settings_for_dispatcher(values):
     # These values are deliberately unused cryptographic placeholders. This role
     # never reads the bridge/token/provider secrets or constructs those clients.
     return Settings.parse({'CHOREOGRAPH_DATABASE_URL':values.get('CHOREOGRAPH_DATABASE_URL',''),
-        'CHOREOGRAPH_PROFILE':'fake','CHOREOGRAPH_CRM_PROVIDER':'disabled',
+        'FAKE_MODE':'true','CHOREOGRAPH_CRM_PROVIDER':'disabled',
         'CHOREOGRAPH_BRIDGE_SECRET':'dispatcher-unused-'+'x'*32,
         'CHOREOGRAPH_TOKEN_KEY':base64.urlsafe_b64encode(bytes(32)).decode()})
 

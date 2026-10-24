@@ -101,7 +101,7 @@ def test_server_startup_failure_still_disposes_engine_if_runtime_close_fails(mon
 
 def test_once_runner_composes_and_closes_without_listener_or_provider_calls(monkeypatch, tmp_path):
     engine, runtime = Engine(), Runtime()
-    settings = Settings.parse({**live_values(), 'CHOREOGRAPH_PROFILE': 'fake'}, testing=True)
+    settings = Settings.parse({**live_values(), 'FAKE_MODE':'true'}, testing=True)
     monkeypatch.setattr(runner, 'load_local', lambda: settings)
     monkeypatch.setattr(runner, 'build_engine', lambda _: engine)
     monkeypatch.setattr(runner, 'compose_ai', lambda *_: runtime)

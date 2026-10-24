@@ -16,8 +16,8 @@ def test_explicit_config_does_not_inherit_live_environment(monkeypatch):
     monkeypatch.setenv("CHOREOGRAPH_PROFILE", "real")
     monkeypatch.setenv("OPENAI_API_KEY", "must-not-be-read")
     assert Settings.parse(values(), testing=True).profile == "fake"
-    with pytest.raises(ValueError, match="TEST_PROVIDER_FORBIDDEN"):
-        Settings.parse({**values(), "CHOREOGRAPH_PROFILE": "real"}, testing=True)
+    with pytest.raises(ValueError, match="AI_MODE_SWITCH_INVALID"):
+        Settings.parse({**values(), "FAKE_MODE":"invalid"}, testing=True)
 
 
 def test_test_database_guard_rejects_development_and_remote():

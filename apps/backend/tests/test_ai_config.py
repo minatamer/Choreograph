@@ -12,11 +12,11 @@ NOW = datetime(2026, 10, 22, tzinfo=UTC)
 
 def live_values():
     values = {
-        'CHOREOGRAPH_PROFILE': 'live', 'CHOREOGRAPH_AI_PAID_ENABLED': 'true',
+        'FAKE_MODE':'false', 'PAID_DEMO_ENABLED': 'true',
         'CHOREOGRAPH_DATABASE_URL': 'postgresql+psycopg://fixture:fixture@127.0.0.1:45862/choreograph_test_config',
         'CHOREOGRAPH_BRIDGE_SECRET': 'synthetic-bridge-' + 'x' * 40,
         'CHOREOGRAPH_TOKEN_KEY': base64.urlsafe_b64encode(bytes(32)).decode(),
-        'CHOREOGRAPH_OPENAI_API_KEY': 'synthetic-key-never-used-externally',
+        'OPENAI_API_KEY': 'synthetic-key-never-used-externally',
         'CHOREOGRAPH_AI_EXPIRES_AT': '2090-01-01T00:00:00Z',
         'CHOREOGRAPH_AI_RESPONSE_MODEL': 'operator-response-model',
         'CHOREOGRAPH_AI_EMBEDDING_MODEL': 'operator-embedding-model',
@@ -38,7 +38,7 @@ def test_explicit_live_configuration_has_no_model_price_or_allowance_defaults():
     assert config.spec.dimensions == 128
     assert config.tokenizer_directory == str(ASSET_DIRECTORY)
     required = [key for key in values if key.startswith('CHOREOGRAPH_AI_')]
-    required.append('CHOREOGRAPH_OPENAI_API_KEY')
+    required.append('OPENAI_API_KEY')
     for key in required:
         missing = values.copy()
         del missing[key]
@@ -64,7 +64,7 @@ def test_expiry_scope_and_embedding_identity_fail_closed():
         ('CHOREOGRAPH_AI_RESPONSE_TOKENIZER', 'implicit-model-tokenizer'),
         ('CHOREOGRAPH_AI_EMBEDDING_TOKENIZER', 'implicit-model-tokenizer'),
         ('CHOREOGRAPH_AI_TOKENIZER_DIRECTORY', 'https://example.invalid/vocabulary'),
-        ('CHOREOGRAPH_AI_PAID_ENABLED', 'True'),
+        ('PAID_DEMO_ENABLED', 'True'),
     ]:
         with pytest.raises(ValueError):
             parse_live_ai({**live_values(), name: value}, now=NOW)
@@ -74,18 +74,18 @@ def test_settings_preserve_fake_test_guard_and_hide_live_credentials(monkeypatch
     values = live_values()
     monkeypatch.setenv('OPENAI_API_KEY', 'ambient-key-must-not-be-used')
     config = Settings.parse(values)
-    assert config.live_ai.api_key == values['CHOREOGRAPH_OPENAI_API_KEY']
-    assert values['CHOREOGRAPH_OPENAI_API_KEY'] not in repr(config)
-    assert values['CHOREOGRAPH_OPENAI_API_KEY'] not in repr(config.live_ai)
+    assert config.live_ai.api_key == values['OPENAI_API_KEY']
+    assert values['OPENAI_API_KEY'] not in repr(config)
+    assert values['OPENAI_API_KEY'] not in repr(config.live_ai)
     with pytest.raises(ValueError, match='TEST_PROVIDER_FORBIDDEN'):
         Settings.parse(values, testing=True)
-    fake = Settings.parse({**values, 'CHOREOGRAPH_PROFILE': 'fake'}, testing=True)
+    fake = Settings.parse({**values, 'FAKE_MODE':'true'}, testing=True)
     assert fake.live_ai is None
 
 
 def test_explicit_live_mapping_cannot_use_ambient_sdk_key(monkeypatch):
     monkeypatch.setenv('OPENAI_API_KEY', 'ambient-key-must-not-be-used')
     values = live_values()
-    del values['CHOREOGRAPH_OPENAI_API_KEY']
+    del values['OPENAI_API_KEY']
     with pytest.raises(ValueError, match='LIVE_AI_CONFIGURATION_INVALID'):
         Settings.parse(values)
