@@ -160,10 +160,11 @@ def perform(engine,provider,job,data,clock,deadline):
         with Session(engine) as db,db.begin():
             ws=db.get(Workspace,job['workspace_id']);connection=db.get(Connection,(ws.id,data['connection_id']))
             crm.account_lock(db)
-            if crm.other_uses(db,ws,connection,clock()):raise CRMFailure('CRM_SHARED_INSTALL')
             # Hold the install registry lock through account-wide removal so a new
             # callback cannot bind before the verified registry removal commits.
-            try:call(provider.uninstall)
+            try:
+                if crm.other_uses(db,ws,connection,clock()):raise CRMFailure('CRM_SHARED_INSTALL')
+                call(provider.uninstall)
             except CRMFailure as error:error.progress=result;raise
             install=db.get(Installation,(provider.app_id,connection.account_id))
             if install:install.state='uninstalled';install.checked_at=clock()
@@ -191,6 +192,7 @@ def finish_job(engine,provider,job,clock,*,result=None,error=None):
                 row.due_at=clock()+timedelta(seconds=max(error.retry_after,min(300,5*2**(row.attempts-1))))
             else:
                 row.state='needs_attention'
+                if row.kind=='crm_cleanup':connection.state='needs_attention'
                 if error.code=='CRM_AUTH_REQUIRED':connection.encrypted_tokens=None;connection.state='needs_attention';connection.export_consent=False
             return True
         row.code=None;row.state='synced' if row.kind=='crm_upsert' else 'completed'

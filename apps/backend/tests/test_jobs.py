@@ -1,7 +1,7 @@
 import threading
 from concurrent.futures import ThreadPoolExecutor
 from datetime import timedelta
-from uuid import UUID
+from uuid import UUID, uuid4
 
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
@@ -58,6 +58,47 @@ def test_durable_duplicate_and_concurrent_delivery(database):
             assert db.scalar(select(func.count()).select_from(SimulatedRecord).where(SimulatedRecord.account_id=='simulated-'+s['workspace_id'],SimulatedRecord.archived.is_(False)))==2
         assert p.calls.count('upsert-contacts')==1
     finally:c.close()
+
+
+def test_shared_install_appearing_during_cleanup_preserves_progress_and_reports_attention(database):
+    engine,settings=database
+
+    class ConcurrentInstall(FakeHubSpot):
+        on_archived=None
+        def archive(self,tokens,kind,key):
+            super().archive(tokens,kind,key)
+            if kind=='contacts' and self.on_archived:
+                callback,self.on_archived=self.on_archived,None
+                callback()
+
+    provider=ConcurrentInstall(engine,account_id='cleanup-race-'+uuid4().hex)
+    c,h,state,_,eid=connected_booking(database,provider)
+    other,other_headers,other_state,_=begin(database,provider)
+    try:
+        assert jobs.deliver(engine,settings,provider,claim_for(engine,state,eid),lambda:NOW)
+        state=c.get('/v1/session',headers=h).json()
+        response=command(c,h,state,{'connection_id':state['connection']['id'],'confirm':True,
+            'cleanup':True,'uninstall':True},'/v1/crm/finish',method='post')
+        assert response.status_code==200
+        state=response.json()['state']
+        with Session(engine) as db:
+            cleanup=db.scalar(select(Outbox.id).where(Outbox.workspace_id==state['workspace_id'],Outbox.kind=='crm_cleanup'))
+        provider.on_archived=lambda:connect(other,other_headers,other_state)
+        assert jobs.deliver(engine,settings,provider,claim_for(engine,state,cleanup),lambda:NOW)
+        current=c.get('/v1/session',headers=h).json()
+        assert current['connection']['cleanup_state']=='removed'
+        assert current['connection']['uninstall_state']=='not_requested'
+        assert current['connection']['state']=='needs_attention'
+        assert current['requests'][0]['status']=='confirmed'
+        assert other.get('/v1/session',headers=other_headers).json()['connection']['state']=='ready'
+        assert 'uninstall' not in provider.calls
+        with Session(engine) as db:
+            event=db.get(Outbox,(UUID(state['workspace_id']),cleanup))
+            assert event.state=='needs_attention' and event.code=='CRM_SHARED_INSTALL'
+            assert db.get(Installation,(provider.app_id,provider.account_id)).state=='installed'
+            assert db.scalar(select(func.count()).select_from(SimulatedRecord).where(
+                SimulatedRecord.account_id==provider.account_id,SimulatedRecord.archived.is_(True)))==2
+    finally:c.close();other.close()
 
 
 def test_expired_lease_recovers_without_accepting_old_worker(database):

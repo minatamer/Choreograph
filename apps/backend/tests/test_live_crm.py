@@ -95,8 +95,8 @@ class NativeFixture:
         return httpx.Response(200,json=self.records[kind])
 
 
-def native(database,zone='UTC'):
-    engine,settings=database;wire=NativeFixture()
+def native(database,zone='UTC',*,wire=None):
+    engine,settings=database;wire=wire if wire is not None else NativeFixture()
     config=parse_live_crm(config_values(),'http://localhost:45860',now=NOW)
     settings=replace(settings,testing=False,origin='http://localhost:45860',crm_provider='hubspot',live_crm=config)
     http=httpx.Client(base_url='https://api.hubapi.com',transport=httpx.MockTransport(wire))
@@ -196,6 +196,47 @@ def test_native_account_destination_schema_consent_booking_verified_links_and_cl
             assert db.get(Installation,('123','456')).state=='uninstalled'
             assert db.get(CRMGrant,settings.live_crm.allowance.grant_id).requests==len(wire.requests)
         provider.close();assert not http.is_closed  # Borrowed transport remains caller-owned.
+    finally:client.close();http.close()
+
+
+@pytest.mark.parametrize('connection_state',['setup','ready','detached'])
+def test_explicit_uninstall_without_record_cleanup_uses_native_delete_and_separate_receipt(database,connection_state):
+    account=1_000_000_000+int(uuid4().hex[:8],16)
+
+    class AccountFixture(NativeFixture):
+        def __call__(self,request):
+            response=super().__call__(request)
+            if request.url.path.endswith('/introspect'):
+                return httpx.Response(200,json={**response.json(),'hub_id':account})
+            if request.url.path=='/account-info/2026-09/details':
+                return httpx.Response(200,json={**response.json(),'portalId':account})
+            return response
+
+    client,headers,state,provider,wire,settings,http=native(database,wire=AccountFixture())
+    try:
+        state,_=connect(client,headers,state)
+        if connection_state!='setup':state=setup(client,headers,state).json()['state']
+        if connection_state=='detached':state=command(client,headers,state,{},'/v1/crm/disconnect',method='post').json()['state']
+        assert state['connection']['state']==connection_state and state['connection']['can_uninstall']
+        before=len(wire.requests)
+        response=command(client,headers,state,{'connection_id':state['connection']['id'],'confirm':True,
+            'cleanup':False,'uninstall':True},'/v1/crm/finish',method='post')
+        assert response.status_code==200
+        state=response.json()['state']
+        assert state['connection']['state']=='finishing' and len(wire.requests)==before
+        assert jobs.tick(database[0],settings,provider,lambda:NOW)==1
+        calls=wire.requests[before:]
+        assert [(request.method,request.url.path) for request in calls]==[('DELETE','/appinstalls/v3/external-install')]
+        assert calls[0].headers['authorization']=='Bearer synthetic-access'
+        state=client.get('/v1/session',headers=headers).json()
+        assert state['crm_mode']=='skipped' and state['connection']['state']=='finished'
+        assert state['connection']['cleanup_state']=='not_requested' and state['connection']['uninstall_state']=='removed'
+        with Session(database[0]) as db:
+            connection=db.get(Connection,(UUID(state['workspace_id']),UUID(state['connection']['id'])))
+            assert connection.encrypted_tokens is None
+            assert db.get(Installation,('123',str(account))).state=='uninstalled'
+        assert jobs.tick(database[0],settings,provider,lambda:NOW)==0
+        assert len(wire.requests)==before+1
     finally:client.close();http.close()
 
 
