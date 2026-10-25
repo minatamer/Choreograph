@@ -219,3 +219,5 @@ body::before {
 /* Official unmodified HubSpot wordmark for the optional account connection. */
 .crm-controls>.section-heading{width:100%}.crm-controls>.section-heading>div{min-width:0;width:100%}.crm-brand{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;min-height:40px;margin-bottom:18px}
 .crm-brand img{display:block;width:128px;height:auto;flex-shrink:0}
+.crm-connect-heading{display:flex;align-items:center;flex-wrap:wrap;gap:8px}
+.crm-connect-heading .crm-heading-wordmark{display:block;width:auto;height:1em;flex-shrink:0}

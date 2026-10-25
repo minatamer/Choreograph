@@ -1,3 +1,13 @@
+.entry-shell{display:flow-root}
+.entry-shell .entry-page{padding-top:28px}
+.entry-shell .entry-page h1{margin-top:0}
+.entry-shell .entry-intro{max-width:none}
+.entry-setup .crm-choice{width:100%;flex:1}
+.entry-setup .crm-choice .crm-brand{min-height:28px;margin:0}
+.entry-setup .crm-choice h2{font-size:32px;margin:20px 0}
+.entry-setup .crm-choice .section-heading p{font-size:18px;line-height:1.53;margin:0;max-width:none}
+.entry-setup .crm-choice>.crm-connect-button,.entry-setup .entry-choices>article>.button{margin-top:auto}
+@media(max-width:740px){.entry-setup .crm-choice h2{font-size:28px;margin:16px 0}.entry-setup .crm-choice .section-heading p{font-size:16px}}
 .entry-welcome .intro-guide-story{align-items:flex-start;gap:8px;height:100%;justify-content:space-between}
 .entry-welcome .intro-guide-story>strong{font-size:24px;line-height:1.3}
 .entry-welcome .intro-guide-story>p{font-size:14px;line-height:1.7;max-width:none}
@@ -11,7 +21,12 @@
 .entry-continue{display:flex;flex-direction:column;align-items:flex-start;gap:12px;width:100%}
 .entry-continue .button{min-width:180px;min-height:48px}
 .entry-continue small{font-size:12px;color:var(--color-text-secondary)}
-.entry-continue [role="alert"]{font-size:14px;color:var(--color-text-secondary)}
+.entry-shell .entry-feedback{display:flex;align-items:flex-start;align-self:stretch;gap:10px;width:100%;min-width:0;padding:12px 14px;border:1px solid #b43a3245;border-radius:16px;background:transparent;box-shadow:inset 0 1px 1px #ffffffa6;color:#972a25;overflow-wrap:anywhere}
+.entry-feedback>svg{flex-shrink:0;margin-top:1px}
+.entry-feedback>div{min-width:0}
+.entry-feedback strong{display:block;font-size:14px;line-height:1.4;font-weight:500}
+.entry-shell .entry-feedback p{font-size:13px;line-height:1.5;color:inherit;margin:4px 0 0;max-width:none}
+.entry-shell .entry-feedback.notice{color:#285da5;border-color:#5287c442}
 .demo-timezone{display:flex;flex-direction:column;gap:10px;width:100%;font-size:14px;text-align:left}
 .demo-timezone input{width:100%;padding:12px;border:1px solid var(--color-border-default);border-radius:12px;background:transparent;color:inherit;font:inherit}
 @media(max-width:740px){.entry-welcome .intro-guide-story>strong{font-size:22px}.entry-welcome .intro-next h2{font-size:26px}.entry-continue{align-items:stretch}.entry-preview-steps{gap:12px}}
