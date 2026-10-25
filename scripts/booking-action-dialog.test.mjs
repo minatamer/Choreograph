@@ -18,7 +18,7 @@ function find(node,predicate){
 }
 function hooks(){
  let index=0,sets=0;const slots=[],effects=[];
- return {react:{useState:initial=>{const n=index++;slots[n]??={value:initial};return [slots[n].value,update=>{sets++;slots[n].value=typeof update==='function'?update(slots[n].value):update;}];},
+ return {react:{useId:()=> 'confirmation-fixture',useState:initial=>{const n=index++;slots[n]??={value:initial};return [slots[n].value,update=>{sets++;slots[n].value=typeof update==='function'?update(slots[n].value):update;}];},
   useRef:initial=>{const n=index++;slots[n]??={current:initial};return slots[n];},
   useEffect:(callback,next)=>{const n=index++;if(!slots[n]||next.some((value,j)=>!Object.is(value,slots[n].deps[j]))){const previous=slots[n];slots[n]={deps:next};effects.push(()=>{previous?.cleanup?.();slots[n].cleanup=callback();});}}},
   begin:()=>{index=0;},flush:()=>{for(const effect of effects.splice(0))effect();},sets:()=>sets,cleanup:()=>slots.forEach(slot=>slot?.cleanup?.())};
@@ -26,15 +26,18 @@ function hooks(){
 const record={id:'booking',revision:3,status:'confirmed',preferred_at:'2026-10-27T07:00:00Z',fields:{service:'deep',bedrooms:2},
  quote:{cents:12000,minutes:180,items:[{name:'Deep cleaning · 2 bedrooms'}]},booking:{staff_id:'ada'},crm_state:'not_connected'};
 const dialogCode=compile('../apps/frontend/components/booking-action-dialog.tsx');
+const confirmationCode=compile('../apps/frontend/components/confirmation-dialog.tsx');
 function dialog({action='complete',status='confirmed',pending=false}={}){
  const h=hooks();let tree,resolve,reject,calls=0,closed=0;
  const response=new Promise((yes,no)=>{resolve=yes;reject=no;});
  const opener={isConnected:true},fallbackFocus={isConnected:true};
  const deps={react:h.react,'react/jsx-runtime':jsx,'@/lib/api':api,'@/lib/timezone':timezone,
   './expanding-dialog':{ExpandingDialog:function Dialog(){}},'./ui':{Button:function Button(){}}};
+ const Confirmation=new Function('require','exports',confirmationCode+'\nreturn ConfirmationDialog;')(name=>{assert.ok(name in deps);return deps[name];},{});
+ deps['./confirmation-dialog']={ConfirmationDialog:Confirmation};
  const Component=new Function('require','exports',dialogCode+'\nreturn BookingActionDialog;')(name=>{assert.ok(name in deps);return deps[name];},{});
- function render(){h.begin();tree=Component({record:{...record,status},zone:'Africa/Cairo',action,pending,opener,fallbackFocus,
-  onClose:()=>closed++,onConfirm:()=>{calls++;return response;}});h.flush();}
+ function render(){h.begin();const wrapper=Component({record:{...record,status},zone:'Africa/Cairo',action,pending,opener,fallbackFocus,
+  onClose:()=>closed++,onConfirm:()=>{calls++;return response;}});tree=Confirmation(wrapper.props);h.flush();}
  render();
  return {render,tree:()=>tree,button:text=>find(tree,node=>node.props?.children===text),calls:()=>calls,closed:()=>closed,opener,fallbackFocus,
   settle:async(success=true)=>{resolve(success?{state:{}}:null);for(let n=0;n<5;n++)await Promise.resolve();render();},
@@ -142,4 +145,18 @@ test('keyboard focus stays in a saving dialog when every action is disabled',()=
  document.activeElement=last;key('Tab');assert.equal(document.activeElement,first);
  key('Tab',true);assert.equal(document.activeElement,last);
  key('Escape');assert.equal(closed,1);cleanup();assert.equal(listeners.size,0);
+});
+
+test('a confirmation yields keyboard control to a designed top-layer human-check dialog',()=>{
+ const effects=[],listeners=new Map();let modal={},closed=0,prevented=0,focused=0;
+ const document={activeElement:null,querySelector:()=>modal,
+  addEventListener:(name,fn)=>listeners.set(name,fn),removeEventListener:name=>listeners.delete(name)};
+ const panel={closest:()=>null,contains:()=>false,querySelector:()=>null,querySelectorAll:()=>[],focus:()=>focused++};
+ const deps={react:{useRef:value=>({current:value}),useEffect:fn=>effects.push(fn)}};
+ const hook=new Function('require','exports','document',compile('../apps/frontend/components/use-dialog-focus.ts')+'\nreturn useDialogFocus;')(
+  name=>deps[name],{},document);
+ hook({current:panel},()=>closed++);effects[0]();const cleanup=effects[1]();focused=0;
+ const key=value=>listeners.get('keydown')({key:value,defaultPrevented:false,preventDefault(){prevented++;},stopPropagation(){}});
+ key('Tab');key('Escape');assert.equal(prevented,0);assert.equal(focused,0);assert.equal(closed,0);
+ modal=null;key('Tab');assert.equal(prevented,1);assert.equal(focused,1);key('Escape');assert.equal(closed,1);cleanup();
 });

@@ -8,6 +8,8 @@ export function useDialogFocus(panel:RefObject<HTMLElement|null>,onClose:()=>voi
   (panel.current?.querySelector<HTMLElement>('button:not(:disabled)')??panel.current)?.focus({preventScroll:true});
   const key=(event:KeyboardEvent)=>{
    if(event.defaultPrevented||panel.current?.closest('[inert]'))return;
+   const modal=document.querySelector?.<HTMLDialogElement>('dialog:modal');
+   if(modal&&!panel.current?.contains(modal))return;
    if(event.key==='Escape'){event.preventDefault();event.stopPropagation();close.current();}
    if(event.key!=='Tab')return;
    const nodes=panel.current?.querySelectorAll<HTMLElement>('button:not(:disabled),a[href],input:not(:disabled),select:not(:disabled),[tabindex="0"]');
