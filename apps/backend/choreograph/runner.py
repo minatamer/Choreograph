@@ -13,6 +13,7 @@ from .composition import compose_ai
 from .crm_composition import compose_crm
 from .db import build_engine
 from .jobs import tick
+from .persistence import is_object
 from .settings import load_local
 
 
@@ -32,7 +33,9 @@ def main():
     try:
         ai_runtime=compose_ai(settings,engine)
         provider=compose_crm(settings,engine)
-        with engine.connect() as db:db.execute(text('SELECT 1'))
+        if is_object(engine):engine.load()
+        else:
+            with engine.connect() as db:db.execute(text('SELECT 1'))
         ready()
         while not stop.is_set():
             try:

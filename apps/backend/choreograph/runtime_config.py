@@ -1,12 +1,15 @@
 """Reviewed, nonsecret application policy. No file/environment/network access.
 
-Env files hold credentials, connection addresses and the two mode switches.
+Env files hold credentials, connection addresses and the three mode switches.
 These values are code configuration, not additional runtime switches.
 """
 from types import MappingProxyType
 
 # One-time Choreograph OAuth app registration, shared by the Connect button.
 # Public identifiers, NOT a visitor account ID or personal CRM API token.
+# Private object bucket; provision only through the reviewed deployment runbook.
+OBJECT_BUCKET = 'choreograph-512713-private-state'
+
 HUBSPOT_APP_ID = '58593051'
 HUBSPOT_CLIENT_ID = 'e797c71e-5806-4b02-ac65-a1e7c64fd539'
 
@@ -62,6 +65,7 @@ APPLICATION = MappingProxyType({
 })
 
 ENV_FIELDS = frozenset({
+    'DATABASE_ENABLED',
     'FAKE_MODE', 'PAID_DEMO_ENABLED', 'OPENAI_API_KEY',
     'TURNSTILE_SITE_KEY', 'TURNSTILE_SECRET_KEY',
     'CHOREOGRAPH_DB_PASSWORD', 'CHOREOGRAPH_DATABASE_URL', 'CHOREOGRAPH_ORIGIN',

@@ -36,29 +36,35 @@ class Settings:
     crm_provider: str = 'disabled'
     live_crm: LiveCRMConfig | None = field(default=None, repr=False)
     turnstile: TurnstileConfig | None = field(default=None, repr=False)
+    database_enabled: bool = False
+    object_backend: str = 'local'
 
     @classmethod
     def parse(cls, values: Mapping[str, str], *, testing: bool = False,
               local_manual_grant_id: str | None = None,
               local_manual_crm_grant_id: str | None = None) -> "Settings":
         values=runtime_values(values)
+        database_value=values.get('DATABASE_ENABLED','false')
+        if database_value not in {'true','false'}:
+            raise ValueError('DATABASE_ENABLED_INVALID')
+        database_enabled=database_value=='true'
         profile = 'fake' if values.get('FAKE_MODE', 'true') == 'true' else 'live'
         if testing and profile != "fake":
             raise ValueError("TEST_PROVIDER_FORBIDDEN")
         db = values.get("CHOREOGRAPH_DATABASE_URL", "")
-        parsed = urlsplit(db)
+        parsed = urlsplit(db if database_enabled else '')
         query = parse_qs(parsed.query, keep_blank_values=True)
         socket_hosts = query.get('host', [])
         cloud_socket = (not parsed.hostname and set(query) == {'host'} and len(socket_hosts) == 1 and
                         len(socket_hosts[0] + '/.s.PGSQL.5432') < 108 and
                         re.fullmatch(r'/cloudsql/[a-z0-9-]+:[a-z0-9-]+:[a-z0-9-]+', socket_hosts[0]) is not None)
-        if parsed.scheme != "postgresql+psycopg" or not (parsed.hostname or cloud_socket) or not parsed.path:
+        if database_enabled and (parsed.scheme != "postgresql+psycopg" or not (parsed.hostname or cloud_socket) or not parsed.path):
             raise ValueError("DATABASE_CONFIGURATION_INVALID")
         # libpq query parameters can override the authority, including the test
         # host guard. Only the explicitly validated Cloud SQL socket may use one.
-        if query and not cloud_socket:
+        if database_enabled and query and not cloud_socket:
             raise ValueError("DATABASE_CONFIGURATION_INVALID")
-        if testing and (parsed.hostname not in {"127.0.0.1", "localhost"} or
+        if database_enabled and testing and (parsed.hostname not in {"127.0.0.1", "localhost"} or
                         not parsed.path.removeprefix("/").startswith("choreograph_test_")):
             raise ValueError("ISOLATED_TEST_DATABASE_REQUIRED")
         origin = values.get("CHOREOGRAPH_ORIGIN", "http://127.0.0.1:45860")
@@ -77,13 +83,16 @@ class Settings:
         crm_provider=values.get('CHOREOGRAPH_CRM_PROVIDER','fake' if testing else 'disabled')
         if crm_provider not in {'fake','hubspot','disabled'}:raise ValueError('CRM_CONFIGURATION_INVALID')
         if testing and crm_provider=='hubspot':raise ValueError('TEST_PROVIDER_FORBIDDEN')
-        if local_manual_grant_id is not None and profile=='live':
+        if (not database_enabled and (local_manual_grant_id or local_manual_crm_grant_id) and
+                origin not in {'http://localhost:45860','http://127.0.0.1:45860'}):
+            raise ValueError('LOCAL_MANUAL_STORAGE_ONLY')
+        if database_enabled and local_manual_grant_id is not None and profile=='live':
             require_local_manual_target(db,origin,'LOCAL_MANUAL_AI_ONLY')
-        if local_manual_crm_grant_id is not None and crm_provider=='hubspot':
+        if database_enabled and local_manual_crm_grant_id is not None and crm_provider=='hubspot':
             require_local_manual_target(db,origin,'LOCAL_MANUAL_CRM_ONLY')
         live_ai = parse_live_ai(values,manual_grant_id=local_manual_grant_id) if profile == 'live' else None
         live_crm=parse_live_crm(values,origin,manual_grant_id=local_manual_crm_grant_id) if crm_provider=='hubspot' else None
-        return cls(db, origin, secret, key, profile, testing, live_ai, crm_provider, live_crm,turnstile_configuration(values,origin))
+        return cls(db, origin, secret, key, profile, testing, live_ai, crm_provider, live_crm,turnstile_configuration(values,origin),database_enabled)
 
 
 def load_local() -> Settings:
@@ -94,8 +103,8 @@ def load_local() -> Settings:
     settings=Settings.parse(configuration_values(values),local_manual_grant_id=LOCAL_MANUAL_AI_GRANT_ID or None,
                             local_manual_crm_grant_id=LOCAL_MANUAL_CRM_GRANT_ID or None)
     from sqlalchemy.engine import make_url
-    url=make_url(settings.database_url)
-    if (url.host not in {'localhost','127.0.0.1'} or url.port!=45862 or url.database!='choreograph' or url.query or
+    url=make_url(settings.database_url) if settings.database_enabled else None
+    if ((url is not None and (url.host not in {'localhost','127.0.0.1'} or url.port!=45862 or url.database!='choreograph' or url.query)) or
             settings.origin not in {'http://localhost:45860','http://127.0.0.1:45860'}):
         raise ValueError('LOCAL_CONFIGURATION_REQUIRED')
     return settings
@@ -106,5 +115,7 @@ def load_environment(values: Mapping[str, str] | None = None) -> Settings:
     if values is None:
         import os
         values = os.environ
+    from dataclasses import replace
+
     from .runtime_config import configuration_values
-    return Settings.parse(configuration_values(values))
+    return replace(Settings.parse(configuration_values(values)),object_backend='gcs')

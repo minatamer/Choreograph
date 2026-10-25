@@ -49,13 +49,14 @@ def private_values(values):
         if profile not in {'fake', 'live'}:
             raise ValueError('LOCAL_MODE_MIGRATION_INVALID')
         result['FAKE_MODE'] = 'true' if profile == 'fake' else 'false'
+    result.setdefault('DATABASE_ENABLED','true' if values.get('CHOREOGRAPH_DATABASE_URL') else 'false')
     result.setdefault('PAID_DEMO_ENABLED', values.get('CHOREOGRAPH_AI_PAID_ENABLED', 'false'))
     if 'OPENAI_API_KEY' not in result:
         result['OPENAI_API_KEY'] = values.get('CHOREOGRAPH_OPENAI_API_KEY', '')
     elif (result['OPENAI_API_KEY'] and values.get('CHOREOGRAPH_OPENAI_API_KEY') and
           result['OPENAI_API_KEY'] != values['CHOREOGRAPH_OPENAI_API_KEY']):
         raise ValueError('LOCAL_SECRET_ALIAS_CONFLICT')
-    if any(result[key] not in {'true', 'false'} for key in ('FAKE_MODE', 'PAID_DEMO_ENABLED')):
+    if any(result[key] not in {'true', 'false'} for key in ('DATABASE_ENABLED', 'FAKE_MODE', 'PAID_DEMO_ENABLED')):
         raise ValueError('LOCAL_MODE_MIGRATION_INVALID')
     # Do not silently discard a deliberately different model, allowance or app ID.
     # Callback is derived from origin; old disabled flags are no longer switches.
@@ -80,7 +81,7 @@ def prepare(root=ROOT):
         existing_frontend = read_values(frontend) if frontend.exists() else {}
         password = secrets.token_hex(24)
         backend_values = {
-            'FAKE_MODE': 'true', 'PAID_DEMO_ENABLED': 'false',
+            'DATABASE_ENABLED':'false','FAKE_MODE': 'true', 'PAID_DEMO_ENABLED': 'false',
             'CHOREOGRAPH_DB_PASSWORD': password,
             'CHOREOGRAPH_DATABASE_URL': f'postgresql+psycopg://choreograph:{password}@127.0.0.1:45862/choreograph',
             'CHOREOGRAPH_ORIGIN': existing_frontend.get('CHOREOGRAPH_ORIGIN', 'http://127.0.0.1:45860'),

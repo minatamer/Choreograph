@@ -7,12 +7,12 @@ from pathlib import Path
 
 from alembic.config import Config
 from alembic.script import ScriptDirectory
-from sqlalchemy import func, select, text
-from sqlalchemy.orm import Session
+from sqlalchemy import text
 
 from .ai_admission import FAKE_SPEC
 from .ai_config import POSITIVE_GRANT_FIELDS, runtime_values
 from .models import Chunk, DocumentVersion
+from .persistence import Session, is_object, repo_rows, repo_value
 from .runtime_config import configuration_values
 from .settings import Settings, require_local_manual_target
 
@@ -46,8 +46,10 @@ def hubspot_report(values, *, application=None, local_manual_crm_grant_id=None):
             'settings_file':'choreograph/runtime_config.py'}
     if 'REGISTER_CHOREOGRAPH_OAUTH_APP' in changes:result['code']='CRM_DISABLED';return result
     try:
-        if local_manual_crm_grant_id is not None:
+        if local_manual_crm_grant_id is not None and values.get('DATABASE_ENABLED','false')=='true':
             require_local_manual_target(values.get('CHOREOGRAPH_DATABASE_URL',''),origin,'LOCAL_MANUAL_CRM_ONLY')
+        elif local_manual_crm_grant_id is not None and origin not in {'http://localhost:45860','http://127.0.0.1:45860'}:
+            raise ValueError('LOCAL_MANUAL_CRM_ONLY')
         parse_live_crm(values,origin,manual_grant_id=local_manual_crm_grant_id)
     except ValueError as error:
         result['code']=str(error) if re.fullmatch(r'[A-Z_]{3,80}',str(error)) else 'CRM_CONFIGURATION_INVALID'
@@ -76,25 +78,27 @@ def corpus_status():
 
 def database_status(engine,spec):
     try:
-        with engine.connect() as connection:
-            actual=connection.scalar(text('SELECT version_num FROM alembic_version'))
-            version=connection.scalar(text('SHOW server_version_num'))
-            extensions=dict(connection.execute(text("SELECT extname,extversion FROM pg_extension WHERE extname IN ('vector','btree_gist')")).all())
-        if actual!=expected_head():return {'ready':False,'code':'SCHEMA_NOT_CURRENT','head':actual,'expected_head':expected_head()}
-        if not 170000<=int(version)<180000 or extensions!={'vector':'0.8.5','btree_gist':'1.7'}:
-            return {'ready':False,'code':'DATABASE_CAPABILITY_MISMATCH'}
+        if is_object(engine):
+            engine.load();actual='object-v1';extensions={}
+        else:
+            with engine.connect() as connection:
+                actual=connection.scalar(text('SELECT version_num FROM alembic_version'))
+                version=connection.scalar(text('SHOW server_version_num'))
+                extensions=dict(connection.execute(text("SELECT extname,extversion FROM pg_extension WHERE extname IN ('vector','btree_gist')")).all())
+            if actual!=expected_head():return {'ready':False,'code':'SCHEMA_NOT_CURRENT','head':actual,'expected_head':expected_head()}
+            if not 170000<=int(version)<180000 or extensions!={'vector':'0.8.5','btree_gist':'1.7'}:
+                return {'ready':False,'code':'DATABASE_CAPABILITY_MISMATCH'}
         manifest=[item for item in json.loads((ROOT/'assets/knowledge/manifest.json').read_text()) if not item['replacement']]
         ready=0
         with Session(engine) as db:
             for item in manifest:
-                version_id=db.scalar(select(DocumentVersion.id).where(DocumentVersion.owner_id.is_(None),
-                    DocumentVersion.slot==item['slot'],DocumentVersion.sha256==item['sha256'],
-                    DocumentVersion.embedding_profile_id==spec.profile_id,DocumentVersion.state=='ready'))
+                version_id=repo_value(db, DocumentVersion, 'id', filters={'slot': item['slot'], 'sha256': item['sha256'], 'embedding_profile_id': spec.profile_id, 'state': 'ready'}, predicate=lambda candidate: candidate.owner_id is None)
                 if version_id is None:continue
-                count,minimum,maximum=db.execute(select(func.count(),func.min(func.vector_dims(Chunk.embedding)),
-                    func.max(func.vector_dims(Chunk.embedding))).where(Chunk.version_id==version_id)).one()
+                chunks=repo_rows(db,Chunk,filters={'version_id':version_id})
+                count=len(chunks);minimum=min((len(row.embedding) for row in chunks),default=0)
+                maximum=max((len(row.embedding) for row in chunks),default=0)
                 if count and minimum==maximum==spec.dimensions:ready+=1
-        return {'ready':ready==6,'code':'DATABASE_READY' if ready==6 else 'KNOWLEDGE_NOT_READY',
+        return {'ready':ready==6,'code':('OBJECT_STORAGE_READY' if is_object(engine) else 'DATABASE_READY') if ready==6 else 'KNOWLEDGE_NOT_READY',
             'head':actual,'ready_slots':ready,'profile_id':spec.profile_id,'extensions':extensions}
     except Exception:  # noqa: BLE001 - diagnostic output must never contain the DB URL, credentials or SQL parameters.
         return {'ready':False,'code':'DATABASE_CHECK_FAILED'}
@@ -105,7 +109,7 @@ def report(values,*,engine=None,local_manual_grant_id=None,local_manual_crm_gran
     except ValueError as error:return {'mode':'read-only-readiness','provider_calls':0,'missing':[],
         'configuration':{'ready':False,'code':str(error)},'corpus':corpus_status(),
         'database':{'ready':False,'code':'DATABASE_NOT_CHECKED'}}
-    required=list(BASE_FIELDS)
+    required=[name for name in BASE_FIELDS if name!='CHOREOGRAPH_DATABASE_URL' or values.get('DATABASE_ENABLED','false')=='true']
     if values.get('FAKE_MODE','true')=='false':
         finite_fields={'CHOREOGRAPH_AI_GRANT_ID','CHOREOGRAPH_AI_EXPIRES_AT',
             *('CHOREOGRAPH_AI_'+name.upper() for name in POSITIVE_GRANT_FIELDS if not name.endswith('_rate'))}
@@ -139,7 +143,7 @@ def main():
     from dotenv import dotenv_values
     parser=argparse.ArgumentParser(description='Offline by default; never constructs a provider client.')
     parser.add_argument('--env-file',type=Path,default=ROOT/'apps/backend/.env.example')
-    parser.add_argument('--database',action='store_true',help='Explicit read-only SQL check')
+    parser.add_argument('--database','--storage',dest='database',action='store_true',help='Explicit read-only selected-storage check')
     parser.add_argument('--require-ready',action='store_true')
     parser.add_argument('--hubspot-only',action='store_true',help='CRM configuration only; no AI grant, provider or SQL access')
     args=parser.parse_args();values={key:value for key,value in dotenv_values(args.env_file,interpolate=False).items() if value is not None}
