@@ -1,0 +1,19 @@
+{
+  "displayName": "Choreograph Cloud Run USD 5 cap - review amount before use",
+  "budgetFilter": {
+    "projects": ["projects/REPLACE_PROJECT_NUMBER"],
+    "services": ["services/152E-C115-5142"],
+    "creditTypesTreatment": "EXCLUDE_ALL_CREDITS",
+    "calendarPeriod": "MONTH"
+  },
+  "amount": {
+    "specifiedAmount": {"currencyCode": "USD", "units": "5"}
+  },
+  "thresholdRules": [
+    {"thresholdPercent": 0.5, "spendBasis": "CURRENT_SPEND"},
+    {"thresholdPercent": 0.8, "spendBasis": "CURRENT_SPEND"},
+    {"thresholdPercent": 1.0, "spendBasis": "CURRENT_SPEND"}
+  ],
+  "notificationsRule": {"enableProjectLevelRecipients": true},
+  "spendCap": {"inputState": "CONFIGURED"}
+}
