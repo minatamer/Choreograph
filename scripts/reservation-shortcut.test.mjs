@@ -5,6 +5,7 @@ import {createRequire} from 'node:module';
 import ts from 'typescript';
 import * as questions from '../apps/frontend/lib/chat-questions.ts';
 import * as windowing from '../apps/frontend/lib/availability-window.ts';
+import {availabilityReply} from '../apps/frontend/lib/availability-copy.ts';
 
 const require=createRequire(import.meta.url),jsx=require('react/jsx-runtime');
 const noop=()=>null;
@@ -71,22 +72,22 @@ test('ordinary schedule replies use the same forward-looking window as the reser
 const weekCode=ts.transpileModule(readFileSync(new URL('../apps/frontend/components/week-calendar.tsx',import.meta.url),'utf8'),{
  compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022,jsx:ts.JsxEmit.ReactJSX},
 }).outputText;
-function calendar(preview){
- const start='2030-01-03',requests=[],effects=[],selected=[];let index=0;
+function calendar(preview,{draft={},pending=false,status='available',repliesEnabled=true}={}){
+ const start='2030-01-03',requests=[],effects=[],selected=[],replies=[];let index=0;
  const days=Array.from({length:7},(_,i)=>{const date=new Date(start+'T12:00:00Z');date.setUTCDate(date.getUTCDate()+i);
-  const day=date.toISOString().slice(0,10);return {date:day,weekday:'Day '+i,status:'available',occupied:[],
+  const day=date.toISOString().slice(0,10);return {date:day,weekday:'Day '+i,status,occupied:[],
    slots:preview?[]:[{start:day+'T09:00:00Z',end:day+'T10:30:00Z',staff_ids:['ada']}]};});
  const data={week_start:start,timezone:'UTC',minutes:90,days,preview,can_previous:false,can_next:true};
  const deps={react:{useState:initial=>{const n=index++;return [n===1?data:n===2?start:n===5?false:typeof initial==='function'?initial():initial,noop];},useEffect:callback=>effects.push(callback)},
   'react/jsx-runtime':jsx,'@/lib/api':{api:async endpoint=>{requests.push(endpoint);return data;},clockReader:()=>()=> '09:00',duration:value=>value+' minutes'},
   './ui':{Badge:noop},'@/lib/timezone':{weekUtcOffset:()=>'+00:00'},'@/lib/calendar-metrics':{localDay:()=>start},
-  '@/lib/availability-copy':{availabilityLabel:()=> 'Available',unavailableReason:()=> 'No times'},
+  '@/lib/availability-copy':{availabilityLabel:()=> 'Available',unavailableReason:()=> 'No times',availabilityReply},
   '@/lib/availability-window':windowing,
   '@/lib/availability-period':{periodSlots:slots=>slots}};
  const WeekCalendar=new Function('require','exports',weekCode+'\nreturn WeekCalendar;')(name=>{assert.ok(name in deps);return deps[name];},{});
- const tree=WeekCalendar({state:{workspace_id:'fixture',generation:1,revision:1,timezone:'UTC',quote:preview?null:{minutes:90},draft:{},scenario:{}},
-  pending:false,rolling:true,initialDate:start,onSelect:value=>selected.push(value)});
- return {tree,requests,selected,runEffect:()=>effects[0]()};
+ const tree=WeekCalendar({state:{workspace_id:'fixture',generation:1,revision:1,timezone:'UTC',quote:preview?null:{minutes:90},draft,scenario:{}},
+  pending,rolling:true,initialDate:start,onSelect:value=>selected.push(value),onReply:repliesEnabled?value=>replies.push(value):undefined});
+ return {tree,requests,selected,replies,runEffect:()=>effects[0]()};
 }
 
 test('incomplete rolling calendars fetch a seven-day preview without exposing exact selectable times',()=>{
@@ -102,4 +103,33 @@ test('complete rolling calendars expose the returned time through the existing s
  const h=calendar(false);const times=find(h.tree,node=>node.props?.className==='time-options');
  assert.ok(times);times.props.children[0].props.onClick();
  assert.deepEqual(h.selected,['2030-01-03T09:00:00Z']);
+});
+
+test('preview cards explain the missing detail and send an explicit selected-day reply without reserving',()=>{
+ for(const [draft,label,expected] of [[{},'A deep clean','A deep clean on 2030-01-03, please.'],
+  [{service:'regular'},'2 bedrooms','2 bedrooms on 2030-01-03, please.'],[{bedrooms:3},'A move-out clean','A move-out clean on 2030-01-03, please.']]){
+  const h=calendar(true,{draft});assert.ok(find(h.tree,node=>node.props?.className==='availability-reply-guide'));
+  assert.ok(find(h.tree,node=>node.type==='q'));
+  const choice=find(h.tree,node=>node.type==='button'&&node.props['aria-label']===label);assert.ok(choice);choice.props.onClick();
+  assert.deepEqual(h.replies,[expected]);assert.deepEqual(h.selected,[]);
+ }
+});
+
+test('preview replies respect pending state and are absent for closed days, exact times and read-only consumers',()=>{
+ const pending=calendar(true,{pending:true});const choice=find(pending.tree,node=>node.type==='button'&&node.props['aria-label']==='A deep clean');
+ assert.equal(choice.props.disabled,true);choice.props.onClick();assert.deepEqual(pending.replies,[]);
+ for(const h of [calendar(true,{status:'closed'}),calendar(false),calendar(true,{repliesEnabled:false})]){
+  assert.equal(find(h.tree,node=>node.props?.className==='availability-reply-choices'),undefined);assert.deepEqual(h.replies,[]);
+ }
+});
+
+test('inline calendar replies use the shared chat send and preserve a typed draft while detail follow-ups keep the calendar',async()=>{
+ const message={id:'a',role:'assistant',text:'How many bedrooms?',cards:['clarify'],claims:[],suggestions:[]};
+ const h=render({draft:{service:'deep',bedrooms:null},scenario:{requested_date:'2030-01-03'},messages:[message]});
+ const card=find(h.tree,node=>node.props?.rolling===true);assert.ok(card);assert.equal(card.props.initialDate,'2030-01-03');
+ card.props.onReply('2 bedrooms on 2030-01-03, please.');await Promise.resolve();await Promise.resolve();
+ assert.deepEqual(h.sent,['2 bedrooms on 2030-01-03, please.']);assert.deepEqual(h.draftEdits,[]);assert.equal(h.getText(),'My unfinished question');
+ const busy=render({scenario:{requested_date:'2030-01-03'},messages:[message]},true);
+ find(busy.tree,node=>node.props?.rolling===true).props.onReply('A deep clean on 2030-01-03, please.');assert.deepEqual(busy.sent,[]);
+ const unrelated=render({messages:[message]});assert.equal(find(unrelated.tree,node=>node.props?.rolling===true),undefined);
 });

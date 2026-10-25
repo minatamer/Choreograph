@@ -58,7 +58,7 @@ export function ChatWorkspace({state,pending,text,setText,onSend,onEdit,onSubmit
  }
  const busy=pending||!!sending||selection?.status==='saving';
  const bookingReview=<ChatReview state={state} pending={busy} onSubmit={onSubmit} selection={selection} anchor={reviewTarget}/>;
- const hasCalendar=latestMessage?.cards.includes('reserve')||latestMessage?.cards.includes('week')&&state.quote;
+ const hasCalendar=latestMessage?.cards.includes('reserve')||latestMessage?.cards.includes('week')&&state.quote||latestMessage?.cards.includes('clarify')&&!state.quote&&!!state.scenario.requested_date;
  const shortcuts=conversationShortcuts(state);
  const bookingAnchors=bookingMessageAnchors(state.messages);
  const managementAnchors=new Map<string,string>();
@@ -76,7 +76,7 @@ export function ChatWorkspace({state,pending,text,setText,onSend,onEdit,onSubmit
       {message.cards.includes('quote')&&state.quote&&<div className="chat-quote"><div><small>Your quote</small><strong>{money(state.quote.cents)}</strong></div><Badge tone="blue">{duration(state.quote.minutes)}</Badge><span>{state.quote.items.map(item=>item.name).join(' + ')}</span>{!hasCalendar&&<Button kind="secondary" disabled={busy} onClick={()=>void send('When is this service free this week?')}>Find a time</Button>}</div>}
      </>}
     </div>
-   </article>{booking&&message.cards.includes('manage')&&managementAnchors.get(booking.id)===message.id&&<ChatBookingManagement state={state} record={booking} pending={busy} onAction={onBookingAction}/>} {message.id===latestMessage?.id&&hasCalendar&&<div className="chat-calendar"><WeekCalendar key={message.id} rolling state={state} pending={busy} initialDate={message.requested_date??undefined} initialPeriod={message.requested_period??undefined} onSelect={start=>void selectTime(start)}/></div>}{message.id===reviewAnchor&&bookingReview}
+   </article>{booking&&message.cards.includes('manage')&&managementAnchors.get(booking.id)===message.id&&<ChatBookingManagement state={state} record={booking} pending={busy} onAction={onBookingAction}/>} {message.id===latestMessage?.id&&hasCalendar&&<div className="chat-calendar"><WeekCalendar key={message.id} rolling state={state} pending={busy} initialDate={message.requested_date??state.scenario.requested_date??undefined} initialPeriod={message.requested_period??undefined} onSelect={start=>void selectTime(start)} onReply={reply=>void send(reply)}/></div>}{message.id===reviewAnchor&&bookingReview}
    {booking?.booking&&bookingAnchors.get(booking.id)===message.id&&<div className="chat-booking-result"><BookingOutcome request={booking} zone={state.timezone}/>{managementAnchors.get(booking.id)===message.id&&<ChatBookingManagement compact state={state} record={booking} pending={busy} onAction={onBookingAction}/>}<aside className="business-booking-nudge" aria-label="Explore the business view"><p>Take a look from the business side.</p><button type="button" aria-label="View booking in Business view" onClick={onBusiness}>Business view <span aria-hidden="true">↗</span></button></aside></div>}
    </Fragment>;})}
    {sending&&<div className="assistant-working" role="status"><span className="assistant-orb" aria-hidden="true"><Mark/></span><Spinner/><span>Juniper is working on it</span></div>}

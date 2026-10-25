@@ -4,6 +4,7 @@ import {readFileSync} from 'node:fs';
 import {createRequire} from 'node:module';
 import ts from 'typescript';
 import * as windowing from '../apps/frontend/lib/availability-window.ts';
+import {availabilityReply} from '../apps/frontend/lib/availability-copy.ts';
 import {localDay} from '../apps/frontend/lib/calendar-metrics.ts';
 import {periodSlots} from '../apps/frontend/lib/availability-period.ts';
 import {clockReader,weekUtcOffset} from '../apps/frontend/lib/timezone.ts';
@@ -49,7 +50,7 @@ function calendar({zone='Africa/Cairo',initialDate='2026-10-24',request,instant=
    if(!dependencies[slot]||next.some((value,n)=>!Object.is(value,dependencies[slot][n]))){dependencies[slot]=next;effects.push(()=>{cleanups[slot]?.();cleanups[slot]=callback();});}}},
   'react/jsx-runtime':jsx,'@/lib/availability-window':windowing,'@/lib/calendar-metrics':{localDay},
   '@/lib/availability-period':{periodSlots},'@/lib/timezone':{weekUtcOffset},
-  '@/lib/availability-copy':{availabilityLabel:day=>day.status,unavailableReason:()=> 'No times'},
+  '@/lib/availability-copy':{availabilityLabel:day=>day.status,unavailableReason:()=> 'No times',availabilityReply},
   './ui':{Badge:()=>null},'@/lib/api':{clockReader,duration:()=> '3h',api:async endpoint=>{
    requests.push(endpoint);const start=new URLSearchParams(endpoint.split('?')[1]).get('start');
    assert.ok(start,'Appointment pickers must request a rolling window');
