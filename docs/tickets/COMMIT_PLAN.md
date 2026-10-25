@@ -620,3 +620,173 @@ One cohesive documentation commit, subject `SBS-027: Record renewed security aud
 Validation:326 full backend tests plus26 focused config/setup checks including the new actual CI-generator regression;75 Node/no skips; Ruff; pip check;192-input release freshness retaining actual Linux44 HTTP/291 assertions;373-file bounded current-tree private-value scan;112 npm HTTPS/integrity entries and93 Python exact pins; static HTML nesting/relative targets; owned frontend/API/runner still running without restart. No image input changed during this report-only security phase. HTML local-file browser preview was policy-blocked and not bypassed; no browser-rendered report check is claimed. No paid/account/provider/cloud/remote scanner metadata export/push operation.
 
 Stage explicit paths only after final settled read-only review. Verify staged/worktree byte equality, known private-value absence and CRLF-aware whitespace; commit and verify the entire worktree/index empty. Final verified commit/clean receipt is retained in ignored runtime evidence and reported at handoff to avoid an endless post-commit documentation change. Human/native/hosted/scanning acceptance remains outstanding.
+
+
+## Owner current-work checkpoint —25 October2026
+
+The owner directly requested a file-level plan and local staging/commits for **all current work**. Baseline: `632d335f1eac657f9e2fec0d13b9295a33ad206a` on `main`. This allocation covers75 existing Git-visible paths plus this plan update: **76 unique files in eight ordered commits**. Each path is assigned once. Shared multi-feature files are kept whole; later groups depend on the earlier contract/configuration/parent-callback groups. No push, provider/account action, app restart or private env/runtime inclusion is authorized by this Git checkpoint.
+
+Before each commit, stage only its exact paths; verify staged allocation, byte equality with the reviewed working file, snapshot hashes, private-value exclusion and CRLF-aware whitespace. Preserve the owner's running real-profile services/data. Tests use fake/injected providers and isolated storage. Final settled checks and actual commit identities are recorded below before the last documentation commit; its own identity and the final clean index/worktree are read from Git to avoid a post-commit edit loop.
+
+### Commit 1: SBS-025: Preserve unquoted local environment values
+
+Keep the owner's bare env syntax and reject ambiguous values before writing configuration.
+
+| Exact file | Responsibility |
+| --- | --- |
+| `scripts/setup.py` | Render bare values and reject unsafe loader interpretations. |
+| `apps/backend/tests/test_local_setup.py` | Verify preservation and refusal cases across setup. |
+| `docs/tickets/SBS-025-local-configuration.md` | Own the no-wrapping-quotes correction and actual checks. |
+
+### Commit 2: SBS-028: Isolate owner-local manual AI and HubSpot policies
+
+Support separately authorized local manual use while retaining finite automated/hosted acceptance, durable accounting and visitor consent.
+
+| Exact file | Responsibility |
+| --- | --- |
+| `apps/backend/choreograph/acceptance.py` | Reject unbounded manual policies in automated acceptance. |
+| `apps/backend/choreograph/ai_admission.py` | Represent manual AI accounting and retain request fences. |
+| `apps/backend/choreograph/ai_config.py` | Parse explicit manual and finite AI policies separately. |
+| `apps/backend/choreograph/composition.py` | Handle an intentionally absent manual expiry. |
+| `apps/backend/choreograph/crm_admission.py` | Account for separately authorized manual CRM use. |
+| `apps/backend/choreograph/crm_composition.py` | Keep finite expiry checks separate from manual CRM. |
+| `apps/backend/choreograph/crm_config.py` | Compose registered OAuth transport and scoped allowances. |
+| `apps/backend/choreograph/models.py` | Allow an explicit nullable manual AI grant expiry. |
+| `apps/backend/choreograph/readiness.py` | Diagnose local manual policies without provider calls. |
+| `apps/backend/choreograph/runtime_config.py` | Own public OAuth identifiers and explicit local policy constants. |
+| `apps/backend/choreograph/settings.py` | Restrict manual loaders to the owned loopback stack. |
+| `apps/backend/migrations/versions/0011_manual_ai.py` | Migrate nullable expiry with a guarded downgrade. |
+| `apps/backend/tests/test_manual_ai.py` | Check accounting, loader isolation and finite acceptance. |
+| `apps/backend/tests/test_manual_crm.py` | Check manual CRM accounting and independent finite acceptance. |
+| `apps/backend/tests/test_runtime_configuration.py` | Make missing-registration cases independent of the registered app. |
+| `docs/tickets/SBS-028-owner-manual-ai.md` | Record direct owner authorization and local-only evidence. |
+| `docs/tickets/SBS-024-hubspot-free-readiness.md` | Own actual OAuth registration/manual readiness and limitations. |
+| `infra/README.md` | Explain operator registration, local consent and native verification. |
+
+### Commit 3: SBS-023: Add upcoming scheduling and scoped guest verification
+
+Keep the shared API/service/interaction changes together with their generated contracts and narrow browser bridge. These whole files contain both scheduling and verification changes.
+
+| Exact file | Responsibility |
+| --- | --- |
+| `apps/backend/choreograph/api.py` | Bind recent verification receipts and rolling guest/request endpoints. |
+| `apps/backend/choreograph/assistant.py` | Route the explicit reserve shortcut to authoritative availability. |
+| `apps/backend/choreograph/contracts.py` | Add the reserve card and preview availability schema. |
+| `apps/backend/choreograph/domain.py` | Evaluate bounded rolling windows and backward navigation. |
+| `apps/backend/choreograph/interactions.py` | Preserve interaction guards around deterministic scheduling and verification. |
+| `apps/backend/choreograph/service.py` | Share exact/preview availability and safe rescheduling queries. |
+| `apps/backend/choreograph/verification.py` | Sign finite session-bound human receipts without caching proof tokens. |
+| `apps/backend/tests/test_verification.py` | Retain the explicit missing-proof boundary regression. |
+| `apps/backend/tests/test_reservation_shortcut.py` | Verify fake/live-injected discovery and unchanged booking authority. |
+| `apps/backend/tests/test_availability_windows.py` | Check local dates, duration and scoped rescheduling. |
+| `apps/backend/tests/test_verification_session.py` | Check expiry, tampering, scope and fresh-proof requirements. |
+| `apps/frontend/app/api/demo/[...path]/route.ts` | Forward only approved rolling queries and guest/receipt cookies. |
+| `apps/frontend/lib/generated/api.d.ts` | Synchronize generated browser types with the API schema. |
+| `apps/frontend/lib/generated/openapi.json` | Record the authoritative generated schema. |
+| `apps/frontend/components/use-guest.ts` | Let the server validate the receipt before asking for another proof. |
+| `apps/frontend/components/verification-provider.tsx` | Warm public configuration/script without minting authorization. |
+| `scripts/verification-session.test.mjs` | Exercise command retry, cancellation and the actual cookie bridge. |
+
+### Commit 4: SBS-023: Reveal upcoming appointments and review feedback in chat
+
+Deliver the reservation pin, shared upcoming picker and immediate saving/review reveal. The parent also prepares the async Business callback used by the next commit.
+
+| Exact file | Responsibility |
+| --- | --- |
+| `apps/frontend/app/demo/availability.css` | Keep rolling dates horizontally reachable in the existing card. |
+| `apps/frontend/app/demo/customer-chat.css` | Style the pinned shortcut, loading/error review and focus. |
+| `apps/frontend/components/chat-review.tsx` | Show saving/error state before enabling explicit booking review. |
+| `apps/frontend/components/chat-workspace.tsx` | Pin reservation discovery and reveal the selected-time review. |
+| `apps/frontend/components/use-chat-scroll.ts` | Target the review smoothly with cancellation and resize tracking. |
+| `apps/frontend/components/week-calendar.tsx` | Share upcoming windows and select an actual fitting day. |
+| `apps/frontend/components/workspace-client.tsx` | Return real mutation promises to Customer and Business handlers. |
+| `apps/frontend/lib/chat-questions.ts` | Keep a stable generic reservation shortcut. |
+| `apps/frontend/lib/chat-sources.ts` | Anchor review beside the current reserve/calendar message. |
+| `apps/frontend/lib/availability-window.ts` | Normalize requested dates and reject stale selections. |
+| `scripts/availability-window.test.mjs` | Exercise restored Sunday, timezone and navigation behavior. |
+| `scripts/chat-review-flow.test.mjs` | Exercise delayed/failing saves and unchanged explicit booking. |
+| `scripts/chat-review-scroll.test.mjs` | Exercise intermediate scrolling, focus, cancellation and cleanup. |
+| `scripts/reservation-shortcut.test.mjs` | Exercise pin reachability, shared picker and draft-only edits. |
+
+### Commit 5: SBS-023: Confirm Business booking actions in branded dialogs
+
+Replace booking lifecycle browser prompts with the shared animated glass dialog and preserve exact reviewed commands.
+
+| Exact file | Responsibility |
+| --- | --- |
+| `apps/frontend/app/demo/booking-management.css` | Size the compact confirmation and style error/focus feedback. |
+| `apps/frontend/components/business-review.tsx` | Open app dialogs bound to the reviewed record/revision. |
+| `apps/frontend/components/booking-action-dialog.tsx` | Show explicit completion/cancel/decline with pending/failure guards. |
+| `apps/frontend/components/expanding-dialog.tsx` | Support contextual focus fallback and a focusable modal panel. |
+| `apps/frontend/components/use-dialog-focus.ts` | Keep keyboard focus trapped while every saving action is disabled. |
+| `scripts/booking-action-dialog.test.mjs` | Verify explicit dispatch, stale records, duplicate guards and focus. |
+
+### Commit 6: SBS-016: Align entry layouts and canonical local demo navigation
+
+Match the shared entry spacing/provider cards, place feedback in context and repair the old-host CRM skip failure.
+
+| Exact file | Responsibility |
+| --- | --- |
+| `apps/frontend/app/demo/welcome.css` | Share entry padding, transition and card feedback styles. |
+| `apps/frontend/app/materials.css` | Use a reusable inline provider wordmark treatment. |
+| `apps/frontend/components/crm-controls.tsx` | Place provider notes/feedback before a bottom-aligned CTA. |
+| `apps/frontend/components/entry-client.tsx` | Keep entry scroll/layout/copy and route feedback consistent. |
+| `apps/frontend/next.config.ts` | Redirect only old local demo hosts to the configured canonical host. |
+| `scripts/entry-origin.test.mjs` | Check host matching and strict-origin skip behavior. |
+
+### Commit 7: SBS-008: Start hero motion after font and frame preparation
+
+Remove the visible entrance hold while preserving the approved headline animation and other landing motion.
+
+| Exact file | Responsibility |
+| --- | --- |
+| `apps/frontend/app/landing-hero.css` | Define the prepared native hero entrance. |
+| `apps/frontend/components/landing-motion.tsx` | Wait for font readiness and preparation frames before revealing text. |
+| `scripts/hero-entrance.test.mjs` | Check readiness, cancellation and fallback behavior. |
+| `docs/tickets/SBS-008-responsive-flow.md` | Own the actual entrance investigation and scoped results. |
+
+### Commit 8: SBS-028: Record the owner-authorized current-work checkpoint
+
+Record current instructions, consolidated evidence, exact file allocation and preceding commit identities without claiming unperformed native/hosted acceptance.
+
+| Exact file | Responsibility |
+| --- | --- |
+| `AGENTS.md` | Preserve accepted owner configuration and interaction corrections. |
+| `README.md` | Summarize local manual policy and actual HubSpot setup. |
+| `docs/CHOREOGRAPH.md` | Own the current architecture/product checkpoint and evidence boundaries. |
+| `docs/tickets/README.md` | Register the manual-use continuation in the ticket queue. |
+| `docs/tickets/SBS-016-guided-workspace.md` | Record shared entry and local navigation corrections. |
+| `docs/tickets/SBS-022-turnstile-live-controls.md` | Record finite verification reuse and current limitations. |
+| `docs/tickets/SBS-023-assistant-quality.md` | Own reservation, calendar, review and confirmation evidence. |
+| `docs/tickets/COMMIT_PLAN.md` | Own this exact allocation, validation and commit execution record. |
+
+### Settled validation and execution
+
+All settled gates pass before staging:
+
+- **366 backend tests** on actual isolated PostgreSQL with fake/injected providers (`.runtime/checkpoint-20261025-backend.log`). No running app database or provider credential was used as a test fixture.
+- **122 Node tests**, no failures/skips, including the scoped lifecycle fixtures (`.runtime/checkpoint-20261025-node.log`). Frontend types, configured Ruff, pip dependency compatibility and regenerated Pydantic/OpenAPI browser contracts pass.
+- **Actual isolated Linux production builds and full-stack smoke:**44 HTTP requests/291 assertions, migrations/downgrade/remigration, six prepared fake sources, actual PDF/private replacement, booking/refresh/CRM skip/worker authorization and owned-resource cleanup pass. No host ports or real provider/account operations. Receipt log: `.runtime/checkpoint-20261025-linux.log`.
+- The smoke source exactly matches the current **195 image inputs**, SHA256 `f9fc9254884c5e7e7adddae9dd640740d4fa9642c45ba4b65249df45a89fa940`. Frontend image `sha256:3f2a6df85c66a133af093318252912f3008c4c96debb6fa3375b0f4ace020c36` runs as `node`; backend `sha256:7a0074bb85ee7804a99ddc52fe922b8be8c64f04d655e93cf63bb6a6f1f1a369` runs as `10001:10001`. This was `--no-receipt`: the older `infra/release-evidence.json` remains historical/stale for these sources and was not relabelled current.
+- The exact76-file allocation has no omissions or duplicate paths. A private-value scan against18 raw/encoded variants of the owning app's current credentials finds **zero matches**. Private env/runtime paths remain ignored. Before each commit, the helper separately checks the actual staged blobs against the reviewed raw working bytes/snapshot and CRLF-aware whitespace. No private values are printed or placed in Git.
+
+No new independent security audit, live-provider/Cloudflare/native HubSpot acceptance, physical-device visual acceptance or hosted deployment is claimed. The earlier standalone visual-preview browser URL rejection is not bypassed by this Git checkpoint. Current local service mode/keys/data and siblings are preserved; no restart or push occurs.
+
+Observed commit identities are appended after the first seven groups actually commit. The final documentation commit's own identity and the final entirely clean worktree/index are read from Git and retained in ignored runtime evidence, avoiding an endless post-commit documentation edit.
+
+### Current-work checkpoint execution record
+
+The first seven commits below were created after their individual exact staged-allocation, raw-byte/snapshot,18-variant private-value and CRLF-aware whitespace checks passed. No private values were found. The index was empty after each commit.
+
+| Group | Actual local commit | Subject | Files |
+| --- | --- | --- | --- |
+| 1 | `5c84ace3c4d1565ab38d5a7906a5d83fb886b992` | SBS-025: Preserve unquoted local environment values | 3 |
+| 2 | `08f07600762f1e40474442ba6ef9f09c46a081b4` | SBS-028: Isolate owner-local manual AI and HubSpot policies | 18 |
+| 3 | `acbceabcac36fa7b15cbb91c1a5c0e9cb1ba7c48` | SBS-023: Add upcoming scheduling and scoped guest verification | 17 |
+| 4 | `10a74f5d798d52d2848bfc1d1d13705033a56cd6` | SBS-023: Reveal upcoming appointments and review feedback in chat | 14 |
+| 5 | `907db7c3eefe6aca5c5dc8712c44bfe462e2f8e9` | SBS-023: Confirm Business booking actions in branded dialogs | 6 |
+| 6 | `67edcfd67839ad70443eeaa31d9d641fcd93e3e2` | SBS-016: Align entry layouts and canonical local demo navigation | 6 |
+| 7 | `cbadaeb90c992aa7595f516b7129ecb59a0d18d2` | SBS-008: Start hero motion after font and frame preparation | 4 |
+| 8 | Read from `git log` after this documentation commit | SBS-028: Record the owner-authorized current-work checkpoint | 8 |
+
+All76 allocated files are covered exactly once. The final commit is checked against the remaining eight documentation paths; its own SHA, all eight commit parents/subjects/file allocations, private-path exclusions and final empty worktree/index are verified from Git and retained in ignored `.runtime/checkpoint-20261025-final.json`. No post-commit tracked-file receipt edit is needed.

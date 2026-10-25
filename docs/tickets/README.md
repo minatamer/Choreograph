@@ -42,6 +42,7 @@ Fresh local ports: frontend **45860**, API **45861**, PostgreSQL **45862**. Sele
 | [SBS-025](SBS-025-local-configuration.md) | Private-only local env, single mode controls and one-time OAuth app setup | Owner configuration correction,24 October2026 | SBS-022/024 | Complete local;326 backend/73 Node and refreshed isolated Linux stack pass; account/new paid allowance remain separate |
 | [SBS-026](SBS-026-pre-sharing-quality.md) | Quality/efficiency and CI configuration consistency | 10a-quality; owner AFK24October | Clean checkpoint13f608b | Complete local: scoped formatters/focus and CI generator repair;26 focused checks,75 Node/types and fresh Linux evidence |
 | [SBS-027](SBS-027-security-review.md) | Renew whole-repo STRIDE/general/dependency audit after quality | 10b-security-review | SBS-026 clean committed boundary | Complete local; provisional AFK no-fixes; owner/external acceptance pending |
+| [SBS-028](SBS-028-owner-manual-ai.md) | Local owner manual real AI without aggregate budget/expiry; preserve finite agent acceptance | Owner correction,25 October2026 | SBS-025/027 | Complete local;334 backend/Ruff pass, schema0011 and owned stack live; owner manual/HubSpot acceptance remains |
 
 Scope is one Python backend, one Next frontend, SQLAlchemy/Alembic, actual PostgreSQL/pgvector, narrow LlamaIndex/OpenAI/HubSpot adapters and local durable runner. No payments/outreach/Google Calendar, extra vector platform or agent framework. Figma remains six desktop key frames and one mobile landing; the implemented app is responsive throughout.
 
