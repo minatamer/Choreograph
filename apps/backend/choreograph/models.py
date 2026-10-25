@@ -277,7 +277,7 @@ class AIGrant(Base):
     id: Mapped[str] = mapped_column(String(80), primary_key=True)
     spec_hash: Mapped[str] = mapped_column(String(64))
     spec: Mapped[dict] = mapped_column(JSONB)
-    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    expires_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     blocked: Mapped[bool] = mapped_column(Boolean, default=False)
     requests: Mapped[int] = mapped_column(BigInteger, default=0)
     input_tokens: Mapped[int] = mapped_column(BigInteger, default=0)

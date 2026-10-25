@@ -87,4 +87,5 @@ def test_hubspot_auto_availability_needs_app_registration_and_its_secret_not_a_v
     assert configured.profile=='fake' and configured.crm_provider=='hubspot'
     assert configured.live_crm.transport.redirect_uri=='http://localhost:45860/auth/hubspot/callback'
     assert Settings.parse(configuration_values({**private,'CHOREOGRAPH_HUBSPOT_CLIENT_SECRET':''},application=policy)).crm_provider=='disabled'
-    assert Settings.parse(configuration_values(private)).crm_provider=='disabled'
+    assert Settings.parse(configuration_values(private,application={**APPLICATION,
+        'CHOREOGRAPH_HUBSPOT_APP_ID':'','CHOREOGRAPH_HUBSPOT_CLIENT_ID':''})).crm_provider=='disabled'

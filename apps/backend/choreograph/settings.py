@@ -13,6 +13,17 @@ from .verification import TurnstileConfig
 from .verification import configuration as turnstile_configuration
 
 
+def require_local_manual_target(database_url, origin, code):
+    """Manual policies cannot escape the owned loopback development stack."""
+    try:
+        parsed=urlsplit(database_url)
+        valid=(parsed.scheme=='postgresql+psycopg' and parsed.hostname in {'localhost','127.0.0.1'} and
+               parsed.port==45862 and parsed.path=='/choreograph' and not parsed.query and
+               origin in {'http://localhost:45860','http://127.0.0.1:45860'})
+    except ValueError:valid=False
+    if not valid:raise ValueError(code)
+
+
 @dataclass(frozen=True)
 class Settings:
     database_url: str = field(repr=False)
@@ -27,7 +38,9 @@ class Settings:
     turnstile: TurnstileConfig | None = field(default=None, repr=False)
 
     @classmethod
-    def parse(cls, values: Mapping[str, str], *, testing: bool = False) -> "Settings":
+    def parse(cls, values: Mapping[str, str], *, testing: bool = False,
+              local_manual_grant_id: str | None = None,
+              local_manual_crm_grant_id: str | None = None) -> "Settings":
         values=runtime_values(values)
         profile = 'fake' if values.get('FAKE_MODE', 'true') == 'true' else 'live'
         if testing and profile != "fake":
@@ -64,8 +77,12 @@ class Settings:
         crm_provider=values.get('CHOREOGRAPH_CRM_PROVIDER','fake' if testing else 'disabled')
         if crm_provider not in {'fake','hubspot','disabled'}:raise ValueError('CRM_CONFIGURATION_INVALID')
         if testing and crm_provider=='hubspot':raise ValueError('TEST_PROVIDER_FORBIDDEN')
-        live_ai = parse_live_ai(values) if profile == 'live' else None
-        live_crm=parse_live_crm(values,origin) if crm_provider=='hubspot' else None
+        if local_manual_grant_id is not None and profile=='live':
+            require_local_manual_target(db,origin,'LOCAL_MANUAL_AI_ONLY')
+        if local_manual_crm_grant_id is not None and crm_provider=='hubspot':
+            require_local_manual_target(db,origin,'LOCAL_MANUAL_CRM_ONLY')
+        live_ai = parse_live_ai(values,manual_grant_id=local_manual_grant_id) if profile == 'live' else None
+        live_crm=parse_live_crm(values,origin,manual_grant_id=local_manual_crm_grant_id) if crm_provider=='hubspot' else None
         return cls(db, origin, secret, key, profile, testing, live_ai, crm_provider, live_crm,turnstile_configuration(values,origin))
 
 
@@ -73,8 +90,9 @@ def load_local() -> Settings:
     from dotenv import dotenv_values
     backend = Path(__file__).resolve().parents[1]
     values = {key: value for key, value in dotenv_values(backend / ".env.local",interpolate=False).items() if value is not None}
-    from .runtime_config import configuration_values
-    settings=Settings.parse(configuration_values(values))
+    from .runtime_config import LOCAL_MANUAL_AI_GRANT_ID, LOCAL_MANUAL_CRM_GRANT_ID, configuration_values
+    settings=Settings.parse(configuration_values(values),local_manual_grant_id=LOCAL_MANUAL_AI_GRANT_ID or None,
+                            local_manual_crm_grant_id=LOCAL_MANUAL_CRM_GRANT_ID or None)
     from sqlalchemy.engine import make_url
     url=make_url(settings.database_url)
     if (url.host not in {'localhost','127.0.0.1'} or url.port!=45862 or url.database!='choreograph' or url.query or

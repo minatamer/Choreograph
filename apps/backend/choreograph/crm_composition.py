@@ -18,7 +18,7 @@ def compose_crm(settings, engine, *, client=None, clock=None):
     config=settings.live_crm
     if settings.crm_provider!='hubspot' or not config or settings.testing:
         raise ValueError('CRM_CONFIGURATION_INVALID')
-    if config.allowance.expires_at<=(clock or (lambda:datetime.now(UTC)))():
+    if config.allowance.expires_at is not None and config.allowance.expires_at<=(clock or (lambda:datetime.now(UTC)))():
         raise ValueError('CRM_ALLOWANCE_EXPIRED')
     provider=HubSpotTransport(config.transport,authorized=True,client=client,engine=engine,
                               allowance=config.allowance,clock=clock)

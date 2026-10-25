@@ -89,7 +89,7 @@ def compose_ai(settings, engine, *, assistant_provider=None, response_client=Non
         raise ValueError('LIVE_AI_CONFIGURATION_INVALID')
     if settings.testing:
         raise ValueError('TEST_PROVIDER_FORBIDDEN')
-    if config.grant.expires_at <= current_time():
+    if config.grant.expires_at is not None and config.grant.expires_at <= current_time():
         raise ValueError('LIVE_AI_GRANT_EXPIRED')
     if (response_client is not None and response_transport is not None or
             embedding_client is not None and embedding_transport is not None):

@@ -193,7 +193,8 @@ def execute_ai(engine,settings,run_id,step,max_cost,*,runtime=None,clock=None,in
     if step not in {'prepare','evaluate'} or (settings.profile!='live' and not injected):
         raise DomainError('ACCEPTANCE_LIVE_REQUIRED','Use an explicit live acceptance configuration.',422)
     grant=settings.live_ai.grant if settings.live_ai else getattr(runtime,'_grant',None)
-    if (grant is None or type(max_cost) is not int or not 0<max_cost<=grant.cost_micros or
+    from .ai_admission import GrantSpec
+    if (not isinstance(grant,GrantSpec) or type(max_cost) is not int or not 0<max_cost<=grant.cost_micros or
             grant.requests>78 or grant.vectors>88 or grant.input_tokens>336_864 or grant.output_tokens>42_000):
         raise DomainError('ACCEPTANCE_GRANT_INVALID','Use the reviewed finite acceptance allowance.',422)
     spec=settings.live_ai.spec if settings.live_ai else runtime.spec
@@ -286,7 +287,7 @@ def execute_crm(engine,settings,run_id,workspace_id,account_id,step,*,provider=N
     if provider is not None and not injected:raise DomainError('ACCEPTANCE_INJECTION_LABEL','Injected execution must be labelled.',422)
     if step not in {'sync','cleanup'} or settings.crm_provider!='hubspot' and not injected:
         raise DomainError('ACCEPTANCE_CRM_REQUIRED','Use the explicitly selected visitor account.',422)
-    if settings.live_crm and settings.live_crm.allowance.requests>60:
+    if settings.live_crm and (settings.live_crm.allowance.requests is None or settings.live_crm.allowance.requests>60):
         raise DomainError('ACCEPTANCE_GRANT_INVALID','Use the finite sixty-request acceptance allowance.',422)
     with Session(engine) as db:
         ws=db.get(Workspace,wid)

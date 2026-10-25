@@ -14,7 +14,7 @@ from .ai_admission import FAKE_SPEC
 from .ai_config import POSITIVE_GRANT_FIELDS, runtime_values
 from .models import Chunk, DocumentVersion
 from .runtime_config import configuration_values
-from .settings import Settings
+from .settings import Settings, require_local_manual_target
 
 ROOT=Path(__file__).resolve().parents[3]
 BASE_FIELDS=('CHOREOGRAPH_DATABASE_URL','CHOREOGRAPH_BRIDGE_SECRET','CHOREOGRAPH_TOKEN_KEY')
@@ -25,9 +25,10 @@ AI_FIELDS=('OPENAI_API_KEY','CHOREOGRAPH_AI_RESPONSE_MODEL','CHOREOGRAPH_AI_EMBE
 CRM_FIELDS=('CHOREOGRAPH_HUBSPOT_APP_ID','CHOREOGRAPH_HUBSPOT_CLIENT_ID','CHOREOGRAPH_HUBSPOT_CLIENT_SECRET',
     'CHOREOGRAPH_HUBSPOT_REDIRECT_URI','CHOREOGRAPH_HUBSPOT_DISTRIBUTION','CHOREOGRAPH_HUBSPOT_CAPACITY',
     'CHOREOGRAPH_CRM_GRANT_ID','CHOREOGRAPH_CRM_EXPIRES_AT','CHOREOGRAPH_CRM_REQUESTS','CHOREOGRAPH_CRM_WORKSPACE_REQUESTS')
+CRM_FINITE_FIELDS=frozenset(name for name in CRM_FIELDS if name.startswith('CHOREOGRAPH_CRM_'))
 
 
-def hubspot_report(values, *, application=None):
+def hubspot_report(values, *, application=None, local_manual_crm_grant_id=None):
     """CRM configuration only: an expired paid-AI grant cannot hide its diagnosis."""
     from .crm_config import parse_live_crm
     try:values=configuration_values(values,application=application)
@@ -39,15 +40,20 @@ def hubspot_report(values, *, application=None):
     if values.get('CHOREOGRAPH_CRM_PROVIDER','disabled')!='hubspot':changes.append('REGISTER_CHOREOGRAPH_OAUTH_APP')
     if origin=='http://127.0.0.1:45860':changes.append('CHOREOGRAPH_ORIGIN')
     result={'mode':'read-only-hubspot-readiness','provider_calls':0,'configuration_ready':False,
-            'ai_independent':True,'missing':[name for name in CRM_FIELDS if not values.get(name)],
+            'ai_independent':True,'missing':[name for name in CRM_FIELDS if not values.get(name) and
+                (local_manual_crm_grant_id is None or name not in CRM_FINITE_FIELDS)],
             'changes_required':changes,'local_callback':'http://localhost:45860/auth/hubspot/callback',
             'settings_file':'choreograph/runtime_config.py'}
     if 'REGISTER_CHOREOGRAPH_OAUTH_APP' in changes:result['code']='CRM_DISABLED';return result
-    try:parse_live_crm(values,origin)
+    try:
+        if local_manual_crm_grant_id is not None:
+            require_local_manual_target(values.get('CHOREOGRAPH_DATABASE_URL',''),origin,'LOCAL_MANUAL_CRM_ONLY')
+        parse_live_crm(values,origin,manual_grant_id=local_manual_crm_grant_id)
     except ValueError as error:
         result['code']=str(error) if re.fullmatch(r'[A-Z_]{3,80}',str(error)) else 'CRM_CONFIGURATION_INVALID'
         return result
     result['configuration_ready']=True;result['code']='CRM_CONFIGURATION_VALID'
+    result['crm_policy']='local_owner_manual' if local_manual_crm_grant_id is not None else 'finite'
     return result
 
 
@@ -94,22 +100,31 @@ def database_status(engine,spec):
         return {'ready':False,'code':'DATABASE_CHECK_FAILED'}
 
 
-def report(values,*,engine=None):
+def report(values,*,engine=None,local_manual_grant_id=None,local_manual_crm_grant_id=None):
     try:values=runtime_values(configuration_values(values))
     except ValueError as error:return {'mode':'read-only-readiness','provider_calls':0,'missing':[],
         'configuration':{'ready':False,'code':str(error)},'corpus':corpus_status(),
         'database':{'ready':False,'code':'DATABASE_NOT_CHECKED'}}
     required=list(BASE_FIELDS)
-    if values.get('FAKE_MODE','true')=='false':required.extend(AI_FIELDS)
-    if values.get('CHOREOGRAPH_CRM_PROVIDER','fake')=='hubspot':required.extend(CRM_FIELDS)
+    if values.get('FAKE_MODE','true')=='false':
+        finite_fields={'CHOREOGRAPH_AI_GRANT_ID','CHOREOGRAPH_AI_EXPIRES_AT',
+            *('CHOREOGRAPH_AI_'+name.upper() for name in POSITIVE_GRANT_FIELDS if not name.endswith('_rate'))}
+        required.extend(name for name in AI_FIELDS if local_manual_grant_id is None or name not in finite_fields)
+    if values.get('CHOREOGRAPH_CRM_PROVIDER','fake')=='hubspot':
+        required.extend(name for name in CRM_FIELDS if local_manual_crm_grant_id is None or name not in CRM_FINITE_FIELDS)
     missing=[name for name in required if not values.get(name)]
     result={'mode':'read-only-readiness','provider_calls':0,'missing':missing,'configuration':{'ready':False},
             'corpus':corpus_status(),'database':{'ready':False,'code':'DATABASE_NOT_CHECKED'}}
-    try:settings=Settings.parse(values)
+    try:settings=Settings.parse(values,local_manual_grant_id=local_manual_grant_id,
+                                local_manual_crm_grant_id=local_manual_crm_grant_id)
     except ValueError as error:
         result['configuration']['code']=str(error) if re.fullmatch(r'[A-Z][A-Z_]{2,79}',str(error)) else 'CONFIGURATION_INVALID'
         return result
     result['configuration']={'ready':True,'code':'CONFIGURATION_VALID','ai':settings.profile,'crm':settings.crm_provider}
+    if settings.live_crm:
+        result['configuration']['crm_policy']='local_owner_manual' if local_manual_crm_grant_id is not None else 'finite'
+    if settings.live_ai:
+        result['configuration']['ai_policy']='local_owner_manual' if local_manual_grant_id is not None else 'finite'
     if settings.live_ai:
         from .tokenizers import RESPONSE_COUNTER, verified_bytes
         try:
@@ -128,17 +143,23 @@ def main():
     parser.add_argument('--require-ready',action='store_true')
     parser.add_argument('--hubspot-only',action='store_true',help='CRM configuration only; no AI grant, provider or SQL access')
     args=parser.parse_args();values={key:value for key,value in dotenv_values(args.env_file,interpolate=False).items() if value is not None}
+    from .runtime_config import LOCAL_MANUAL_AI_GRANT_ID, LOCAL_MANUAL_CRM_GRANT_ID
+    local=args.env_file.resolve()==(ROOT/'apps/backend/.env.local').resolve()
+    manual_id=(LOCAL_MANUAL_AI_GRANT_ID or None) if local else None
+    crm_manual_id=(LOCAL_MANUAL_CRM_GRANT_ID or None) if local else None
     if args.hubspot_only:
         if args.database:parser.error('--hubspot-only cannot be combined with --database')
-        result=hubspot_report(values);print(json.dumps(result))
+        result=hubspot_report(values,local_manual_crm_grant_id=crm_manual_id);print(json.dumps(result))
         if args.require_ready and not result['configuration_ready']:raise SystemExit(2)
         return
     engine=None
     try:
         if args.database:
             from .db import build_engine
-            engine=build_engine(Settings.parse(configuration_values(values)))
-        result=report(values,engine=engine);print(json.dumps(result))
+            engine=build_engine(Settings.parse(configuration_values(values),local_manual_grant_id=manual_id,
+                                               local_manual_crm_grant_id=crm_manual_id))
+        result=report(values,engine=engine,local_manual_grant_id=manual_id,
+                      local_manual_crm_grant_id=crm_manual_id);print(json.dumps(result))
         if args.require_ready and not (result['configuration']['ready'] and result['corpus']['ready'] and
                 (not args.database or result['database']['ready'])):raise SystemExit(2)
     except ValueError:

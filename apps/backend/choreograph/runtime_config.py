@@ -7,8 +7,18 @@ from types import MappingProxyType
 
 # One-time Choreograph OAuth app registration, shared by the Connect button.
 # Public identifiers, NOT a visitor account ID or personal CRM API token.
-HUBSPOT_APP_ID = ''
-HUBSPOT_CLIENT_ID = ''
+HUBSPOT_APP_ID = '58593051'
+HUBSPOT_CLIENT_ID = 'e797c71e-5806-4b02-ac65-a1e7c64fd539'
+
+# Owner25 October2026: a genuine human check covers subsequent chat in the
+# same guest workspace briefly. This is separate from AI spending authority.
+CHAT_VERIFICATION_SECONDS = 30 * 60
+
+# Owner instruction25 October2026: local manual UI use has no budget/deadline.
+# Selected ONLY by load_local; containers and automated acceptance stay finite.
+# This does not authorize agent-run paid requests or operator sample ingestion.
+LOCAL_MANUAL_AI_GRANT_ID = 'owner-manual-local-20261025'
+LOCAL_MANUAL_CRM_GRANT_ID = 'owner-manual-hubspot-local-20261025'
 
 # Reviewed24 October2026; preserve the prepared1536-dimensional source profile.
 # The input rate includes conservative cache-write headroom ($2.50/M tokens).
@@ -42,8 +52,9 @@ APPLICATION = MappingProxyType({
     'CHOREOGRAPH_HUBSPOT_CLIENT_ID': HUBSPOT_CLIENT_ID,
     'CHOREOGRAPH_HUBSPOT_DISTRIBUTION': 'marketplace_unlisted',
     'CHOREOGRAPH_HUBSPOT_CAPACITY': '25',
-    'CHOREOGRAPH_HUBSPOT_SCHEMA_SETUP_ALLOWED': 'false',
-    # No real HubSpot API acceptance has been authorized/configured yet.
+    # Schema changes still require the visitor's separate explicit setup consent.
+    'CHOREOGRAPH_HUBSPOT_SCHEMA_SETUP_ALLOWED': 'true',
+    # Automated/hosted acceptance still needs its own finite authorization.
     'CHOREOGRAPH_CRM_GRANT_ID': '',
     'CHOREOGRAPH_CRM_EXPIRES_AT': '',
     'CHOREOGRAPH_CRM_REQUESTS': '',

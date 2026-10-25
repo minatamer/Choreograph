@@ -5,17 +5,17 @@ from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from urllib.parse import urlsplit
 
-from .crm_admission import CRMAllowance
+from .crm_admission import CRMAllowance, ManualCRMAllowance
 from .hubspot import HubSpotConfig
 
 
 @dataclass(frozen=True)
 class LiveCRMConfig:
     transport: HubSpotConfig = field(repr=False)
-    allowance: CRMAllowance
+    allowance: CRMAllowance | ManualCRMAllowance
 
 
-def parse_live_crm(values, origin, *, now=None):
+def parse_live_crm(values, origin, *, now=None, manual_grant_id=None):
     app_id=values.get('CHOREOGRAPH_HUBSPOT_APP_ID','')
     client=values.get('CHOREOGRAPH_HUBSPOT_CLIENT_ID','')
     secret=values.get('CHOREOGRAPH_HUBSPOT_CLIENT_SECRET','')
@@ -43,13 +43,16 @@ def parse_live_crm(values, origin, *, now=None):
     capacity=number('CHOREOGRAPH_HUBSPOT_CAPACITY',maximum)
     schema=values.get('CHOREOGRAPH_HUBSPOT_SCHEMA_SETUP_ALLOWED','false')
     if schema not in {'true','false'}:raise ValueError('CRM_CONFIGURATION_INVALID')
-    grant=values.get('CHOREOGRAPH_CRM_GRANT_ID','')
+    grant=manual_grant_id if manual_grant_id is not None else values.get('CHOREOGRAPH_CRM_GRANT_ID','')
     if not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9._-]{0,79}',grant):raise ValueError('CRM_CONFIGURATION_INVALID')
-    try:
-        expiry=datetime.fromisoformat(values.get('CHOREOGRAPH_CRM_EXPIRES_AT','').replace('Z','+00:00'))
-        if expiry.tzinfo is None or expiry<=(now or datetime.now(UTC)):raise ValueError()
-    except (ValueError,TypeError):raise ValueError('CRM_ALLOWANCE_INVALID') from None
-    allowance=CRMAllowance(grant,app_id,expiry,number('CHOREOGRAPH_CRM_REQUESTS',1_000_000),
-                           number('CHOREOGRAPH_CRM_WORKSPACE_REQUESTS',1_000_000))
+    if manual_grant_id is not None:
+        allowance=ManualCRMAllowance(grant,app_id)
+    else:
+        try:
+            expiry=datetime.fromisoformat(values.get('CHOREOGRAPH_CRM_EXPIRES_AT','').replace('Z','+00:00'))
+            if expiry.tzinfo is None or expiry<=(now or datetime.now(UTC)):raise ValueError()
+        except (ValueError,TypeError):raise ValueError('CRM_ALLOWANCE_INVALID') from None
+        allowance=CRMAllowance(grant,app_id,expiry,number('CHOREOGRAPH_CRM_REQUESTS',1_000_000),
+                               number('CHOREOGRAPH_CRM_WORKSPACE_REQUESTS',1_000_000))
     return LiveCRMConfig(HubSpotConfig(app_id,client,secret,callback,schema_setup_allowed=schema=='true',
                                       capacity=capacity,distribution=distribution),allowance)

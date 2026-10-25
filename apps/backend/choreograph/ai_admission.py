@@ -4,7 +4,7 @@ import json
 import re
 import time
 from collections.abc import Callable
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, field
 from datetime import datetime, timedelta
 from typing import Generic, Literal, TypeVar
 from uuid import UUID, uuid4
@@ -70,6 +70,27 @@ class GrantSpec:
                 len(self.response_model)>100 or len(self.embedding_model)>100 or
                 any(getattr(self,'workspace_'+key)>getattr(self,key)
                     for key in ('requests','input_tokens','output_tokens','vectors','cost_micros'))):
+            raise ValueError('AI_GRANT_INVALID')
+
+
+@dataclass(frozen=True)
+class ManualGrantSpec:
+    """Owner-authorized local UI use; accounting without aggregate ceilings."""
+    grant_id: str
+    response_model: str
+    embedding_model: str
+    response_input_rate: int
+    response_output_rate: int
+    embedding_input_rate: int
+    expires_at: None = field(default=None, init=False)
+    policy: str = field(default='local_owner_manual', init=False)
+
+    def __post_init__(self):
+        if (not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9._:/-]{0,79}', self.grant_id) or
+                any(not isinstance(value, str) or not value or len(value)>100
+                    for value in (self.response_model, self.embedding_model)) or
+                any(type(value) is not int or not 0<value<=10**12 for value in
+                    (self.response_input_rate, self.response_output_rate, self.embedding_input_rate))):
             raise ValueError('AI_GRANT_INVALID')
 
 
@@ -200,7 +221,7 @@ class Admission:
     deliberately never refunded; observed usage is diagnostic, not permission
     to repeat a request whose external completion may be uncertain.
     """
-    def __init__(self, engine, grant: GrantSpec, scope: AttemptScope, clock: Callable[[], datetime], *,
+    def __init__(self, engine, grant: GrantSpec | ManualGrantSpec, scope: AttemptScope, clock: Callable[[], datetime], *,
                  monotonic_deadline=None, monotonic_clock=time.monotonic):
         self.engine, self.grant, self.scope, self.clock = engine, grant, scope, clock
         self.monotonic_deadline,self.monotonic_clock=monotonic_deadline,monotonic_clock
@@ -233,8 +254,13 @@ class Admission:
                 (embedding and (not 1<=vectors<=4 or output_tokens)) or (not embedding and (vectors or output_tokens<1))):
             raise ValueError('AI_ATTEMPT_INVALID')
         now=self.clock()
-        if self.grant.expires_at<=now:raise DomainError('AI_BUDGET_EXPIRED','Live assistance is unavailable.',429)
-        values=asdict(self.grant);values['expires_at']=self.grant.expires_at.isoformat()
+        manual=isinstance(self.grant,ManualGrantSpec)
+        if manual and self.scope.workspace_id is None:
+            raise DomainError('AI_MANUAL_WORKSPACE_REQUIRED','Manual assistance requires an active demo.',403)
+        if self.grant.expires_at is not None and self.grant.expires_at<=now:
+            raise DomainError('AI_BUDGET_EXPIRED','Live assistance is unavailable.',429)
+        values=asdict(self.grant)
+        if self.grant.expires_at is not None:values['expires_at']=self.grant.expires_at.isoformat()
         digest=hashlib.sha256(json.dumps(values,sort_keys=True,separators=(',',':')).encode()).hexdigest()
         cost=(input_tokens*(self.grant.embedding_input_rate if embedding else self.grant.response_input_rate)+
               output_tokens*(0 if embedding else self.grant.response_output_rate)+999_999)//1_000_000
@@ -264,17 +290,20 @@ class Admission:
                 raise DomainError('ASSISTANT_BUSY','The front desk is busy. Try again shortly.',429)
             for key,amount in requested.items():
                 used=getattr(grant,key)
-                aggregate=func.count(AIAttempt.id) if key=='requests' else func.coalesce(func.sum(getattr(AIAttempt,key)),0)
-                guest=db.scalar(select(aggregate).where(
-                    AIAttempt.grant_id==grant.id,AIAttempt.scope_key==scope_key))
-                if used+amount>getattr(self.grant,key) or (self.scope.workspace_id is not None and
-                        guest+amount>getattr(self.grant,'workspace_'+key)):
-                    raise DomainError('AI_BUDGET_LIMIT','This live allowance has been used. Use the request controls.',429)
+                if not manual:
+                    aggregate=func.count(AIAttempt.id) if key=='requests' else func.coalesce(func.sum(getattr(AIAttempt,key)),0)
+                    guest=db.scalar(select(aggregate).where(
+                        AIAttempt.grant_id==grant.id,AIAttempt.scope_key==scope_key))
+                    if used+amount>getattr(self.grant,key) or (self.scope.workspace_id is not None and
+                            guest+amount>getattr(self.grant,'workspace_'+key)):
+                        raise DomainError('AI_BUDGET_LIMIT','This live allowance has been used. Use the request controls.',429)
                 setattr(grant,key,used+amount)
+            lease_until=now+timedelta(seconds=120)
+            if self.grant.expires_at is not None:lease_until=min(lease_until,self.grant.expires_at)
             row=AIAttempt(id=uuid4(),grant_id=grant.id,workspace_id=self.scope.workspace_id,scope_key=scope_key,
                 generation=self.scope.generation,command_key=self.scope.command_key,phase=phase,batch=batch,
                 model=self.grant.embedding_model if embedding else self.grant.response_model,state='reserved',
-                lease_until=min(now+timedelta(seconds=120),self.grant.expires_at),lease_token=uuid4(),
+                lease_until=lease_until,lease_token=uuid4(),
                 input_tokens=input_tokens,output_tokens=output_tokens,vectors=vectors,cost_micros=cost)
             db.add(row)
             return AttemptClaim(row.id,row.lease_token)
