@@ -12,6 +12,7 @@ from .ai_admission import AttemptScope
 from .composition import compose_ai
 from .crm_composition import compose_crm
 from .db import build_engine
+from .persistence import is_object
 from .settings import load_environment
 
 
@@ -23,15 +24,31 @@ def application(role, settings, engine, values, *, ai_runtime=None,crm_provider=
         @app.get('/healthz')
         def bootstrap_health():return {'status':'bootstrap','application_ready':False}
         return app
+    publisher=None
+    if values.get('CHOREOGRAPH_TASKS_ENABLED')=='true':
+        from .task_enqueue import CloudTasks, TasksConfig
+        publisher=CloudTasks(TasksConfig.parse(values),authorized=True)
+    elif is_object(engine) and settings.object_backend=='gcs':
+        raise ValueError('OBJECT_DISPATCH_REQUIRED')
     if role == 'api':
         from .api import create_app
-        return create_app(settings, engine, ai_runtime=ai_runtime,crm_provider=crm_provider)
-    from .task_delivery import TaskTarget, create_delivery_app
+        try:
+            return create_app(settings, engine, ai_runtime=ai_runtime,crm_provider=crm_provider,
+                              publisher=publisher,close_publisher=publisher is not None)
+        except BaseException:
+            if publisher is not None:publisher.close()
+            raise
+    from .task_delivery import MaintenanceTarget, TaskTarget, create_delivery_app
     target = TaskTarget(values.get('CHOREOGRAPH_TASK_URL', ''),
                         values.get('CHOREOGRAPH_TASK_AUDIENCE', ''),
                         values.get('CHOREOGRAPH_TASK_SERVICE_EMAIL', ''))
     provider=crm_provider if crm_provider is not None else compose_crm(settings,engine)
-    app = create_delivery_app(settings, engine, provider, target,close_provider=crm_provider is None)
+    maintenance=None
+    if publisher is not None:
+        maintenance=MaintenanceTarget(target.audience+'/internal/maintenance',target.audience,
+                                     values.get('CHOREOGRAPH_MAINTENANCE_SERVICE_EMAIL',''))
+    app = create_delivery_app(settings, engine, provider, target,close_provider=crm_provider is None,
+        maintenance_target=maintenance,publisher=publisher,close_publisher=publisher is not None)
 
     @app.get('/health')
     def health():
@@ -67,6 +84,7 @@ def main():
             if not all(result[key]['ready'] for key in ('configuration','corpus','database')):raise SystemExit(2)
             return
         if args.role in {'migrate', 'schema-downgrade'}:
+            if is_object(engine):raise ValueError('DATABASE_DISABLED_NO_MIGRATIONS')
             from .migrate import downgrade, migrate
             if args.role == 'schema-downgrade':
                 if not args.target:
@@ -76,12 +94,13 @@ def main():
                 migrate(engine, args.target or 'head')
             print('{"code":"SCHEMA_COMMAND_COMPLETED"}')
             return
-        with engine.connect() as connection:
-            connection.execute(text('SELECT 1'))
+        if is_object(engine):engine.load()
+        else:
+            with engine.connect() as connection:
+                connection.execute(text('SELECT 1'))
         if args.role == 'prepare-knowledge':
-            from sqlalchemy.orm import Session
-
             from .knowledge import prepare_pack, prepare_samples
+            from .persistence import Session
             if settings.profile == 'fake':
                 with Session(engine) as db, db.begin():
                     prepare_samples(db, datetime.now(UTC))

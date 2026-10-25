@@ -5,17 +5,18 @@ import re
 from contextlib import asynccontextmanager
 from dataclasses import dataclass
 from datetime import UTC, datetime
+from typing import ClassVar, Literal
 from urllib.parse import urlsplit
 from uuid import UUID
 
 from fastapi import FastAPI, Request, Response
 from pydantic import ValidationError
-from sqlalchemy.orm import Session
 from starlette.concurrency import run_in_threadpool
 
 from . import jobs
 from .contracts import Contract
 from .models import Outbox
+from .persistence import Session
 
 
 class Delivery(Contract):
@@ -23,8 +24,13 @@ class Delivery(Contract):
     event_id: UUID
 
 
+class Maintenance(Contract):
+    sweep: Literal[True]
+
+
 @dataclass(frozen=True)
 class TaskTarget:
+    PATH: ClassVar[str]='/internal/tasks/crm'
     url: str
     audience: str
     service_email: str
@@ -37,9 +43,13 @@ class TaskTarget:
         if not re.fullmatch(r'[a-z][a-z0-9-]{4,28}[a-z0-9]@[a-z][a-z0-9-]{4,28}[a-z0-9]\.iam\.gserviceaccount\.com',self.service_email):
             raise ValueError('TASK_IDENTITY_INVALID')
         target,audience=urlsplit(self.url),urlsplit(self.audience)
-        if (target.path!='/internal/tasks/crm' or audience.path or target.netloc!=audience.netloc or
+        if (target.path!=self.PATH or audience.path or target.netloc!=audience.netloc or
                 target.port not in {None,443} or audience.port not in {None,443}):
             raise ValueError('TASK_TARGET_INVALID')
+
+
+class MaintenanceTarget(TaskTarget):
+    PATH='/internal/maintenance'
 
 
 def task_payload(target, workspace_id, event_id):
@@ -68,31 +78,35 @@ def verify_google_token(token, audience):
         return verify_oauth2_token(token, bounded_request, audience=audience)
 
 
-def create_delivery_app(settings, engine, provider, target, *, verifier=verify_google_token, clock=None,close_provider=False):
+def create_delivery_app(settings, engine, provider, target, *, verifier=verify_google_token, clock=None,close_provider=False,
+                        maintenance_target=None,publisher=None,close_publisher=False):
     @asynccontextmanager
     async def lifespan(_):
         try:yield
         finally:
+            if close_publisher and publisher is not None:publisher.close()
             if close_provider:provider.close()
     app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None,lifespan=lifespan)
     clock = clock or (lambda: datetime.now(UTC))
     verification_slots = asyncio.Semaphore(4)
 
-    @app.post('/internal/tasks/crm')
-    async def delivery(request: Request):
+    async def authorized(request,identity):
         authorization = request.headers.get('authorization', '')
         if not authorization.startswith('Bearer ') or not 1 <= len(authorization[7:]) <= 8192:
-            return Response(status_code=403)
+            return False
         try:
             async with asyncio.timeout(6):
                 async with verification_slots:
-                    claims = await run_in_threadpool(verifier, authorization[7:], target.audience)
+                    claims = await run_in_threadpool(verifier, authorization[7:], identity.audience)
             if (claims.get('iss') not in {'accounts.google.com', 'https://accounts.google.com'}
-                    or claims.get('aud') != target.audience or claims.get('email') != target.service_email
+                    or claims.get('aud') != identity.audience or claims.get('email') != identity.service_email
                     or claims.get('email_verified') is not True):
-                return Response(status_code=403)
+                return False
         except Exception:  # noqa: BLE001 - every verifier failure must deny access without leaking token details.
-            return Response(status_code=403)
+            return False
+        return True
+
+    async def command_body(request,model):
         try:
             if request.headers.get('content-type', '').split(';')[0] != 'application/json':
                 return Response(status_code=415)
@@ -102,11 +116,17 @@ def create_delivery_app(settings, engine, provider, target, *, verifier=verify_g
                     body.extend(chunk)
                     if len(body) > 1024:
                         return Response(status_code=413)
-            command = Delivery.model_validate_json(body)
+            return model.model_validate_json(body)
         except TimeoutError:
             return Response(status_code=408)
         except (ValidationError, ValueError):
             return Response(status_code=422)
+
+    @app.post('/internal/tasks/crm')
+    async def delivery(request: Request):
+        if not await authorized(request,target):return Response(status_code=403)
+        command=await command_body(request,Delivery)
+        if isinstance(command,Response):return command
 
         def process():
             job = jobs.claim(engine, clock(), event_id=command.event_id, workspace_id=command.workspace_id)
@@ -120,5 +140,22 @@ def create_delivery_app(settings, engine, provider, target, *, verifier=verify_g
             return Response(status_code=await run_in_threadpool(process))
         except Exception:  # noqa: BLE001 - the private delivery boundary returns only a retry status.
             return Response(status_code=503)
+
+    if maintenance_target is not None and publisher is not None:
+        @app.post('/internal/maintenance')
+        async def maintenance(request:Request):
+            if not await authorized(request,maintenance_target):return Response(status_code=403)
+            command=await command_body(request,Maintenance)
+            if isinstance(command,Response):return command
+            def sweep():
+                from . import dispatch
+                jobs.maintenance(engine,clock())
+                dispatch.settle_terminal(engine)
+                dispatch.tick(engine,publisher,clock,limit=3)
+            try:
+                await run_in_threadpool(sweep)
+                return Response(status_code=204)
+            except Exception:  # noqa: BLE001 - Scheduler retries; durable claims and counters remain authoritative.
+                return Response(status_code=503)
 
     return app

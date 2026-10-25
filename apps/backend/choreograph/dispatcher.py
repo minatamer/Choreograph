@@ -9,12 +9,12 @@ from datetime import UTC, datetime
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from uuid import uuid4
 
-from sqlalchemy import func, select, text
-from sqlalchemy.orm import Session
+from sqlalchemy import text
 
 from . import dispatch, jobs
 from .db import build_engine
 from .models import DispatcherHeartbeat, Outbox, TaskPublication
+from .persistence import Session, is_object, repo_rows, repo_values
 from .settings import Settings
 from .task_enqueue import CloudTasks, TasksConfig
 
@@ -24,6 +24,9 @@ def leadership(engine):
     # One checked-out connection owns a session advisory lock through the cycle;
     # the second pool connection serves short data transactions. Explicit unlock
     # is essential: returning a connection to a pool does not end its session.
+    if is_object(engine):
+        yield True
+        return
     with engine.connect() as connection:
         acquired=connection.scalar(text('SELECT pg_try_advisory_lock(45870,1)'))
         connection.commit()
@@ -60,11 +63,13 @@ def cycle(engine,transport,clock,instance,*,stopping=lambda:False):
 def status(engine,now):
     with Session(engine) as db:
         row=db.get(DispatcherHeartbeat,'primary')
-        states=dict(db.execute(select(TaskPublication.state,func.count()).group_by(TaskPublication.state)).all())
-        codes=dict(db.execute(select(TaskPublication.code,func.count()).where(TaskPublication.code.is_not(None)).group_by(TaskPublication.code)).all())
-        work=dict(db.execute(select(Outbox.state,func.count()).group_by(Outbox.state)).all())
-        work_codes=dict(db.execute(select(Outbox.code,func.count()).where(Outbox.code.is_not(None)).group_by(Outbox.code)).all())
-        oldest=db.scalar(select(func.min(Outbox.due_at)).where(Outbox.state.in_(['pending','retrying','reconciling'])))
+        from collections import Counter
+        publications=repo_rows(db,TaskPublication);events=repo_rows(db,Outbox)
+        states=dict(Counter(row.state for row in publications))
+        codes=dict(Counter(row.code for row in publications if row.code))
+        work=dict(Counter(row.state for row in events))
+        work_codes=dict(Counter(row.code for row in events if row.code))
+        oldest=min(repo_values(db, Outbox, 'due_at', predicate=lambda candidate: (candidate.state in ['pending', 'retrying', 'reconciling'])), default=None)
         return {'code':row.code if row else 'DISPATCH_NOT_STARTED','cycles':row.cycles if row else 0,
             'published':row.published if row else 0,'cycle_age_seconds':int((now-row.attempted_at).total_seconds()) if row else None,
             'success_age_seconds':int((now-row.succeeded_at).total_seconds()) if row and row.succeeded_at else None,
@@ -75,10 +80,13 @@ def status(engine,now):
 def settings_for_dispatcher(values):
     # These values are deliberately unused cryptographic placeholders. This role
     # never reads the bridge/token/provider secrets or constructs those clients.
-    return Settings.parse({'CHOREOGRAPH_DATABASE_URL':values.get('CHOREOGRAPH_DATABASE_URL',''),
+    from dataclasses import replace
+    return replace(Settings.parse({'DATABASE_ENABLED':values.get('DATABASE_ENABLED','false'),
+        'CHOREOGRAPH_DATABASE_URL':values.get('CHOREOGRAPH_DATABASE_URL',''),
+        'CHOREOGRAPH_ORIGIN':values.get('CHOREOGRAPH_ORIGIN','http://127.0.0.1:45860'),
         'FAKE_MODE':'true','CHOREOGRAPH_CRM_PROVIDER':'disabled',
         'CHOREOGRAPH_BRIDGE_SECRET':'dispatcher-unused-'+'x'*32,
-        'CHOREOGRAPH_TOKEN_KEY':base64.urlsafe_b64encode(bytes(32)).decode()})
+        'CHOREOGRAPH_TOKEN_KEY':values.get('CHOREOGRAPH_TOKEN_KEY','') if values.get('DATABASE_ENABLED','false')=='false' else base64.urlsafe_b64encode(bytes(32)).decode()}),object_backend='gcs')
 
 
 def health_server(port,health,*,host='0.0.0.0'):

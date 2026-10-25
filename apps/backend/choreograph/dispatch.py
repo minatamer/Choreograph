@@ -6,11 +6,9 @@ from dataclasses import asdict, dataclass
 from datetime import timedelta
 from uuid import uuid4
 
-from sqlalchemy import and_, or_, select, text
-from sqlalchemy.orm import Session
-
 from . import jobs
 from .models import Outbox, TaskPublication
+from .persistence import Session, advisory, repo_first, repo_rows, storage_retry
 from .task_delivery import Delivery, task_payload
 from .task_enqueue import PublishFailure
 
@@ -39,20 +37,18 @@ def eligible(row,now):
         (row.state=='processing' and row.lease_until is not None and row.lease_until<=now)))
 
 
+@storage_retry
 def claim(engine,config,now):
     fingerprint=target_hash(config)
     with Session(engine) as db,db.begin():
-        db.execute(text('SELECT pg_advisory_xact_lock(45869,1)'))
-        active=TaskPublication.lease_until>now
-        if len(list(db.scalars(select(TaskPublication.event_id).where(active).limit(3))))>=3:return None
-        due=or_(and_(Outbox.state.in_(['pending','retrying','reconciling']),Outbox.due_at<=now),
-            and_(Outbox.state=='processing',Outbox.lease_until<=now))
-        rows=db.scalars(select(Outbox).outerjoin(TaskPublication,
-            (TaskPublication.workspace_id==Outbox.workspace_id)&(TaskPublication.event_id==Outbox.id)).where(
-            due,Outbox.attempts<5,or_(TaskPublication.event_id.is_(None),and_(
-                TaskPublication.next_check<=now,TaskPublication.state.not_in(['retired','attention']),
-                or_(TaskPublication.lease_until.is_(None),TaskPublication.lease_until<=now))))
-            .order_by(Outbox.due_at,Outbox.id).limit(20).with_for_update(of=Outbox,skip_locked=True))
+        advisory(db,45869,1)
+        if len(repo_rows(db,TaskPublication,predicate=lambda row:row.lease_until is not None and row.lease_until>now,limit=3))>=3:return None
+        def candidate(row):
+            if not eligible(row,now):return False
+            publication=db.get(TaskPublication,(row.workspace_id,row.id))
+            return publication is None or (publication.next_check<=now and publication.state not in {'retired','attention'} and
+                (publication.lease_until is None or publication.lease_until<=now))
+        rows=repo_rows(db,Outbox,predicate=candidate,order=lambda row:(row.due_at,row.id),limit=20,lock=True)
         for row in rows:
             publication=db.get(TaskPublication,(row.workspace_id,row.id))
             if not jobs.window_open(db,row,now):
@@ -97,9 +93,10 @@ def matches(task,claim,config):
     except (ValueError,KeyError,TypeError):return False
 
 
+@storage_retry
 def finish(engine,config,claim,now,*,task=None,error=None):
     with Session(engine) as db,db.begin():
-        row=db.scalar(select(Outbox).where(Outbox.workspace_id==claim.workspace_id,Outbox.id==claim.event_id).with_for_update())
+        row=repo_first(db, Outbox, filters={'workspace_id': claim.workspace_id, 'id': claim.event_id}, lock=True)
         publication=db.get(TaskPublication,(claim.workspace_id,claim.event_id))
         if (not row or not publication or publication.lease_token!=claim.lease_token or
                 not publication.lease_until or publication.lease_until<=now):return False
@@ -134,13 +131,12 @@ def finish(engine,config,claim,now,*,task=None,error=None):
         return False
 
 
+@storage_retry
 def settle_terminal(engine):
     with Session(engine) as db,db.begin():
-        rows=db.execute(select(TaskPublication,Outbox).join(Outbox,
-            (TaskPublication.workspace_id==Outbox.workspace_id)&(TaskPublication.event_id==Outbox.id)).where(
-                Outbox.state.in_(['synced','completed','retired','needs_attention']),
-                TaskPublication.state.not_in(['retired','attention'])).limit(20).with_for_update(of=TaskPublication,skip_locked=True))
-        for publication,row in rows:
+        for publication in repo_rows(db,TaskPublication,predicate=lambda item:item.state not in {'retired','attention'},lock=True):
+            row=db.get(Outbox,(publication.workspace_id,publication.event_id))
+            if row is None or row.state not in {'synced','completed','retired','needs_attention'}:continue
             publication.state='attention' if row.state=='needs_attention' else 'retired'
             publication.code=row.code;publication.lease_until=None;publication.lease_token=None
 
