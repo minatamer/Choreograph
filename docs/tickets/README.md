@@ -10,6 +10,7 @@ Fresh local ports: frontend **45860**, API **45861**, PostgreSQL **45862**. Sele
 
 | Ticket | Outcome | Owning phase | Dependencies | Status |
 | --- | --- | --- | --- | --- |
+| [SBS-031](SBS-031-optional-database.md) | Optional PostgreSQL, private object persistence and dual-mode validation | Owner25 October2026 continuation | Current booking/RAG/CRM/dispatch implementation | Complete local26 October2026;511 backend/160 Node/Linux checks; false-mode restart and23 tests with PostgreSQL stopped; approved local commit plan; owner live/hosted review remains |
 | [SBS-000](SBS-000-baseline.md) | Verify the supported baseline and owned lifecycle | 07-build | None | Complete local |
 | [SBS-000A](SBS-000A-figma.md) | Adopt the approved compact Figma | Design milestone | None | Adopted visual design; owner approved |
 | [SBS-001](SBS-001-foundation.md) | Create the Next/FastAPI contract foundation | 07-build | SBS-000, SBS-000A | Complete local |
@@ -43,7 +44,7 @@ Fresh local ports: frontend **45860**, API **45861**, PostgreSQL **45862**. Sele
 | [SBS-026](SBS-026-pre-sharing-quality.md) | Quality/efficiency and CI configuration consistency | 10a-quality; owner AFK24October | Clean checkpoint13f608b | Complete local: scoped formatters/focus and CI generator repair;26 focused checks,75 Node/types and fresh Linux evidence |
 | [SBS-027](SBS-027-security-review.md) | Renew whole-repo STRIDE/general/dependency audit after quality | 10b-security-review | SBS-026 clean committed boundary | Complete local; provisional AFK no-fixes; owner/external acceptance pending |
 | [SBS-028](SBS-028-owner-manual-ai.md) | Local owner manual real AI without aggregate budget/expiry; preserve finite agent acceptance | Owner correction,25 October2026 | SBS-025/027 | Complete local;334 backend/Ruff pass, schema0011 and owned stack live; owner manual/HubSpot acceptance remains |
-| [SBS-029](SBS-029-deployment-readiness.md) | Deployment runbook, CLI setup, named secrets, cost alerts and private SQL/API plan | Owner deployment request,25 October2026 | SBS-010/014/015/024/028 | Runbook researched; eight empty secrets, USD5 Cloud Run and USD10 project alerts verified; paid foundation/private transport/hosted acceptance pending |
+| [SBS-029](SBS-029-deployment-readiness.md) | Deployment runbook, CLI setup, named secrets, cost alerts and private SQL/API plan | Owner deployment request,25 October2026 | SBS-010/014/015/024/028 | Runbook/cheaper task-plus-minute-sweep candidate researched; eight empty secrets and USD5/USD10 alerts verified; private transport, selected cadence implementation and paid/hosted acceptance pending |
 | [SBS-030](SBS-030-shared-confirmation.md) | Shared designed confirmations, no native prompts and reset to connection choices | Owner correction,25 October2026 | SBS-016/017/023 | Complete local:134 Node/types and HTTP compilation pass; browser visual check blocked; owner acceptance remains |
 
 Scope is one Python backend, one Next frontend, SQLAlchemy/Alembic, actual PostgreSQL/pgvector, narrow LlamaIndex/OpenAI/HubSpot adapters and local durable runner. No payments/outreach/Google Calendar, extra vector platform or agent framework. Figma remains six desktop key frames and one mobile landing; the implemented app is responsive throughout.
