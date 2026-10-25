@@ -10,6 +10,7 @@ export const QUESTION_GROUPS=[
 ] as const;
 
 export type ChatShortcut={label:string;text:string};
+export const RESERVATION_SHORTCUT:ChatShortcut={label:'Reserve an appointment',text:'Reserve an appointment.'};
 export const DOCUMENT_QUESTIONS=[
  {document:'Service Guide',text:QUESTION_GROUPS[0].questions[1]},
  {document:'Preparation Guide',text:QUESTION_GROUPS[1].questions[0]},

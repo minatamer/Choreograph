@@ -10,6 +10,6 @@ export function citationGroups(claims:Claim[]){
  return [...groups.values()];
 }
 export function reviewMessage(messages:SessionState['messages']){
- return messages.findLast(message=>message.role==='assistant'&&message.cards.some(card=>['quote','week','review'].includes(card)))?.id
+ return messages.findLast(message=>message.role==='assistant'&&message.cards.some(card=>['quote','week','reserve','review'].includes(card)))?.id
   ??messages.find(message=>message.role==='assistant')?.id;
 }
