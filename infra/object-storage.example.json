@@ -1,0 +1,35 @@
+{
+  "status": "UNCONFIGURED_REVIEW_ONLY",
+  "project": "choreograph-512713",
+  "bucket": {
+    "name": "choreograph-512713-private-state",
+    "location": "us-central1",
+    "storageClass": "STANDARD",
+    "iamConfiguration": {
+      "publicAccessPrevention": "enforced",
+      "uniformBucketLevelAccess": {
+        "enabled": true
+      }
+    },
+    "versioning": {
+      "enabled": false
+    },
+    "softDeletePolicy": {
+      "retentionDurationSeconds": "0"
+    }
+  },
+  "runtimePermissions": [
+    "storage.buckets.get",
+    "storage.objects.get",
+    "storage.objects.create",
+    "storage.objects.delete"
+  ],
+  "notes": [
+    "No public ACL/URL, retention lock or lifecycle deletion of the authoritative state.",
+    "Exact-bucket access only for API and worker identities. No service-account key files.",
+    "The API and worker publish to the exact Cloud Tasks queue and may actAs only the delivery identity.",
+    "Only the frontend invokes the API. Only task-delivery and maintenance identities invoke the worker.",
+    "One minute-scheduled OIDC POST /internal/maintenance with body {\"sweep\":true}; no always-running WorkerPool.",
+    "No cloud operation has been performed. Validate IAM, source packs, rates and cleanup before publishing."
+  ]
+}

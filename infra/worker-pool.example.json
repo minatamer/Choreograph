@@ -11,6 +11,7 @@
       "args": ["dispatcher"],
       "resources": {"limits": {"cpu": "1", "memory": "512Mi"}, "cpuIdle": false},
       "env": [
+        {"name":"DATABASE_ENABLED","value":"true"},
         {"name": "CHOREOGRAPH_DISPATCH_HEALTH_PORT", "value": "8080"},
         {"name": "CHOREOGRAPH_DATABASE_URL", "valueSource": {"secretKeyRef": {"secret": "REPLACE_APPLICATION_DATABASE_URL_SECRET_NAME", "version": "REPLACE_PINNED_APPLICATION_DATABASE_URL_SECRET_VERSION"}}},
         {"name": "CHOREOGRAPH_TASKS_ENABLED", "value": "true"},

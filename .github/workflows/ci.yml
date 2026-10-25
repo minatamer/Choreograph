@@ -17,6 +17,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     env:
+      DATABASE_ENABLED: "true"
       FAKE_MODE: "true"
       PAID_DEMO_ENABLED: "false"
       NEXT_TELEMETRY_DISABLED: "1"
@@ -112,6 +113,7 @@ jobs:
 
           password = "ci-only-not-a-secret"
           values = {
+              "DATABASE_ENABLED": "true",
               "FAKE_MODE": "true",
               "PAID_DEMO_ENABLED": "false",
               "CHOREOGRAPH_DB_PASSWORD": password,

@@ -97,6 +97,8 @@ spec:
               cpu: "1"
               memory: 512Mi
           env:
+            - name: DATABASE_ENABLED
+              value: "true"
             - name: FAKE_MODE
               value: "true"
             - name: PAID_DEMO_ENABLED
@@ -164,6 +166,8 @@ spec:
               cpu: "1"
               memory: 512Mi
           env:
+            - name: DATABASE_ENABLED
+              value: "true"
             - name: FAKE_MODE
               value: "true"
             - name: PAID_DEMO_ENABLED
@@ -234,6 +238,8 @@ spec:
                   cpu: "1"
                   memory: 512Mi
               env:
+                - name: DATABASE_ENABLED
+                  value: "true"
                 - name: FAKE_MODE
                   value: "true"
                 - name: PAID_DEMO_ENABLED
@@ -286,6 +292,8 @@ spec:
                   cpu: "1"
                   memory: 512Mi
               env:
+                - name: DATABASE_ENABLED
+                  value: "true"
                 - name: FAKE_MODE
                   value: "true"
                 - name: PAID_DEMO_ENABLED
@@ -334,6 +342,8 @@ spec:
                   cpu: "1"
                   memory: 512Mi
               env:
+                - name: DATABASE_ENABLED
+                  value: "true"
                 - name: FAKE_MODE
                   value: "true"
                 - name: PAID_DEMO_ENABLED

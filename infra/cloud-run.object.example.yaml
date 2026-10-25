@@ -1,0 +1,227 @@
+# UNAPPLIED: selected object-storage QA path. Replace all placeholders; secrets use env names.
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: REPLACE_FRONTEND_SERVICE_NAME
+  namespace: "REPLACE_PROJECT_NUMBER"
+  labels:
+    cloud.googleapis.com/location: REPLACE_REGION
+  annotations:
+    run.googleapis.com/description: UNCONFIGURED - private object-storage QA; review
+      before deployment
+    run.googleapis.com/ingress: all
+    run.googleapis.com/invoker-iam-disabled: 'false'
+    run.googleapis.com/minScale: '0'
+    run.googleapis.com/maxScale: '2'
+spec:
+  template:
+    metadata:
+      annotations:
+        run.googleapis.com/execution-environment: gen2
+    spec:
+      serviceAccountName: REPLACE_FRONTEND_SA@REPLACE_PROJECT_ID.iam.gserviceaccount.com
+      containerConcurrency: 8
+      timeoutSeconds: 90
+      containers:
+      - image: REPLACE_REGION-docker.pkg.dev/REPLACE_PROJECT_ID/REPLACE_REPOSITORY/frontend@sha256:REPLACE_FRONTEND_IMAGE_DIGEST
+        ports:
+        - name: http1
+          containerPort: 8080
+        resources:
+          limits:
+            cpu: '1'
+            memory: 512Mi
+        env:
+        - name: NEXT_TELEMETRY_DISABLED
+          value: '1'
+        - name: CHOREOGRAPH_ORIGIN
+          value: https://REPLACE_FRONTEND_SERVICE_ORIGIN.run.app
+        - name: CHOREOGRAPH_API_URL
+          value: https://REPLACE_API_SERVICE_ORIGIN.run.app
+        - name: CHOREOGRAPH_API_AUTH
+          value: google
+        - name: CHOREOGRAPH_API_AUDIENCE
+          value: https://REPLACE_API_SERVICE_ORIGIN.run.app
+        - name: CHOREOGRAPH_BRIDGE_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: CHOREOGRAPH_BRIDGE_SECRET
+              key: "REPLACE_PINNED_BRIDGE_SECRET_VERSION"
+        startupProbe:
+          httpGet:
+            path: /healthz
+            port: 8080
+          periodSeconds: 3
+          timeoutSeconds: 1
+          failureThreshold: 20
+  traffic:
+  - latestRevision: true
+    percent: 100
+---
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: REPLACE_API_SERVICE_NAME
+  namespace: "REPLACE_PROJECT_NUMBER"
+  labels:
+    cloud.googleapis.com/location: REPLACE_REGION
+  annotations:
+    run.googleapis.com/description: UNCONFIGURED - private object-storage QA; review
+      before deployment
+    run.googleapis.com/ingress: all
+    run.googleapis.com/invoker-iam-disabled: 'false'
+    run.googleapis.com/minScale: '0'
+    run.googleapis.com/maxScale: '2'
+spec:
+  template:
+    metadata:
+      annotations:
+        run.googleapis.com/execution-environment: gen2
+    spec:
+      serviceAccountName: REPLACE_API_SA@REPLACE_PROJECT_ID.iam.gserviceaccount.com
+      containerConcurrency: 8
+      timeoutSeconds: 90
+      containers:
+      - image: REPLACE_REGION-docker.pkg.dev/REPLACE_PROJECT_ID/REPLACE_REPOSITORY/backend@sha256:REPLACE_BACKEND_IMAGE_DIGEST
+        command:
+        - python
+        - -m
+        - choreograph.release
+        args:
+        - api
+        ports:
+        - name: http1
+          containerPort: 8080
+        resources:
+          limits:
+            cpu: '1'
+            memory: 512Mi
+        env:
+        - name: DATABASE_ENABLED
+          value: 'false'
+        - name: FAKE_MODE
+          value: 'true'
+        - name: PAID_DEMO_ENABLED
+          value: 'false'
+        - name: CHOREOGRAPH_ORIGIN
+          value: https://REPLACE_FRONTEND_SERVICE_ORIGIN.run.app
+        - name: CHOREOGRAPH_BRIDGE_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: CHOREOGRAPH_BRIDGE_SECRET
+              key: "REPLACE_PINNED_BRIDGE_SECRET_VERSION"
+        - name: CHOREOGRAPH_TOKEN_KEY
+          valueFrom:
+            secretKeyRef:
+              name: CHOREOGRAPH_TOKEN_KEY
+              key: "REPLACE_PINNED_TOKEN_KEY_SECRET_VERSION"
+        - name: CHOREOGRAPH_TASKS_ENABLED
+          value: 'true'
+        - name: CHOREOGRAPH_TASK_PROJECT
+          value: REPLACE_PROJECT_ID
+        - name: CHOREOGRAPH_TASK_REGION
+          value: REPLACE_REGION
+        - name: CHOREOGRAPH_TASK_QUEUE
+          value: REPLACE_QUEUE_NAME
+        - name: CHOREOGRAPH_TASK_URL
+          value: https://REPLACE_WORKER_SERVICE_ORIGIN.run.app/internal/tasks/crm
+        - name: CHOREOGRAPH_TASK_AUDIENCE
+          value: https://REPLACE_WORKER_SERVICE_ORIGIN.run.app
+        - name: CHOREOGRAPH_TASK_SERVICE_EMAIL
+          value: REPLACE_TASK_DELIVERY_SA@REPLACE_PROJECT_ID.iam.gserviceaccount.com
+        - name: CHOREOGRAPH_MAINTENANCE_SERVICE_EMAIL
+          value: REPLACE_MAINTENANCE_SA@REPLACE_PROJECT_ID.iam.gserviceaccount.com
+        startupProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          periodSeconds: 3
+          timeoutSeconds: 1
+          failureThreshold: 20
+  traffic:
+  - latestRevision: true
+    percent: 100
+---
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: REPLACE_WORKER_SERVICE_NAME
+  namespace: "REPLACE_PROJECT_NUMBER"
+  labels:
+    cloud.googleapis.com/location: REPLACE_REGION
+  annotations:
+    run.googleapis.com/description: UNCONFIGURED - private object-storage QA; review
+      before deployment
+    run.googleapis.com/ingress: all
+    run.googleapis.com/invoker-iam-disabled: 'false'
+    run.googleapis.com/minScale: '0'
+    run.googleapis.com/maxScale: '1'
+spec:
+  template:
+    metadata:
+      annotations:
+        run.googleapis.com/execution-environment: gen2
+    spec:
+      serviceAccountName: REPLACE_WORKER_SA@REPLACE_PROJECT_ID.iam.gserviceaccount.com
+      containerConcurrency: 2
+      timeoutSeconds: 120
+      containers:
+      - image: REPLACE_REGION-docker.pkg.dev/REPLACE_PROJECT_ID/REPLACE_REPOSITORY/backend@sha256:REPLACE_BACKEND_IMAGE_DIGEST
+        command:
+        - python
+        - -m
+        - choreograph.release
+        args:
+        - worker
+        ports:
+        - name: http1
+          containerPort: 8080
+        resources:
+          limits:
+            cpu: '1'
+            memory: 512Mi
+        env:
+        - name: DATABASE_ENABLED
+          value: 'false'
+        - name: FAKE_MODE
+          value: 'true'
+        - name: PAID_DEMO_ENABLED
+          value: 'false'
+        - name: CHOREOGRAPH_ORIGIN
+          value: https://REPLACE_FRONTEND_SERVICE_ORIGIN.run.app
+        - name: CHOREOGRAPH_TASK_URL
+          value: https://REPLACE_WORKER_SERVICE_ORIGIN.run.app/internal/tasks/crm
+        - name: CHOREOGRAPH_TASK_AUDIENCE
+          value: https://REPLACE_WORKER_SERVICE_ORIGIN.run.app
+        - name: CHOREOGRAPH_TASK_SERVICE_EMAIL
+          value: REPLACE_TASK_DELIVERY_SA@REPLACE_PROJECT_ID.iam.gserviceaccount.com
+        - name: CHOREOGRAPH_BRIDGE_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: CHOREOGRAPH_BRIDGE_SECRET
+              key: "REPLACE_PINNED_BRIDGE_SECRET_VERSION"
+        - name: CHOREOGRAPH_TOKEN_KEY
+          valueFrom:
+            secretKeyRef:
+              name: CHOREOGRAPH_TOKEN_KEY
+              key: "REPLACE_PINNED_TOKEN_KEY_SECRET_VERSION"
+        - name: CHOREOGRAPH_TASKS_ENABLED
+          value: 'true'
+        - name: CHOREOGRAPH_TASK_PROJECT
+          value: REPLACE_PROJECT_ID
+        - name: CHOREOGRAPH_TASK_REGION
+          value: REPLACE_REGION
+        - name: CHOREOGRAPH_TASK_QUEUE
+          value: REPLACE_QUEUE_NAME
+        - name: CHOREOGRAPH_MAINTENANCE_SERVICE_EMAIL
+          value: REPLACE_MAINTENANCE_SA@REPLACE_PROJECT_ID.iam.gserviceaccount.com
+        startupProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          periodSeconds: 3
+          timeoutSeconds: 1
+          failureThreshold: 20
+  traffic:
+  - latestRevision: true
+    percent: 100
