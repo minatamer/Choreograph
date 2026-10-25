@@ -31,3 +31,6 @@
 .activity-chart{height:180px;max-height:none;overflow:visible}.activity-chart svg{height:180px;max-height:none}.activity-days{display:block;position:relative;height:64px;margin-left:0}.activity-days button{position:absolute;top:0;width:36px;transform:translateX(-50%)}
 
 .customer-conversation .chat-compose-area{background:linear-gradient(#eef3f9f5,#eef3f9 28%)}
+.crm-setup-feedback{width:100%;padding:12px 14px;border:1px solid #b43a3245;border-radius:16px;background:transparent;box-shadow:inset 0 1px 1px #ffffffa6;color:#972a25;overflow-wrap:anywhere}
+.crm-setup-feedback strong{font-size:14px;font-weight:500}.crm-setup-feedback p{font-size:13px;line-height:1.5;color:inherit;margin:4px 0 0}
+.crm-entry-progress{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--color-text-secondary)}.crm-entry-progress .loading-spinner{flex-shrink:0}.crm-setup-feedback>.button{margin-top:10px}

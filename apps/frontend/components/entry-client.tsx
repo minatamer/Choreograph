@@ -45,15 +45,32 @@ export function EntryClient({resumeSetup=false}:{resumeSetup?:boolean}){
 function EntrySetup(){
  const guest=useDemoGuest();const {state,pending,error}=guest;const router=useRouter();
  const [navigating,startNavigation]=useTransition();const [destination,setDestination]=useState<'skip'|'connected'|null>(null);
- const [openingHubSpot,setOpeningHubSpot]=useState(false);const busy=pending||navigating||openingHubSpot;
+ const [entryNavigation,setEntryNavigation]=useState<'idle'|'opening'|'reloading'|'stalled'>('idle');
+ const [openingHubSpot,setOpeningHubSpot]=useState(false);const openingFrontDesk=entryNavigation==='opening'||entryNavigation==='reloading';const busy=pending||navigating||openingHubSpot||openingFrontDesk;
  const hubSpotOpening=useCallback((opening:boolean)=>{setOpeningHubSpot(opening);if(opening)setDestination('connected');},[]);
  const [notice,setNotice]=useState('');
- const heading=useRef<HTMLHeadingElement>(null);
- useEffect(()=>{const value=new URL(window.location.href).searchParams.get('crm');if(value==='unavailable')setNotice('The HubSpot connection could not be completed. You can continue without HubSpot.');if(value==='cancelled')setNotice('Connection cancelled. No HubSpot records were sent.');window.history.replaceState(null,'','/demo');window.scrollTo(0,0);heading.current?.focus({preventScroll:true});router.prefetch('/demo/workspace');},[router]);
- function proceed(){if(busy)return;setDestination('connected');startNavigation(()=>router.push('/demo/workspace'));}
+ const heading=useRef<HTMLHeadingElement>(null);const continued=useRef<string|null>(null);
+ useEffect(()=>{const value=new URL(window.location.href).searchParams.get('crm');if(value==='unavailable')setNotice('The HubSpot connection could not be completed. You can continue without HubSpot.');if(value==='cancelled')setNotice('Connection cancelled. No HubSpot records were sent.');window.scrollTo(0,0);heading.current?.focus({preventScroll:true});router.prefetch('/demo/workspace');},[router]);
+ useEffect(()=>{
+  const connection=state?.connection;
+  if(!state||pending||openingFrontDesk||destination==='skip'||state.crm_provider!=='hubspot'||state.crm_mode!=='connected'||connection?.provider!=='hubspot'||connection.state!=='ready'||!connection.consented)return;
+  const key=state.workspace_id+':'+connection.id;if(continued.current===key)return;
+  continued.current=key;setOpeningHubSpot(false);setDestination('connected');setEntryNavigation('opening');
+  startNavigation(()=>{try{router.replace('/demo/workspace');}catch{setEntryNavigation('stalled');}});
+ },[state,pending,openingFrontDesk,destination,router]);
+ useEffect(()=>{
+  if(!openingFrontDesk)return;
+  const timer=setTimeout(()=>{
+   if(entryNavigation==='opening'){
+    setEntryNavigation('reloading');
+    try{window.location.replace('/demo/workspace');}catch{setEntryNavigation('stalled');}
+   }else setEntryNavigation('stalled');
+  },8_000);
+  return()=>clearTimeout(timer);
+ },[entryNavigation,openingFrontDesk]);
  function skip(){if(busy)return;setDestination('skip');startNavigation(async()=>{const result=await guest.mutate('crm/skip',{});if(result)startNavigation(()=>router.push('/demo/workspace'));});}
  return <main id="main" className="entry-page entry-setup"><h1 ref={heading} tabIndex={-1}>Juniper Cleaning</h1><p className="entry-intro">Both paths use Juniper’s documents, assistant and schedule. Connect your HubSpot to follow approved bookings in your own account.</p>
-  <div className="entry-choices"><article>{state&&<CRMControls state={state} pending={busy} mutate={guest.mutate} onContinue={proceed} continuing={navigating&&destination==='connected'} onOpeningChange={hubSpotOpening} feedback={error&&destination!=='skip'?<EntryFeedback title="Couldn’t connect to HubSpot" message={error.message}/>:notice?<EntryFeedback kind="notice" title="HubSpot connection" message={notice}/>:undefined}/>}</article><article className="subtle"><Badge tone="neutral">No connection needed</Badge><h2>Continue without HubSpot</h2><p>The complete Juniper experience: questions with sources, a quote, a time and a reviewed booking. Nothing is sent to HubSpot.</p>{error&&destination==='skip'&&<EntryFeedback title="Couldn’t continue yet" message={error.message}/>}<Button kind="secondary" disabled={!state||busy} busy={navigating&&destination==='skip'} onClick={skip}>Continue without HubSpot</Button></article></div></main>;
+  <div className="entry-choices"><article>{state&&<CRMControls state={state} pending={busy} mutate={guest.mutate} continuing={openingFrontDesk} navigationStalled={entryNavigation==='stalled'} onOpeningChange={hubSpotOpening} feedback={error&&destination!=='skip'?<EntryFeedback title="Couldn’t connect to HubSpot" message={error.message}/>:notice?<EntryFeedback kind="notice" title="HubSpot connection" message={notice}/>:undefined}/>}</article><article className="subtle"><Badge tone="neutral">No connection needed</Badge><h2>Continue without HubSpot</h2><p>The complete Juniper experience: questions with sources, a quote, a time and a reviewed booking. Nothing is sent to HubSpot.</p>{error&&destination==='skip'&&<EntryFeedback title="Couldn’t continue yet" message={error.message}/>}<Button kind="secondary" disabled={!state||busy} busy={navigating&&destination==='skip'} onClick={skip}>Continue without HubSpot</Button></article></div></main>;
 }
 
 function EntryFeedback({title,message,kind='error'}:{title:string;message:string;kind?:'error'|'notice'}){
