@@ -18,7 +18,7 @@ from .models import SimulatedRecord
 SCOPES=('oauth','crm.objects.contacts.read','crm.objects.contacts.write','crm.objects.deals.read','crm.objects.deals.write',
         'crm.schemas.contacts.read','crm.schemas.contacts.write','crm.schemas.deals.read','crm.schemas.deals.write','settings.currencies.read')
 KEY_PROPERTY='choreograph_demo_key'
-CURRENCY_PATH='/settings/currencies/2026-09/company-currency'
+CURRENCY_PATH='/account-info/2026-09/details'
 
 
 class CRMFailure(Exception):
@@ -178,7 +178,11 @@ class HubSpotTransport:
 
     def verify_currency(self,tokens):
         currency=self._request('GET',CURRENCY_PATH,tokens=tokens)
-        if not currency or currency.get('id')!='USD':raise CRMFailure('CRM_CURRENCY_REQUIRED')
+        code=currency.get('companyCurrency') if currency else None
+        if not isinstance(code,str) or not re.fullmatch(r'[A-Z]{3}',code):raise CRMFailure('CRM_CURRENCY_UNAVAILABLE',True)
+        if type(currency.get('portalId')) is not int or str(currency['portalId'])!=tokens.get('account_id'):
+            raise CRMFailure('CRM_ACCOUNT_CHANGED')
+        if code!='USD':raise CRMFailure('CRM_CURRENCY_REQUIRED')
 
     def preflight(self,tokens,*,allow_schema=False):
         self.verify_currency(tokens)

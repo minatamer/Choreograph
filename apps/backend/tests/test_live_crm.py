@@ -67,7 +67,7 @@ class NativeFixture:
         self.requests.append(request);path=request.url.path
         assert request.url.host=='api.hubapi.com'
         assert request.headers['accept-encoding']=='identity'
-        if path=='/settings/currencies/2026-09/company-currency':return httpx.Response(200,json={'id':self.currency,'createdAt':'2026-01-01T00:00:00Z'})
+        if path=='/account-info/2026-09/details':return httpx.Response(200,json={'companyCurrency':self.currency,'portalId':456,'accountType':'STANDARD'})
         if path.endswith('/token'):
             return httpx.Response(200,json={'access_token':'synthetic-access','refresh_token':'synthetic-refresh','expires_in':1800})
         if path.endswith('/introspect'):

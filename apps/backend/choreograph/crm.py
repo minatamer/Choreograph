@@ -154,7 +154,9 @@ def setup_destination(db,workspace,body,provider,key,now):
     except CRMFailure as error:
         workspace.revision+=1
         if error.code=='CRM_CURRENCY_REQUIRED':
-            return {'request_id':None,'crm_notice':'Juniper’s sample quotes use USD. Set this HubSpot account’s company currency to USD in Account defaults, or continue without HubSpot. No records were shared.'}
+            return {'request_id':None,'crm_notice':'Juniper’s sample quotes use USD. Choose a HubSpot account whose company currency is USD, or continue without HubSpot. No records were shared.'}
+        if error.code=='CRM_CURRENCY_UNAVAILABLE':
+            return {'request_id':None,'crm_notice':'HubSpot’s account currency could not be verified. Try again shortly. No records were shared.'}
         return {'request_id':None,'crm_notice':('The selected destination is unavailable. Review the account setup or continue without CRM.'
             if error.code not in {'CRM_SETUP_REQUIRED','CRM_UNIQUENESS_REQUIRED'} else
             'The account needs compatible demo ID fields. Authorize setup or continue without CRM.')}

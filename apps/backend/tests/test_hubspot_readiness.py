@@ -41,16 +41,39 @@ def test_oauth_app_manifest_matches_real_transport_and_contains_no_paid_feature_
     assert not any(key in json.dumps(manifest).lower() for key in ('clientsecret','client_secret','access_token','refresh_token'))
 
 
-@pytest.mark.parametrize('currency',[{}, {'id':'EGP'}, {'id':None}, {'id':840}])
-def test_unknown_or_non_usd_currency_never_reaches_schema_writes(currency):
+@pytest.mark.parametrize('currency,code',[
+    ({},'CRM_CURRENCY_UNAVAILABLE'),
+    ({'companyCurrency':'EGP','portalId':456},'CRM_CURRENCY_REQUIRED'),
+    ({'companyCurrency':None,'portalId':456},'CRM_CURRENCY_UNAVAILABLE'),
+    ({'companyCurrency':840,'portalId':456},'CRM_CURRENCY_UNAVAILABLE'),
+    ({'companyCurrency':'USD','portalId':789},'CRM_ACCOUNT_CHANGED'),
+])
+def test_unknown_or_non_usd_currency_never_reaches_schema_writes(currency,code):
     calls=[]
     def respond(request):calls.append(request);return httpx.Response(200,json=currency)
     http=httpx.Client(transport=httpx.MockTransport(respond))
     provider=HubSpotTransport(HubSpotConfig('123','synthetic','private-marker','http://localhost:45860/auth/hubspot/callback',
         schema_setup_allowed=True),authorized=True,client=http)
     try:
-        with pytest.raises(CRMFailure,match='CRM_CURRENCY_REQUIRED'):provider.preflight({'access_token':'private-token'},allow_schema=True)
+        with pytest.raises(CRMFailure,match=code):provider.preflight({'access_token':'private-token','account_id':'456'},allow_schema=True)
         assert [(request.method,request.url.path) for request in calls]==[('GET',CURRENCY_PATH)]
         with pytest.raises(CRMFailure,match='CRM_ROUTE'):provider._request('PUT',CURRENCY_PATH,json={'currencyCode':'USD'})
         assert len(calls)==1
+    finally:http.close()
+
+
+def test_account_details_currency_read_works_without_multicurrency_endpoint_and_rejects_missing_response():
+    calls=[];available=True
+    def respond(request):
+        calls.append(request)
+        assert request.method=='GET' and request.url.path=='/account-info/2026-09/details'
+        return httpx.Response(200,json={'companyCurrency':'USD','portalId':456}) if available else httpx.Response(404)
+    http=httpx.Client(transport=httpx.MockTransport(respond))
+    provider=HubSpotTransport(HubSpotConfig('123','synthetic','private-marker','http://localhost:45860/auth/hubspot/callback'),authorized=True,client=http)
+    try:
+        provider.verify_currency({'access_token':'private-token','account_id':'456'})
+        available=False
+        with pytest.raises(CRMFailure,match='CRM_CURRENCY_UNAVAILABLE'):
+            provider.verify_currency({'access_token':'private-token','account_id':'456'})
+        assert len(calls)==2
     finally:http.close()
