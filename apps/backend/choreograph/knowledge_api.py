@@ -1,11 +1,11 @@
 from uuid import UUID
 
 from fastapi import Depends, Request, Response
-from sqlalchemy import select
 
 from . import knowledge
 from .contracts import DocumentDetail, MutationView, ReplaceDocument
 from .models import Chunk
+from .persistence import repo_rows
 
 
 def register(app):
@@ -17,7 +17,7 @@ def register(app):
         row=knowledge.source(db,workspace,version_id)
         return {'document':next(item for item in knowledge.documents(db,workspace) if item['id']==row.id),
                 'passages':[{'id':c.id,'page':c.page,'section':c.section,'content':c.content}
-                            for c in db.scalars(select(Chunk).where(Chunk.version_id==row.id).order_by(Chunk.page,Chunk.id))]}
+                            for c in repo_rows(db, Chunk, filters={'version_id': row.id}, order=lambda candidate: (candidate.page, candidate.id,))]}
 
     @app.get('/v1/documents/{version_id}/source')
     def original(version_id:UUID,request:Request,db=dependency):

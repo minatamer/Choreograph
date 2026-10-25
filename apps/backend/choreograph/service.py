@@ -5,9 +5,6 @@ from datetime import date, datetime, time, timedelta
 from uuid import UUID, uuid4
 from zoneinfo import ZoneInfo
 
-from sqlalchemy import func, select
-from sqlalchemy.dialects.postgresql import insert
-
 from . import domain
 from .contracts import BookingCommand, ChatMessage
 from .errors import DomainError
@@ -22,6 +19,7 @@ from .models import (
     Staff,
     Workspace,
 )
+from .persistence import repo_desc, repo_first, repo_rows, repo_value, workspace_lock
 
 
 def ensure_seeded(db, workspace: Workspace, now: datetime):
@@ -32,7 +30,7 @@ def ensure_seeded(db, workspace: Workspace, now: datetime):
 def _seed_working_calendar(db, workspace: Workspace, now: datetime):
     if workspace.seeded:
         return
-    if db.scalar(select(func.count()).select_from(Reservation).where(Reservation.workspace_id == workspace.id)):
+    if len(repo_rows(db, Reservation, filters={'workspace_id': workspace.id})):
         # An already exposed calendar can never be rearranged to force a script.
         workspace.seeded = True
         return
@@ -41,9 +39,10 @@ def _seed_working_calendar(db, workspace: Workspace, now: datetime):
     alternative = domain.working_day_after(busy_day)
     workspace.scenario = {"busy_date": busy_day.isoformat(), "alternative_date": alternative.isoformat(),
                           "week_start": domain.week_start(busy_day).isoformat()}
-    db.execute(insert(Catalogue).values(id='juniper-v1', version=1, rules={
-        'rates': domain.RATES, 'staff': list(domain.STAFF_IDS), 'hours': [9,18], 'days': [0,1,2,3,4,5],
-        'currency': 'USD', 'oven_cents': 2500, 'oven_minutes': 30}).on_conflict_do_nothing())
+    if db.get(Catalogue,'juniper-v1') is None:
+        db.add(Catalogue(id='juniper-v1',version=1,rules={
+            'rates':domain.RATES,'staff':list(domain.STAFF_IDS),'hours':[9,18],'days':[0,1,2,3,4,5],
+            'currency':'USD','oven_cents':2500,'oven_minutes':30}))
     for staff_id, name in [('ada', 'Ada'), ('noah', 'Noah')]:
         db.add(Staff(workspace_id=workspace.id, id=staff_id, name=name))
     db.flush()
@@ -68,8 +67,7 @@ def _seed_calendar_history(db, workspace: Workspace, now: datetime):
     Callers hold the workspace lock. Never move a blocker or infer that a real
     booking completed; these are separate historical Juniper appointments.
     """
-    if db.scalar(select(Activity.id).where(Activity.workspace_id==workspace.id,
-                                         Activity.kind=='calendar_examples_v1').limit(1)):
+    if repo_value(db, Activity, 'id', filters={'workspace_id': workspace.id, 'kind': 'calendar_examples_v1'}, limit=1):
         return
     today=now.astimezone(ZoneInfo(workspace.timezone)).date()
     completed=0
@@ -80,9 +78,7 @@ def _seed_calendar_history(db, workspace: Workspace, now: datetime):
         start=domain.local_to_utc(datetime.combine(day,time(9)),workspace.timezone)
         end=domain.local_to_utc(datetime.combine(day,time(11)),workspace.timezone)
         for staff in (('ada','noah') if completed==0 else ('noah','ada')):
-            occupied=db.scalar(select(Reservation.id).where(Reservation.workspace_id==workspace.id,
-                Reservation.staff_id==staff,Reservation.state!='cancelled',
-                Reservation.starts_at<end,Reservation.ends_at>start).limit(1))
+            occupied=repo_value(db, Reservation, 'id', filters={'workspace_id': workspace.id, 'staff_id': staff}, predicate=lambda candidate,end=end,start=start: candidate.state != 'cancelled' and candidate.starts_at < end and (candidate.ends_at > start), limit=1)
             if occupied:
                 continue
             db.add(Reservation(workspace_id=workspace.id,staff_id=staff,starts_at=start,ends_at=end,
@@ -111,8 +107,7 @@ def clear_calendar_entry(db, workspace, booking_id, revision, now):
         raise DomainError('APPOINTMENT_UNAVAILABLE','That appointment is unavailable.',404)
     if reservation.state!='cancelled':
         raise DomainError('APPOINTMENT_NOT_CANCELLED','Only cancelled appointments can be removed from the calendar.')
-    cleared=db.scalar(select(Activity.id).where(Activity.workspace_id==workspace.id,
-        Activity.kind=='calendar_cleared',Activity.reference==str(booking_id)).limit(1))
+    cleared=repo_value(db, Activity, 'id', filters={'workspace_id': workspace.id, 'kind': 'calendar_cleared', 'reference': str(booking_id)}, limit=1)
     if not cleared:
         db.add(Activity(workspace_id=workspace.id,kind='calendar_cleared',created_at=now,reference=str(booking_id)))
         workspace.revision+=1
@@ -127,10 +122,9 @@ def current_quote(workspace):
 
 
 def busy_records(db, workspace, *, exclude_enquiry=None):
-    query=select(Reservation).where(Reservation.workspace_id==workspace.id,Reservation.state!='cancelled')
-    if exclude_enquiry is not None:
-        query=query.where((Reservation.enquiry_id.is_(None)) | (Reservation.enquiry_id!=exclude_enquiry))
-    return [domain.Busy(row.staff_id,row.starts_at,row.ends_at) for row in db.scalars(query)]
+    return [domain.Busy(row.staff_id,row.starts_at,row.ends_at) for row in repo_rows(
+        db,Reservation,filters={'workspace_id':workspace.id},
+        predicate=lambda row:row.state!='cancelled' and (exclude_enquiry is None or row.enquiry_id!=exclude_enquiry))]
 
 
 def week_view(db, workspace, now, week: date | None = None):
@@ -174,12 +168,13 @@ def idempotency_status(db, workspace, key: str | None, operation: str, body: dic
         if previous.operation!=operation or previous.request_hash!=fingerprint:
             raise DomainError('IDEMPOTENCY_MISMATCH','That action key was already used for different details.')
         return fingerprint, {**previous.result,'replayed':True}
-    if db.scalar(select(func.count()).select_from(Idempotency).where(Idempotency.workspace_id==workspace.id))>=200:
+    if len(repo_rows(db, Idempotency, filters={'workspace_id': workspace.id}))>=200:
         raise DomainError('DEMO_LIMIT','This demo has reached its action limit. Start a fresh demo.',429)
     return fingerprint, None
 
 
 def idempotent(db, workspace, key: str | None, operation: str, body: dict, apply):
+    workspace_lock(db,workspace)
     fingerprint, previous = idempotency_status(db, workspace, key, operation, body)
     if previous is not None:
         return previous
@@ -223,7 +218,7 @@ def submit_request(db, workspace, revision: int, now: datetime):
     quote=current_quote(workspace)
     if not quote or not workspace.draft.get('preferred_at'):
         raise DomainError('REVIEW_REQUIRED','Choose a cleaning and a time, then review the quote.',422)
-    if db.scalar(select(func.count()).select_from(Enquiry).where(Enquiry.workspace_id==workspace.id))>=10:
+    if len(repo_rows(db, Enquiry, filters={'workspace_id': workspace.id}))>=10:
         raise DomainError('REQUEST_LIMIT','This demo has reached ten requests. Start a fresh demo.',429)
     start=domain.validate_start(datetime.fromisoformat(workspace.draft['preferred_at']),quote['minutes'],workspace.timezone,now)
     if not domain.eligible(start,quote['minutes'],busy_records(db,workspace)):
@@ -255,8 +250,7 @@ def bind_booking_messages(db,workspace,messages):
     legacy=[message for message in messages if message.role=='assistant' and message.request_id is None and
             message.text=="You're booked. Here are the details for your clean."]
     if not legacy:return
-    receipts={row.result['applied_revision']:row.result['request_id'] for row in db.scalars(select(Idempotency).where(
-        Idempotency.workspace_id==workspace.id,Idempotency.operation.in_(['book','approve'])))
+    receipts={row.result['applied_revision']:row.result['request_id'] for row in repo_rows(db, Idempotency, filters={'workspace_id': workspace.id}, predicate=lambda candidate: candidate.operation in ['book', 'approve'])
         if (row.result.get('receipt') or {}).get('action')=='confirmed'}
     for message in legacy:
         request_id=receipts.get(message.revision)
@@ -267,7 +261,7 @@ def bind_booking_messages(db,workspace,messages):
 def queue_crm(db,workspace,enquiry,now):
     if workspace.crm_mode!='connected':
         return 'not_connected'
-    connection=db.scalar(select(Connection).where(Connection.workspace_id==workspace.id,Connection.state=='ready').order_by(Connection.created_at.desc()).limit(1))
+    connection=repo_first(db, Connection, filters={'workspace_id': workspace.id, 'state': 'ready'}, order=lambda candidate: (repo_desc(candidate.created_at),), limit=1)
     if not connection or not connection.export_consent:
         return 'not_shared'
     db.add(Outbox(workspace_id=workspace.id,enquiry_id=enquiry.id,connection_id=connection.id,
@@ -292,7 +286,7 @@ def booking_command(db,workspace,request_id,action,body,now):
         raise DomainError('STALE_REQUEST','The booking changed. Review its current details.')
     matching_draft=(workspace.draft.get('preferred_at')==enquiry.preferred_at.isoformat() and
                     all(workspace.draft.get(key)==enquiry.fields.get(key) for key in ('service','bedrooms','oven')))
-    reservation=db.scalar(select(Reservation).where(Reservation.workspace_id==workspace.id,Reservation.enquiry_id==enquiry.id).with_for_update())
+    reservation=repo_first(db, Reservation, filters={'workspace_id': workspace.id, 'enquiry_id': enquiry.id}, lock=True)
     if action in {'approve','reschedule'}:
         expected='awaiting_review' if action=='approve' else 'confirmed'
         if enquiry.status!=expected:

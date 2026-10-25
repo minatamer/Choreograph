@@ -6,14 +6,12 @@ import time
 from dataclasses import dataclass, field
 from zoneinfo import ZoneInfo
 
-from sqlalchemy import select
-from sqlalchemy.orm import Session, defer
-
 from . import ai_admission, assistant, knowledge, service
 from .assistant_context import bind_context, turn_context
 from .contracts import MutationView
 from .errors import DomainError
-from .models import DocumentVersion, Manifest
+from .models import Manifest
+from .persistence import Session, repo_rows
 from .verification import remember_verification, require_chat_verification, require_verification
 
 OPERATION_SECONDS = 55
@@ -52,8 +50,7 @@ def _snapshot(app, db, workspace, body, request, operation, payload):
     service.require_revision(workspace, body.revision)
     profile = _profile(app, db, workspace)
     knowledge.attach_samples(db, workspace)
-    manifest = {row.slot: str(row.version_id) for row in db.scalars(
-        select(Manifest).where(Manifest.workspace_id == workspace.id))}
+    manifest = {row.slot: str(row.version_id) for row in repo_rows(db, Manifest, filters={'workspace_id': workspace.id})}
     if operation=='chat' and profile.provider!='fake' and len(manifest)!=len(knowledge.SLOTS):
         raise DomainError('KNOWLEDGE_NOT_READY','Juniper’s document library is not ready yet. Please try again shortly.',503)
     return Snapshot(ai_admission.AttemptScope(workspace.id, workspace.generation, key, workspace.revision),
@@ -148,8 +145,7 @@ def replace_document(app, slot, body, request):
             raise DomainError('DOCUMENT_SLOT', 'Choose a document to replace.', 422)
         if workspace.ingestion_attempts >= 3:
             raise DomainError('DOCUMENT_LIMIT', 'This demo has used its three document replacements.', 422)
-        current = db.scalar(knowledge.authorized(db, workspace).where(DocumentVersion.slot == slot).options(
-            defer(DocumentVersion.source, raiseload=True)))
+        current = knowledge.authorized_slot(db,workspace,slot)
         if current is None:
             raise DomainError('DOCUMENT_UNAVAILABLE', 'Prepare the sample pack first.', 503)
         title, expected = current.title, current.id
@@ -165,6 +161,7 @@ def replace_document(app, slot, body, request):
             ai_admission.check_interaction(db, claim, workspace, app.state.clock())
             if workspace.ingestion_attempts >= 3:
                 raise DomainError('DOCUMENT_LIMIT', 'This demo has used its three document replacements.', 422)
+            service.workspace_lock(db,workspace)
             workspace.ingestion_attempts += 1
             version = f'Guest {workspace.ingestion_attempts}'
         scoped = app.state.ai_runtime.for_scope(snapshot.scope, clock=app.state.clock, deadline=deadline)

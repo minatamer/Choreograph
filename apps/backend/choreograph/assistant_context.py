@@ -1,9 +1,8 @@
 """Small server-owned conversational context; no source bytes, contacts or secrets."""
 import json
 
-from sqlalchemy import select
-
 from .models import Enquiry
+from .persistence import repo_desc, repo_rows
 
 
 def turn_context(db,workspace):
@@ -16,8 +15,7 @@ def turn_context(db,workspace):
         amount=len(json.dumps(row,ensure_ascii=True))
         if size+amount>8000:break
         history.append(row);size+=amount
-    records=list(db.scalars(select(Enquiry).where(Enquiry.workspace_id==workspace.id)
-                           .order_by(Enquiry.created_at.desc(),Enquiry.quote['revision'].as_integer().desc(),Enquiry.id.desc()).limit(3)))
+    records=list(repo_rows(db, Enquiry, filters={'workspace_id': workspace.id}, order=lambda candidate: (repo_desc(candidate.created_at), repo_desc(candidate.quote['revision']), repo_desc(candidate.id),), limit=3))
     return {'recent_turns':list(reversed(history)),
             'pending_date':workspace.scenario.get('requested_date'),
             'pending_time':workspace.scenario.get('requested_time'),

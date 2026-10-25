@@ -8,7 +8,6 @@ from datetime import datetime, timedelta
 from uuid import uuid4
 
 from cryptography.fernet import Fernet, InvalidToken
-from sqlalchemy import case, func, or_, select, text, update
 
 from . import service
 from .errors import DomainError
@@ -23,21 +22,20 @@ from .models import (
     Reservation,
     Workspace,
 )
+from .persistence import Session, advisory, change, is_object, repo_desc, repo_first, repo_rows, repo_value
 
 
 def latest_connection(db,workspace):
-    return db.scalar(select(Connection).where(Connection.workspace_id==workspace.id).order_by(
-        case((Connection.state=='ready',0),(Connection.state=='finishing',1),else_=2),Connection.created_at.desc(),Connection.id).limit(1))
+    return repo_first(db,Connection,filters={'workspace_id':workspace.id},
+        order=lambda row:({'ready':0,'finishing':1}.get(row.state,2),repo_desc(row.created_at),row.id))
 
 
 def installed_count(db,app_id):
-    return db.scalar(select(func.count()).select_from(Installation).where(Installation.app_id==app_id,Installation.state!='uninstalled'))
+    return len(repo_rows(db, Installation, filters={'app_id': app_id}, predicate=lambda candidate: candidate.state != 'uninstalled'))
 
 
 def available(db,provider,now):
-    pending=db.scalar(select(func.count()).select_from(OAuthState).where(OAuthState.app_id==provider.app_id,
-        OAuthState.provider==provider.provider,or_(
-        (OAuthState.used.is_(False)) & (OAuthState.expires_at>now),OAuthState.outcome=='unknown')))
+    pending=len(repo_rows(db, OAuthState, filters={'app_id': provider.app_id, 'provider': provider.provider}, predicate=lambda candidate: candidate.used is False and candidate.expires_at > now or candidate.outcome == 'unknown'))
     return installed_count(db,provider.app_id)+pending<getattr(provider,'capacity',25)
 
 
@@ -55,7 +53,8 @@ def scoped(provider,workspace_id,*,seconds=45):
 
 def account_lock(db):
     # Account registry serialization, unrelated to TCP ports.
-    db.execute(text('SELECT pg_advisory_xact_lock(45863,1)'))
+    if is_object(db):db.hold_lease('crm-account-v1')
+    else:advisory(db,45863,1)
 
 
 def begin(db,workspace,revision,provider,now):
@@ -63,7 +62,7 @@ def begin(db,workspace,revision,provider,now):
     current=latest_connection(db,workspace)
     if current and current.state in {'ready','finishing','setup'}:
         return {'request_id':None,'crm_notice':'This workspace already has a connection.'}
-    db.execute(update(OAuthState).where(OAuthState.workspace_id==workspace.id,OAuthState.outcome=='pending').values(used=True,outcome='superseded'))
+    change(db, OAuthState, {'used': True, 'outcome': 'superseded'}, filters={'workspace_id': workspace.id, 'outcome': 'pending'})
     if not available(db,provider,now):
         return {'request_id':None,'crm_notice':'HubSpot connection capacity is unavailable. Continue without CRM.'}
     state=secrets.token_urlsafe(36)
@@ -76,9 +75,16 @@ def begin(db,workspace,revision,provider,now):
 def encrypt(tokens,key):return Fernet(key.encode()).encrypt(json.dumps(tokens).encode())
 
 
+def connection_lock(db,connection):
+    if is_object(db):db.hold_lease('crm-token-'+str(connection.id))
+    else:
+        db.get(Connection,(connection.workspace_id,connection.id),with_for_update=True,populate_existing=True)
+
+
 def tokens_for(db,connection,key,provider,now):
     # Caller locks the connection across refresh, preventing rotating-token races.
     require_provider(connection,provider)
+    connection_lock(db,connection)
     try:tokens=json.loads(Fernet(key.encode()).decrypt(connection.encrypted_tokens))
     except (InvalidToken,TypeError,ValueError):raise CRMFailure('CRM_AUTH_REQUIRED') from None
     if tokens.get('account_id')!=connection.account_id:raise CRMFailure('CRM_ACCOUNT_CHANGED')
@@ -87,17 +93,34 @@ def tokens_for(db,connection,key,provider,now):
     return tokens
 
 
+def claim_oauth_attempt(db,state,now):
+    # Persist uncertainty BEFORE HTTP. A crashed exchange cannot become an
+    # expired, reusable pending state or silently release installation capacity.
+    engine=db.engine if is_object(db) else db.get_bind()
+    with Session(engine) as claim,claim.begin():
+        current=claim.get(OAuthState,state.state_hash,with_for_update=True)
+        if (current is None or current.used or current.expires_at<=now or
+                current.workspace_id!=state.workspace_id or current.generation!=state.generation or
+                current.provider!=state.provider or current.app_id!=state.app_id):
+            raise DomainError('OAUTH_STATE','The connection attempt expired. Start it again.',409)
+        current.used=True;current.outcome='unknown'
+    if is_object(db):db.adopt_committed(OAuthState,state.state_hash,{'used':True,'outcome':'unknown'})
+    else:state.used=True;state.outcome='unknown'
+
+
 def callback(db,workspace,body,provider,key,now):
     state=db.get(OAuthState,hashlib.sha256(body.state.encode()).hexdigest())
     if not state or state.workspace_id!=workspace.id or state.generation!=workspace.generation or state.used or state.expires_at<=now:
         raise DomainError('OAUTH_STATE','The connection attempt expired. Start it again.',409)
     if state.provider!=provider.provider or state.app_id!=provider.app_id:
         raise DomainError('CRM_PROVIDER_CHANGED','The connection configuration changed. Start again.',409)
-    state.used=True;workspace.revision+=1
     if body.denied:
+        state.used=True;workspace.revision+=1
         state.outcome='denied'
         workspace.crm_mode='skipped'
         return {'request_id':None,'crm_notice':'Connection cancelled. No CRM records were sent.'}
+    claim_oauth_attempt(db,state,now)
+    workspace.revision+=1
     account_lock(db)
     provider=scoped(provider,workspace.id)
     account=None;install=None
@@ -178,10 +201,10 @@ def contact_details():
 
 
 def other_uses(db,workspace,connection,now):
-    return bool(db.scalar(select(Connection.id).join(Workspace,Workspace.id==Connection.workspace_id).where(
-        Connection.account_id==connection.account_id,Connection.provider==connection.provider,Connection.app_id==connection.app_id,
-        Connection.workspace_id!=workspace.id,Connection.state.in_(['ready','finishing','setup']),
-        Workspace.active.is_(True),Workspace.expires_at>now).limit(1)))
+    active={row.id for row in repo_rows(db,Workspace,predicate=lambda row:row.active and row.expires_at>now)}
+    return bool(repo_first(db,Connection,filters={'account_id':connection.account_id,'provider':connection.provider,
+        'app_id':connection.app_id},predicate=lambda row:row.workspace_id!=workspace.id and row.workspace_id in active and
+        row.state in {'ready','finishing','setup'}))
 
 
 def public_view(db,workspace,secret,now,*,connection,events,provider=None):
@@ -200,6 +223,7 @@ def public_view(db,workspace,secret,now,*,connection,events,provider=None):
 
 def consent(db,workspace,body,provider=None,*,now):
     service.require_revision(workspace,body.revision);connection=latest_connection(db,workspace)
+    if connection:connection_lock(db,connection)
     if not connection or connection.id!=body.connection_id or connection.state!='ready' or workspace.crm_mode!='connected':
         raise DomainError('CRM_CONNECTION_CHANGED','Review the current connection before sharing.',409)
     if provider is not None and not matches(connection,provider):
@@ -210,13 +234,11 @@ def consent(db,workspace,body,provider=None,*,now):
         connection.export_consent=True
         # Consent covers already reviewed records too. Destination and record
         # revision remain explicit; pending requests cannot become exports.
-        reviewed=db.scalars(select(Enquiry).where(Enquiry.workspace_id==workspace.id,
-            Enquiry.status.in_(['confirmed','completed','cancelled']),Enquiry.id.in_(
-                select(Reservation.enquiry_id).where(Reservation.workspace_id==workspace.id))))
+        booked={row.enquiry_id for row in repo_rows(db,Reservation,filters={'workspace_id':workspace.id})}
+        reviewed=repo_rows(db,Enquiry,filters={'workspace_id':workspace.id},
+            predicate=lambda row:row.status in {'confirmed','completed','cancelled'} and row.id in booked)
         for enquiry in reviewed:
-            existing=db.scalar(select(Outbox.id).where(Outbox.workspace_id==workspace.id,
-                Outbox.connection_id==connection.id,Outbox.enquiry_id==enquiry.id,
-                Outbox.revision==enquiry.revision,Outbox.kind=='crm_upsert').limit(1))
+            existing=repo_value(db, Outbox, 'id', filters={'workspace_id': workspace.id, 'connection_id': connection.id, 'enquiry_id': enquiry.id, 'revision': enquiry.revision, 'kind': 'crm_upsert'}, limit=1)
             if existing is None:service.queue_crm(db,workspace,enquiry,now)
     workspace.revision+=1
     return {'request_id':None,'crm_notice':'Fictional contact and reviewed booking details can now be shared with this account.'}
@@ -224,22 +246,24 @@ def consent(db,workspace,body,provider=None,*,now):
 
 def detach(db,workspace,revision):
     service.require_revision(workspace,revision);connection=latest_connection(db,workspace)
-    db.execute(update(OAuthState).where(OAuthState.workspace_id==workspace.id,OAuthState.outcome=='pending').values(used=True,outcome='skipped'))
+    if connection:connection_lock(db,connection)
+    change(db, OAuthState, {'used': True, 'outcome': 'skipped'}, filters={'workspace_id': workspace.id, 'outcome': 'pending'})
     if connection and connection.state in {'ready','setup'}:
         connection.state='detached';connection.generation+=1;connection.export_consent=False
-        db.execute(update(Outbox).where(Outbox.workspace_id==workspace.id,Outbox.connection_id==connection.id,Outbox.state.in_(['pending','retrying','reconciling'])).values(state='retired'))
+        change(db, Outbox, {'state': 'retired'}, filters={'workspace_id': workspace.id, 'connection_id': connection.id}, predicate=lambda row: row.state in ['pending', 'retrying', 'reconciling'])
     workspace.crm_mode='skipped';workspace.revision+=1
     return {'request_id':None,'crm_notice':'Disconnected from this workspace. Existing CRM records and the account installation have not been removed.'}
 
 
 def finish(db,workspace,body,now):
     service.require_revision(workspace,body.revision);connection=latest_connection(db,workspace)
+    if connection:connection_lock(db,connection)
     if not connection or connection.id!=body.connection_id or connection.state not in {'ready','detached','setup'}:
         raise DomainError('CRM_CONNECTION_CHANGED','Review the current connection before finishing.',409)
     if body.uninstall and other_uses(db,workspace,connection,now):
         raise DomainError('CRM_SHARED_INSTALL','Another active demo uses this account. Disconnect this workspace without uninstalling.',409)
     connection.generation+=1;connection.state='finishing';connection.export_consent=False;workspace.crm_mode='skipped';workspace.revision+=1
-    db.execute(update(Outbox).where(Outbox.workspace_id==workspace.id,Outbox.connection_id==connection.id,Outbox.state.in_(['pending','retrying','reconciling'])).values(state='retired'))
+    change(db, Outbox, {'state': 'retired'}, filters={'workspace_id': workspace.id, 'connection_id': connection.id}, predicate=lambda row: row.state in ['pending', 'retrying', 'reconciling'])
     db.add(Outbox(workspace_id=workspace.id,enquiry_id=None,connection_id=connection.id,account_id=connection.account_id,
                   connection_generation=connection.generation,workspace_generation=workspace.generation,revision=workspace.revision,
                   kind='crm_cleanup',state='pending',attempts=0,due_at=now,payload={'cleanup':body.cleanup,'uninstall':body.uninstall}))
@@ -255,9 +279,7 @@ def apply_receipts(db,workspace,state,*,connection,events,provider=None):
              and row.workspace_generation==workspace.generation}
     mappings={}
     if connection and connection.state=='ready' and workspace.crm_mode=='connected' and state.requests:
-        mappings={row.enquiry_id:row for row in db.scalars(select(ExternalMapping).where(
-            ExternalMapping.workspace_id==workspace.id,ExternalMapping.connection_id==connection.id,
-            ExternalMapping.enquiry_id.in_([request.id for request in state.requests])))}
+        mappings={row.enquiry_id:row for row in repo_rows(db, ExternalMapping, filters={'workspace_id': workspace.id, 'connection_id': connection.id}, predicate=lambda candidate: candidate.enquiry_id in [request.id for request in state.requests])}
     for request in state.requests:
         request.crm_state='not_connected';request.crm_receipt=None;request.crm_links={}
         event=current.get((request.id,request.revision))

@@ -9,10 +9,8 @@ from datetime import datetime, timedelta
 from typing import Generic, Literal, TypeVar
 from uuid import UUID, uuid4
 
-from sqlalchemy import func, select, text, update
-from sqlalchemy.orm import Session
-
 from .errors import DomainError
+from .persistence import Session, advisory, change, repo_first, repo_rows, repo_value, storage_retry
 
 T = TypeVar('T')
 
@@ -153,6 +151,7 @@ def _workspace(db, scope, now):
     return workspace
 
 
+@storage_retry
 def claim_interaction(engine, scope: AttemptScope, *, operation, request_hash, profile_id, manifest_ids, now):
     from .models import AIInteraction, Manifest
     _scope(scope)
@@ -160,24 +159,20 @@ def claim_interaction(engine, scope: AttemptScope, *, operation, request_hash, p
             re.fullmatch(r'[a-f0-9]{64}', request_hash) is None):
         raise ValueError('AI_INTERACTION_INVALID')
     with Session(engine) as db, db.begin():
-        db.execute(text('SELECT pg_advisory_xact_lock(45866,1)'))
+        advisory(db,45866,1)
         workspace=_workspace(db,scope,now)
-        expected={row.slot:str(row.version_id) for row in db.scalars(select(Manifest).where(
-            Manifest.workspace_id==workspace.id))}
+        expected={row.slot:str(row.version_id) for row in repo_rows(db, Manifest, filters={'workspace_id': workspace.id})}
         if workspace.embedding_profile_id!=profile_id or expected!=manifest_ids:
             raise DomainError('DOCUMENT_CHANGED','The documents changed. Refresh before continuing.')
-        previous=db.scalar(select(AIInteraction).where(AIInteraction.workspace_id==workspace.id,
-            AIInteraction.generation==scope.generation,AIInteraction.command_key==scope.command_key))
+        previous=repo_first(db, AIInteraction, filters={'workspace_id': workspace.id, 'generation': scope.generation, 'command_key': scope.command_key})
         if previous:
             code='AI_INTERACTION_USED' if previous.request_hash==request_hash and previous.operation==operation else 'IDEMPOTENCY_MISMATCH'
             raise DomainError(code,'That action has already been processed. Refresh before sending again.',409)
-        if db.scalar(select(func.count()).select_from(AIInteraction).where(AIInteraction.workspace_id==workspace.id))>=200:
+        if len(repo_rows(db, AIInteraction, filters={'workspace_id': workspace.id}))>=200:
             raise DomainError('DEMO_LIMIT','This demo has reached its action limit.',429)
-        active=(AIInteraction.state=='active') & (AIInteraction.lease_until>now)
-        if (db.scalar(select(func.count()).select_from(AIInteraction).where(active))>=4 or
-                (operation=='replace' and db.scalar(select(func.count()).select_from(AIInteraction).where(
-                    active,AIInteraction.operation=='replace'))>=2) or
-                db.scalar(select(AIInteraction.id).where(active,AIInteraction.workspace_id==workspace.id).limit(1))):
+        active=repo_rows(db,AIInteraction,predicate=lambda row:row.state=='active' and row.lease_until>now)
+        if (len(active)>=4 or (operation=='replace' and sum(row.operation=='replace' for row in active)>=2) or
+                any(row.workspace_id==workspace.id for row in active)):
             raise DomainError('ASSISTANT_BUSY','The front desk is busy. Try again shortly.',429)
         row=AIInteraction(id=uuid4(),workspace_id=workspace.id,generation=scope.generation,revision=scope.revision,
             command_key=scope.command_key,request_hash=request_hash,operation=operation,profile_id=profile_id,
@@ -192,7 +187,7 @@ def check_interaction(db, claim, workspace, now):
     if (not row or row.state!='active' or row.lease_until<=now or workspace.id!=claim.workspace_id or
             not workspace.active or workspace.expires_at<=now or workspace.generation!=claim.generation):
         raise DomainError('SESSION_EXPIRED','This operation is no longer active.',410)
-    current={item.slot:str(item.version_id) for item in db.scalars(select(Manifest).where(Manifest.workspace_id==workspace.id))}
+    current={item.slot:str(item.version_id) for item in repo_rows(db, Manifest, filters={'workspace_id': workspace.id})}
     if workspace.revision!=claim.revision or workspace.embedding_profile_id!=claim.profile_id or current!=claim.manifest_ids:
         raise DomainError('STALE_REVISION','The demo or documents changed. Refresh before continuing.')
 
@@ -207,11 +202,12 @@ def complete_interaction(db, claim, workspace, now):
     row.state='completed'
 
 
+@storage_retry
 def finish_interaction(engine, claim, *, now, state='failed'):
     from .models import AIInteraction
     if state not in {'failed','retired'}:raise ValueError('AI_INTERACTION_STATE_INVALID')
     with Session(engine) as db,db.begin():
-        db.execute(update(AIInteraction).where(AIInteraction.id==claim.id,AIInteraction.state=='active').values(state=state))
+        change(db, AIInteraction, {'state': state}, filters={'id': claim.id, 'state': 'active'})
 
 
 class Admission:
@@ -244,6 +240,7 @@ class Admission:
             self.finish(claim)
             raise
 
+    @storage_retry
     def reserve(self, phase, batch, *, input_tokens, output_tokens=0, vectors=0):
         from .models import AIAttempt, AIGrant, AIInteraction
         _scope(self.scope)
@@ -267,12 +264,11 @@ class Admission:
         requested=dict(requests=1,input_tokens=input_tokens,output_tokens=output_tokens,vectors=vectors,cost_micros=cost)
         scope_key=str(self.scope.workspace_id) if self.scope.workspace_id else 'operator'
         with Session(self.engine) as db,db.begin():
-            db.execute(text('SELECT pg_advisory_xact_lock(45867,1)'))
+            advisory(db,45867,1)
             self._deadline()
             if self.scope.workspace_id:
                 workspace=_workspace(db,self.scope,now)
-                interaction=db.scalar(select(AIInteraction).where(AIInteraction.workspace_id==workspace.id,
-                    AIInteraction.generation==self.scope.generation,AIInteraction.command_key==self.scope.command_key))
+                interaction=repo_first(db, AIInteraction, filters={'workspace_id': workspace.id, 'generation': self.scope.generation, 'command_key': self.scope.command_key})
                 if not interaction or interaction.state!='active' or interaction.lease_until<=now:
                     raise DomainError('AI_INTERACTION_REQUIRED','Start the action again.',409)
             grant=db.get(AIGrant,self.grant.grant_id)
@@ -282,18 +278,15 @@ class Admission:
                 grant=AIGrant(id=self.grant.grant_id,spec_hash=digest,spec=values,expires_at=self.grant.expires_at,
                     requests=0,input_tokens=0,output_tokens=0,vectors=0,cost_micros=0)
                 db.add(grant)
-            if db.scalar(select(AIAttempt.id).where(AIAttempt.scope_key==scope_key,AIAttempt.generation==self.scope.generation,
-                AIAttempt.command_key==self.scope.command_key,AIAttempt.phase==phase,AIAttempt.batch==batch)):
+            if repo_value(db, AIAttempt, 'id', filters={'scope_key': scope_key, 'generation': self.scope.generation, 'command_key': self.scope.command_key, 'phase': phase, 'batch': batch}):
                 raise DomainError('AI_ATTEMPT_USED','That provider action cannot be repeated. Refresh the demo.',409)
-            active=AIAttempt.state.in_(['reserved','started']) & (AIAttempt.lease_until>now)
-            if db.scalar(select(func.count()).select_from(AIAttempt).where(active))>=4:
+            if len(repo_rows(db, AIAttempt, predicate=lambda candidate: ((candidate.state in ['reserved', 'started']) and candidate.lease_until > now)))>=4:
                 raise DomainError('ASSISTANT_BUSY','The front desk is busy. Try again shortly.',429)
             for key,amount in requested.items():
                 used=getattr(grant,key)
                 if not manual:
-                    aggregate=func.count(AIAttempt.id) if key=='requests' else func.coalesce(func.sum(getattr(AIAttempt,key)),0)
-                    guest=db.scalar(select(aggregate).where(
-                        AIAttempt.grant_id==grant.id,AIAttempt.scope_key==scope_key))
+                    attempts=repo_rows(db,AIAttempt,filters={'grant_id':grant.id,'scope_key':scope_key})
+                    guest=len(attempts) if key=='requests' else sum(getattr(row,key) for row in attempts)
                     if used+amount>getattr(self.grant,key) or (self.scope.workspace_id is not None and
                             guest+amount>getattr(self.grant,'workspace_'+key)):
                         raise DomainError('AI_BUDGET_LIMIT','This live allowance has been used. Use the request controls.',429)
@@ -308,11 +301,12 @@ class Admission:
             db.add(row)
             return AttemptClaim(row.id,row.lease_token)
 
+    @storage_retry
     def start(self, claim):
         from .models import AIAttempt, AIGrant
         self._deadline()
         with Session(self.engine) as db,db.begin():
-            row=db.scalar(select(AIAttempt).where(AIAttempt.id==claim.id).with_for_update())
+            row=repo_first(db, AIAttempt, filters={'id': claim.id}, lock=True)
             if not row or row.lease_token!=claim.lease_token or row.state!='reserved' or row.lease_until<=self.clock():
                 raise DomainError('AI_ATTEMPT_USED','That provider action cannot be repeated.',409)
             if db.get(AIGrant,row.grant_id).blocked:
@@ -320,12 +314,13 @@ class Admission:
             if self.scope.workspace_id:_workspace(db,self.scope,self.clock())
             row.state='started'
 
+    @storage_retry
     def finish(self, claim, *, result=None):
         from .models import AIAttempt, AIGrant
         overrun=False
         with Session(self.engine) as db,db.begin():
-            db.execute(text('SELECT pg_advisory_xact_lock(45867,1)'))
-            row=db.scalar(select(AIAttempt).where(AIAttempt.id==claim.id).with_for_update())
+            advisory(db,45867,1)
+            row=repo_first(db, AIAttempt, filters={'id': claim.id}, lock=True)
             if not row or row.lease_token!=claim.lease_token or row.state not in {'reserved','started'}:return
             row.state='completed' if result is not None else 'unknown'
             if result and result.usage:

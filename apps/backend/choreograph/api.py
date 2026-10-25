@@ -9,9 +9,7 @@ from zoneinfo import ZoneInfo
 from fastapi import Depends, FastAPI, Request, Response
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
-from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError, OperationalError
-from sqlalchemy.orm import Session
 from starlette.exceptions import HTTPException
 
 from . import domain, service
@@ -34,6 +32,7 @@ from .contracts import (
 )
 from .errors import DomainError
 from .models import Activity, Enquiry, Outbox, Reservation
+from .persistence import Session, repo_rows, repo_values
 from .sessions import (
     COOKIE,
     create_workspace,
@@ -93,7 +92,7 @@ class Boundary:
         return await self.app(scope, receive, send)
 
 
-def create_app(settings: Settings, engine=None, clock=None,assistant_provider=None,crm_provider=None,ai_runtime=None,verification_provider=None) -> FastAPI:
+def create_app(settings: Settings, engine=None, clock=None,assistant_provider=None,crm_provider=None,ai_runtime=None,verification_provider=None,publisher=None,close_publisher=False) -> FastAPI:
     from .composition import compose_ai
     from .crm_composition import compose_crm
     runtime = ai_runtime or compose_ai(settings, engine, assistant_provider=assistant_provider, clock=clock)
@@ -113,6 +112,7 @@ def create_app(settings: Settings, engine=None, clock=None,assistant_provider=No
         try:
             yield
         finally:
+            if close_publisher and publisher is not None:publisher.close()
             try:
                 if verification_provider is None and verifier is not None:verifier.close()
             finally:
@@ -129,6 +129,9 @@ def create_app(settings: Settings, engine=None, clock=None,assistant_provider=No
     app.state.assistant = runtime.assistant
     app.state.crm=crm_runtime
     app.state.verification=verifier
+    if publisher is not None:
+        from .publication import ImmediatePublication
+        app.add_middleware(ImmediatePublication,engine=engine,transport=publisher,clock=app.state.clock)
     app.add_middleware(Boundary, settings=settings)
 
     def unit_of_work():
@@ -190,23 +193,21 @@ def create_app(settings: Settings, engine=None, clock=None,assistant_provider=No
         state.replacements_left=3-workspace.ingestion_attempts
         from . import crm
         from .contracts import CRMConnectionView
-        events=list(db.scalars(select(Outbox).where(Outbox.workspace_id==workspace.id).order_by(Outbox.revision)))
+        events=list(repo_rows(db, Outbox, filters={'workspace_id': workspace.id}, order=lambda candidate: (candidate.revision,)))
         current_connection=crm.latest_connection(db,workspace)
         connection=crm.public_view(db,workspace,settings.bridge_secret,app.state.clock(),
                                    connection=current_connection,events=events,provider=app.state.crm)
         state.connection=CRMConnectionView(**connection) if connection else None
         state.crm_available=crm.available(db,app.state.crm,app.state.clock())
-        rows=list(db.scalars(select(Reservation).where(Reservation.workspace_id==workspace.id).order_by(Reservation.starts_at)))
+        rows=list(repo_rows(db, Reservation, filters={'workspace_id': workspace.id}, order=lambda candidate: (candidate.starts_at,)))
         all_bookings=[BookingView(id=row.id,enquiry_id=row.enquiry_id,staff_id=row.staff_id,starts_at=row.starts_at,
                                  ends_at=row.ends_at,state=row.state,label=row.label) for row in rows]
-        cleared=set(db.scalars(select(Activity.reference).where(Activity.workspace_id==workspace.id,
-                                                                Activity.kind=='calendar_cleared')))
+        cleared=set(repo_values(db, Activity, 'reference', filters={'workspace_id': workspace.id, 'kind': 'calendar_cleared'}))
         state.calendar=[row for row in all_bookings if row.state!='cancelled' or str(row.id) not in cleared]
         bookings={row.enquiry_id:row for row in all_bookings if row.enquiry_id}
         state.requests=[RequestView(id=row.id,revision=row.revision,status=row.status,fields=row.fields,
                                     quote=row.quote,preferred_at=row.preferred_at,booking=bookings.get(row.id))
-                        for row in db.scalars(select(Enquiry).where(Enquiry.workspace_id==workspace.id).order_by(
-                            Enquiry.created_at,Enquiry.quote['revision'].as_integer(),Enquiry.id))]
+                        for row in repo_rows(db, Enquiry, filters={'workspace_id': workspace.id}, order=lambda candidate: (candidate.created_at, candidate.quote['revision'], candidate.id,))]
         state.calendar_week_start=domain.week_start(app.state.clock().astimezone(ZoneInfo(workspace.timezone)).date())
         state.calendar_first_week_start=state.calendar_week_start
         if state.calendar:
@@ -228,8 +229,7 @@ def create_app(settings: Settings, engine=None, clock=None,assistant_provider=No
         from . import knowledge
         from .models import DocumentVersion
         if runtime.spec.provider != 'fake':
-            slots = set(db.scalars(select(DocumentVersion.slot).where(DocumentVersion.owner_id.is_(None),
-                DocumentVersion.embedding_profile_id == runtime.spec.profile_id, DocumentVersion.state == 'ready')))
+            slots = set(repo_values(db, DocumentVersion, 'slot', filters={'embedding_profile_id': runtime.spec.profile_id, 'state': 'ready'}, predicate=lambda candidate: candidate.owner_id is None))
             if not set(knowledge.SLOTS).issubset(slots):
                 raise DomainError('KNOWLEDGE_NOT_READY', 'The front desk is being prepared. Please try again later.', 503)
         return create_workspace(db, zone, app.state.clock(), embedding_profile_id=runtime.spec.profile_id)
@@ -256,6 +256,7 @@ def create_app(settings: Settings, engine=None, clock=None,assistant_provider=No
                 remember_verification(app, response, workspace, verified_at)
                 return full_view(db,workspace,token)
             if body.restart:
+                service.workspace_lock(db,workspace)
                 if workspace.active and workspace.expires_at>app.state.clock():
                     raise DomainError('RESET_REQUIRED','Use Reset demo to end an active workspace.')
                 from .jobs import retire_workspace
@@ -286,6 +287,7 @@ def create_app(settings: Settings, engine=None, clock=None,assistant_provider=No
         if not workspace.active:
             raise DomainError("SESSION_EXPIRED", "This demo has already ended.", 410)
         require_generation(workspace, body.generation)
+        service.workspace_lock(db,workspace)
         from .jobs import retire_workspace
         retire_workspace(db,workspace,app.state.clock())
         workspace, token = new_workspace(db, body.timezone)

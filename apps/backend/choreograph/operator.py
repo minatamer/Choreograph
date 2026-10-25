@@ -1,25 +1,23 @@
 """Local operator-only aggregates. No public endpoint or account/token details."""
 import json
 
-from sqlalchemy import func, select
-
 from .models import Connection, Installation, OAuthState, Outbox
 
 
 def summary(db,app_id='choreograph-local-simulation'):
-    return {'installations':dict(db.execute(select(Installation.state,func.count()).where(
-                Installation.app_id==app_id).group_by(Installation.state)).all()),
-            'oauth_outcomes':dict(db.execute(select(OAuthState.outcome,func.count()).where(
-                OAuthState.app_id==app_id).group_by(OAuthState.outcome)).all()),
-            'work':dict(db.execute(select(Outbox.state,func.count()).join(Connection,
-                (Connection.workspace_id==Outbox.workspace_id)&(Connection.id==Outbox.connection_id)).where(
-                Connection.app_id==app_id).group_by(Outbox.state)).all())}
+    from collections import Counter
+
+    from .persistence import repo_rows
+    connections={(row.workspace_id,row.id) for row in repo_rows(db,Connection,filters={'app_id':app_id})}
+    return {'installations':dict(Counter(row.state for row in repo_rows(db,Installation,filters={'app_id':app_id}))),
+            'oauth_outcomes':dict(Counter(row.outcome for row in repo_rows(db,OAuthState,filters={'app_id':app_id}))),
+            'work':dict(Counter(row.state for row in repo_rows(db,Outbox,
+                predicate=lambda row:(row.workspace_id,row.connection_id) in connections)))}
 
 
 if __name__=='__main__':
-    from sqlalchemy.orm import Session
-
     from .db import build_engine
+    from .persistence import Session
     from .settings import load_local
     settings=load_local();engine=build_engine(settings)
     try:

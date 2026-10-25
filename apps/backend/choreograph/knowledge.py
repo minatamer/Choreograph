@@ -16,12 +16,22 @@ from llama_index.core.node_parser import TokenTextSplitter
 from llama_index.core.retrievers import BaseRetriever
 from llama_index.core.schema import NodeWithScore, QueryBundle, TextNode
 from pydantic import PrivateAttr
-from sqlalchemy import delete, or_, select, text
-from sqlalchemy.orm import Session, defer
+from sqlalchemy import or_, select
+from sqlalchemy.orm import defer
 
 from .ai_admission import FAKE_SPEC, EmbeddingSpec, ProviderResult, SafeUsage
 from .errors import DomainError
 from .models import Chunk, DocumentVersion, EmbeddingProfile, Manifest
+from .persistence import (
+    Session,
+    is_object,
+    remove,
+    repo_desc,
+    repo_rows,
+    repo_value,
+    repo_values,
+    try_advisory,
+)
 
 PACK=Path(__file__).resolve().parents[3]/'assets'/'knowledge'
 SLOTS=('service','preparation','access','changes','safety','questions')
@@ -137,12 +147,18 @@ class OpenAIEmbedding(BaseEmbedding):
 
 
 def register_profile(db,spec):
-    from sqlalchemy.dialects.postgresql import insert
     values=dict(id=spec.profile_id,provider=spec.provider,model=spec.model,dimensions=spec.dimensions,
                 chunker=spec.chunker,tokenizer=spec.tokenizer)
-    db.execute(insert(EmbeddingProfile).values(**values).on_conflict_do_nothing())
+    if db.get(EmbeddingProfile,spec.profile_id) is None:
+        db.add(EmbeddingProfile(**values));db.flush()
     row=db.get(EmbeddingProfile,spec.profile_id)
     if any(getattr(row,key)!=value for key,value in values.items()):raise ValueError('EMBEDDING_PROFILE_INVALID')
+
+
+def spec_for_version(db,version):
+    row=db.get(EmbeddingProfile,version.embedding_profile_id)
+    if not row:raise DomainError('KNOWLEDGE_PROFILE','The document configuration needs review.',503)
+    return EmbeddingSpec(row.provider,row.model,row.dimensions,row.chunker,row.tokenizer)
 
 
 def spec_for_workspace(db,workspace):
@@ -252,8 +268,7 @@ def prepare_samples(db,now):
         if item['replacement']:continue
         data=(PACK/item['file']).read_bytes()
         if hashlib.sha256(data).hexdigest()!=item['sha256']:raise ValueError('SAMPLE_HASH_MISMATCH')
-        existing=db.scalar(select(DocumentVersion.id).where(DocumentVersion.owner_id.is_(None),DocumentVersion.slot==item['slot'],
-            DocumentVersion.sha256==item['sha256'],DocumentVersion.embedding_profile_id==FAKE_SPEC.profile_id))
+        existing=repo_value(db, DocumentVersion, 'id', filters={'slot': item['slot'], 'sha256': item['sha256'], 'embedding_profile_id': FAKE_SPEC.profile_id}, predicate=lambda candidate: candidate.owner_id is None)
         if existing:continue
         row,chunks=build_version(data,'pdf' if item['file'].endswith('.pdf') else 'text',item['slot'],item['title'],item['version'],now)
         db.add(row)
@@ -270,8 +285,7 @@ def prepare_pack(engine,now,*,spec,embedder,tokenizer=None):
             if item['replacement']:continue
             data=(PACK/item['file']).read_bytes()
             if hashlib.sha256(data).hexdigest()!=item['sha256']:raise ValueError('SAMPLE_HASH_MISMATCH')
-            if db.scalar(select(DocumentVersion.id).where(DocumentVersion.owner_id.is_(None),DocumentVersion.slot==item['slot'],
-                DocumentVersion.sha256==item['sha256'],DocumentVersion.embedding_profile_id==spec.profile_id)):continue
+            if repo_value(db, DocumentVersion, 'id', filters={'slot': item['slot'], 'sha256': item['sha256'], 'embedding_profile_id': spec.profile_id}, predicate=lambda candidate: candidate.owner_id is None):continue
             parsed.append(parse_version(data,'pdf' if item['file'].endswith('.pdf') else 'text',item['slot'],
                 item['title'],item['version'],now,spec=spec,tokenizer=tokenizer))
     for item in parsed:
@@ -284,29 +298,34 @@ def prepare_pack(engine,now,*,spec,embedder,tokenizer=None):
 
 
 def attach_samples(db,workspace):
-    existing=set(db.scalars(select(Manifest.slot).where(Manifest.workspace_id==workspace.id)))
+    if not is_object(db):return _sql_attach_samples(db,workspace)
+    existing=set(repo_values(db, Manifest, 'slot', filters={'workspace_id': workspace.id}))
     for slot in SLOTS:
         if slot in existing:continue
-        version_id=db.scalar(select(DocumentVersion.id).where(DocumentVersion.owner_id.is_(None),DocumentVersion.slot==slot,
-            DocumentVersion.state=='ready',DocumentVersion.embedding_profile_id==workspace.embedding_profile_id).order_by(DocumentVersion.created_at.desc()).limit(1))
+        version_id=repo_value(db, DocumentVersion, 'id', filters={'slot': slot, 'state': 'ready', 'embedding_profile_id': workspace.embedding_profile_id}, predicate=lambda candidate: candidate.owner_id is None, order=lambda candidate: (repo_desc(candidate.created_at),), limit=1)
         if version_id:db.add(Manifest(workspace_id=workspace.id,slot=slot,version_id=version_id))
     db.flush()
 
 
 def authorized(db,workspace):
-    return select(DocumentVersion).join(Manifest,Manifest.version_id==DocumentVersion.id).where(
-        Manifest.workspace_id==workspace.id,DocumentVersion.state=='ready',
-        or_(DocumentVersion.owner_id.is_(None),DocumentVersion.owner_id==workspace.id))
+    manifest=set(repo_values(db,Manifest,'version_id',filters={'workspace_id':workspace.id}))
+    return repo_rows(db,DocumentVersion,predicate=lambda row:row.id in manifest and row.state=='ready' and
+                     row.owner_id in {None,workspace.id},order=lambda row:row.slot)
+
+
+def authorized_slot(db,workspace,slot):
+    return next((row for row in authorized(db,workspace) if row.slot==slot),None)
 
 
 def documents(db,workspace):
+    if not is_object(db):return _sql_documents(db,workspace)
     return [{'id':r.id,'slot':r.slot,'title':r.title,'version':r.version,'pages':r.page_count,'media_type':r.media_type,
-             'private':r.owner_id is not None} for r in db.scalars(authorized(db,workspace).options(
-                 defer(DocumentVersion.source,raiseload=True)).order_by(DocumentVersion.slot))]
+             'private':r.owner_id is not None} for r in authorized(db,workspace)]
 
 
 def source(db,workspace,version_id):
-    row=db.scalar(authorized(db,workspace).where(DocumentVersion.id==version_id))
+    if not is_object(db):return _sql_source(db,workspace,version_id)
+    row=next((row for row in authorized(db,workspace) if row.id==version_id),None)
     if not row:raise DomainError('SOURCE_UNAVAILABLE','This source is no longer available in this demo.',404)
     return row
 
@@ -318,23 +337,26 @@ class ScopedRetriever(BaseRetriever):
             raise DomainError('KNOWLEDGE_PROFILE','The documents changed. Start a fresh demo.',409)
         self.vector=vector;self.embed=embedder
     def _retrieve(self,query_bundle:QueryBundle):
+        if not is_object(self.db):return _sql_retrieve(self,query_bundle)
         question=query_bundle.query_str[:1200];tokens=set(terms(question))
         if self.vector is None:
             if self.spec.provider!='fake':raise DomainError('EMBEDDING_REQUIRED','Prepare the question embedding first.',503)
             self.vector=(self.embed or FakeEmbedding(self.spec)).get_query_embedding(question)
         vector=validate_vector(self.vector,self.spec)
-        profile=(DocumentVersion.embedding_profile_id==self.spec.profile_id)
-        if self.spec.model=='legacy-mixed-fake64' and self.spec.provider=='fake':
-            profile=DocumentVersion.embedding_profile_id.in_(select(EmbeddingProfile.id).where(
-                EmbeddingProfile.provider=='fake',EmbeddingProfile.dimensions==64))
-        # Server manifest and ready/owner joins run BEFORE similarity search.
-        query=select(Chunk,DocumentVersion,Chunk.embedding.cosine_distance(vector).label('distance')).join(
-            DocumentVersion,DocumentVersion.id==Chunk.version_id).join(Manifest,Manifest.version_id==DocumentVersion.id).where(
-                Manifest.workspace_id==self.workspace.id,DocumentVersion.state=='ready',
-                profile,or_(DocumentVersion.owner_id.is_(None),DocumentVersion.owner_id==self.workspace.id)).options(
-                    defer(DocumentVersion.source,raiseload=True)).order_by('distance').limit(64)
+        # Authorize ready manifest versions before inspecting any passage/vector.
+        allowed={row.id:row for row in authorized(self.db,self.workspace)
+                 if row.embedding_profile_id==self.spec.profile_id or
+                 (self.spec.model=='legacy-mixed-fake64' and self.spec.provider=='fake' and
+                  spec_for_version(self.db,row).provider=='fake' and spec_for_version(self.db,row).dimensions==64)}
+        import math
+        def distance(chunk):
+            candidate=validate_vector(chunk.embedding,self.spec)
+            denominator=math.sqrt(sum(x*x for x in vector)*sum(x*x for x in candidate))
+            return 1-sum(a*b for a,b in zip(vector,candidate,strict=True))/denominator if denominator else 1
+        candidates=repo_rows(self.db,Chunk,predicate=lambda row:row.version_id in allowed)
+        candidates=sorted(((chunk,allowed[chunk.version_id],distance(chunk)) for chunk in candidates),key=lambda item:item[2])[:64]
         ranked=[]
-        for chunk,doc,distance in self.db.execute(query):
+        for chunk,doc,distance in candidates:
             overlap=tokens.intersection(terms(chunk.content+' '+chunk.section+' '+doc.title))
             if not overlap and self.spec.provider=='fake':continue
             score=len(overlap)/max(1,len(tokens))+(1-float(distance))*(.12 if self.spec.provider=='fake' else 1)
@@ -361,7 +383,7 @@ def publish_replacement(db,workspace,parsed,built,expected_version_id,expected_r
     if (workspace.revision!=expected_revision or workspace.id!=parsed.owner or
             workspace.embedding_profile_id!=parsed.spec.profile_id):
         raise DomainError('STALE_REVISION','The demo or documents changed. Refresh before continuing.')
-    current=db.scalar(authorized(db,workspace).where(DocumentVersion.slot==parsed.slot))
+    current=authorized_slot(db,workspace,parsed.slot)
     if not current or str(current.id)!=str(expected_version_id):
         raise DomainError('DOCUMENT_CHANGED','The document changed. Refresh before continuing.')
     row,chunks=built
@@ -380,11 +402,11 @@ def replace(db,workspace,slot,data,kind,now):
     if slot not in SLOTS:raise DomainError('DOCUMENT_SLOT','Choose a document to replace.',422)
     if workspace.ingestion_attempts>=3:raise DomainError('DOCUMENT_LIMIT','This demo has used its three document replacements.',422)
     # At most two document parses across API processes sharing this database.
-    if not any(db.scalar(text('SELECT pg_try_advisory_xact_lock(45860,:slot)'),{'slot':slot}) for slot in (1,2)):
+    if not any(try_advisory(db,45860,slot) for slot in (1,2)):
         raise DomainError('DOCUMENT_BUSY','Other documents are processing. Try again shortly.',429)
     workspace.ingestion_attempts+=1
     try:
-        current=db.scalar(authorized(db,workspace).where(DocumentVersion.slot==slot))
+        current=authorized_slot(db,workspace,slot)
         if not current:raise DomainError('DOCUMENT_UNAVAILABLE','Prepare the sample pack first.',503)
         spec=spec_for_workspace(db,workspace)
         parsed=parse_version(data,kind,slot,current.title,f'Guest {workspace.ingestion_attempts}',now,
@@ -401,5 +423,60 @@ def replace(db,workspace,slot,data,kind,now):
 
 
 def purge_private(db,workspace):
-    db.execute(delete(Manifest).where(Manifest.workspace_id==workspace.id))
-    db.execute(delete(DocumentVersion).where(DocumentVersion.owner_id==workspace.id))
+    remove(db, Manifest, filters={'workspace_id': workspace.id})
+    remove(db, DocumentVersion, filters={'owner_id': workspace.id})
+
+
+def _sql_authorized(db,workspace):
+    return select(DocumentVersion).join(Manifest,Manifest.version_id==DocumentVersion.id).where(
+        Manifest.workspace_id==workspace.id,DocumentVersion.state=='ready',
+        or_(DocumentVersion.owner_id.is_(None),DocumentVersion.owner_id==workspace.id))
+
+
+def _sql_attach_samples(db,workspace):
+    existing=set(db.scalars(select(Manifest.slot).where(Manifest.workspace_id==workspace.id)))
+    for slot in SLOTS:
+        if slot in existing:continue
+        version_id=db.scalar(select(DocumentVersion.id).where(DocumentVersion.owner_id.is_(None),DocumentVersion.slot==slot,
+            DocumentVersion.state=='ready',DocumentVersion.embedding_profile_id==workspace.embedding_profile_id).order_by(DocumentVersion.created_at.desc()).limit(1))
+        if version_id:db.add(Manifest(workspace_id=workspace.id,slot=slot,version_id=version_id))
+    db.flush()
+
+
+def _sql_documents(db,workspace):
+    return [{'id':r.id,'slot':r.slot,'title':r.title,'version':r.version,'pages':r.page_count,'media_type':r.media_type,
+             'private':r.owner_id is not None} for r in db.scalars(_sql_authorized(db,workspace).options(
+                 defer(DocumentVersion.source,raiseload=True)).order_by(DocumentVersion.slot))]
+
+
+def _sql_source(db,workspace,version_id):
+    row=db.scalar(_sql_authorized(db,workspace).where(DocumentVersion.id==version_id))
+    if not row:raise DomainError('SOURCE_UNAVAILABLE','This source is no longer available in this demo.',404)
+    return row
+
+
+def _sql_retrieve(self,query_bundle:QueryBundle):
+    question=query_bundle.query_str[:1200];tokens=set(terms(question))
+    if self.vector is None:
+        if self.spec.provider!='fake':raise DomainError('EMBEDDING_REQUIRED','Prepare the question embedding first.',503)
+        self.vector=(self.embed or FakeEmbedding(self.spec)).get_query_embedding(question)
+    vector=validate_vector(self.vector,self.spec)
+    profile=(DocumentVersion.embedding_profile_id==self.spec.profile_id)
+    if self.spec.model=='legacy-mixed-fake64' and self.spec.provider=='fake':
+        profile=DocumentVersion.embedding_profile_id.in_(select(EmbeddingProfile.id).where(
+            EmbeddingProfile.provider=='fake',EmbeddingProfile.dimensions==64))
+    # Server manifest and ready/owner joins run BEFORE similarity search.
+    query=select(Chunk,DocumentVersion,Chunk.embedding.cosine_distance(vector).label('distance')).join(
+        DocumentVersion,DocumentVersion.id==Chunk.version_id).join(Manifest,Manifest.version_id==DocumentVersion.id).where(
+            Manifest.workspace_id==self.workspace.id,DocumentVersion.state=='ready',
+            profile,or_(DocumentVersion.owner_id.is_(None),DocumentVersion.owner_id==self.workspace.id)).options(
+                defer(DocumentVersion.source,raiseload=True)).order_by('distance').limit(64)
+    ranked=[]
+    for chunk,doc,distance in self.db.execute(query):
+        overlap=tokens.intersection(terms(chunk.content+' '+chunk.section+' '+doc.title))
+        if not overlap and self.spec.provider=='fake':continue
+        score=len(overlap)/max(1,len(tokens))+(1-float(distance))*(.12 if self.spec.provider=='fake' else 1)
+        node=TextNode(id_=str(chunk.id),text=chunk.content,metadata={'version_id':str(doc.id),'title':doc.title,'version':doc.version,
+                       'page':chunk.page,'section':chunk.section,'media_type':doc.media_type,'slot':doc.slot})
+        ranked.append(NodeWithScore(node=node,score=score))
+    return sorted(ranked,key=lambda item:item.score or 0,reverse=True)[:4]

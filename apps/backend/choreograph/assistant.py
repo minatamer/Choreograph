@@ -4,13 +4,12 @@ from datetime import datetime, time, timedelta
 from uuid import uuid4
 from zoneinfo import ZoneInfo
 
-from sqlalchemy import select
-
 from . import domain, knowledge, service
 from .assistant_context import bind_context, turn_context
 from .contracts import ChatMessage, SourceClaim, Suggestion
 from .errors import DomainError
 from .models import Enquiry
+from .persistence import repo_desc, repo_first, try_advisory
 from .providers import EvidenceQuote, GroundedOutput, Interpretation
 
 WEEKDAYS=['monday','tuesday','wednesday','thursday','friday','saturday','sunday']
@@ -140,8 +139,7 @@ def _clarification(workspace):
 
 
 def _latest_request(db,workspace):
-    return db.scalar(select(Enquiry).where(Enquiry.workspace_id==workspace.id)
-                     .order_by(Enquiry.created_at.desc(),Enquiry.quote['revision'].as_integer().desc(),Enquiry.id.desc()).limit(1))
+    return repo_first(db, Enquiry, filters={'workspace_id': workspace.id}, order=lambda candidate: (repo_desc(candidate.created_at), repo_desc(candidate.quote['revision']), repo_desc(candidate.id),), limit=1)
 
 
 def turn_suggestions(workspace,intent,claims,record=None):
@@ -287,8 +285,7 @@ def chat(db,workspace,text,revision,now,provider):
     _require_turn(workspace,revision)
     # Direct callers retain the original four shared transaction admission slots.
     # API orchestration admits its external work separately, before apply_chat.
-    from sqlalchemy import text as sql
-    if not any(db.scalar(sql('SELECT pg_try_advisory_xact_lock(45861,:slot)'),{'slot':slot}) for slot in range(1,5)):
+    if not any(try_advisory(db,45861,slot) for slot in range(1,5)):
         raise DomainError('ASSISTANT_BUSY','The front desk is busy. Try again shortly.',429)
     local=now.astimezone(ZoneInfo(workspace.timezone))
     provider=bind_context(provider,turn_context(db,workspace))

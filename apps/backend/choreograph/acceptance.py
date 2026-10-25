@@ -9,14 +9,13 @@ from datetime import UTC, datetime
 from pathlib import Path
 from uuid import UUID, uuid4, uuid5
 
-from sqlalchemy import or_, select
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy.orm import Session
 
 from . import ai_admission, assistant, crm, jobs, knowledge
 from .contracts import CRMFinish
 from .errors import DomainError
 from .models import AcceptanceRun, AIAttempt, Enquiry, ExternalMapping, Manifest, Outbox, Workspace
+from .persistence import Session, repo_desc, repo_first, repo_rows, repo_values
 from .readiness import ROOT, database_status
 from .sessions import COOKIE, create_workspace, csrf_token
 
@@ -112,7 +111,7 @@ def _rag(engine,runtime,wid,run_id,label,question,clock,*,expected=None,status='
     with Session(engine) as db:
         ws=db.get(Workspace,wid)
         scope=ai_admission.AttemptScope(ws.id,ws.generation,key,ws.revision)
-        manifest={row.slot:str(row.version_id) for row in db.scalars(select(Manifest).where(Manifest.workspace_id==wid))}
+        manifest={row.slot:str(row.version_id) for row in repo_rows(db, Manifest, filters={'workspace_id': wid})}
     claim=ai_admission.claim_interaction(engine,scope,operation='chat',request_hash=_fingerprint({'question':question}),
         profile_id=runtime.spec.profile_id,manifest_ids=manifest,now=clock())
     try:
@@ -172,9 +171,7 @@ def complete_ai_run(engine,run_id,grant,clock):
         with Session(engine) as db,db.begin():
             row=db.get(AcceptanceRun,run_id,with_for_update=True)
             if row is None or row.state!='running':raise DomainError('ACCEPTANCE_RUN_USED','Acceptance is no longer active.',409)
-            attempts=list(db.scalars(select(AIAttempt).where(AIAttempt.grant_id==grant.grant_id,
-                or_(AIAttempt.workspace_id.in_([UUID(value) for value in row.workspace_ids]),
-                    (AIAttempt.workspace_id.is_(None)) & (AIAttempt.command_key==str(run_id))))))
+            attempts=list(repo_rows(db, AIAttempt, filters={'grant_id': grant.grant_id}, predicate=lambda candidate: candidate.workspace_id in [UUID(value) for value in row.workspace_ids] or (candidate.workspace_id is None and candidate.command_key == str(run_id))))
             usage={'attempts':len(attempts),'reported_input_tokens':sum(a.actual_input_tokens or 0 for a in attempts),
                 'reported_output_tokens':sum(a.actual_output_tokens or 0 for a in attempts),
                 'unreported_attempts':sum(a.actual_input_tokens is None for a in attempts)}
@@ -303,13 +300,11 @@ def execute_crm(engine,settings,run_id,workspace_id,account_id,step,*,provider=N
             if step=='cleanup':
                 crm.finish(db,ws,CRMFinish(generation=ws.generation,revision=ws.revision,connection_id=connection.id,
                     confirm=True,cleanup=True,uninstall=uninstall),clock());db.flush()
-                event=db.scalar(select(Outbox).where(Outbox.workspace_id==wid,Outbox.kind=='crm_cleanup',
-                    Outbox.connection_id==connection.id).order_by(Outbox.revision.desc()).limit(1))
+                event=repo_first(db, Outbox, filters={'workspace_id': wid, 'kind': 'crm_cleanup', 'connection_id': connection.id}, order=lambda candidate: (repo_desc(candidate.revision),), limit=1)
             else:
-                requests=list(db.scalars(select(Enquiry.id).where(Enquiry.workspace_id==wid,Enquiry.status=='confirmed')))
+                requests=list(repo_values(db, Enquiry, 'id', filters={'workspace_id': wid, 'status': 'confirmed'}))
                 if len(requests)!=1:raise DomainError('ACCEPTANCE_CRM_SCOPE','Review exactly one fictional booking first.',422)
-                event=db.scalar(select(Outbox).where(Outbox.workspace_id==wid,Outbox.enquiry_id==requests[0],
-                    Outbox.connection_id==connection.id,Outbox.kind=='crm_upsert').order_by(Outbox.revision.desc()).limit(1))
+                event=repo_first(db, Outbox, filters={'workspace_id': wid, 'enquiry_id': requests[0], 'connection_id': connection.id, 'kind': 'crm_upsert'}, order=lambda candidate: (repo_desc(candidate.revision),), limit=1)
             if event is None:raise DomainError('ACCEPTANCE_CRM_SCOPE','No reviewed CRM work is available.',422)
             event_id=event.id
         job=jobs.claim(engine,clock(),workspace_id=wid,event_id=event_id)

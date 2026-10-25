@@ -5,11 +5,9 @@ from dataclasses import asdict, dataclass
 from datetime import datetime
 from uuid import UUID, uuid4
 
-from sqlalchemy import func, select, text
-from sqlalchemy.orm import Session
-
 from .hubspot import CRMFailure
 from .models import CRMCall, CRMGrant
+from .persistence import Session, advisory, repo_rows, storage_retry
 
 
 @dataclass(frozen=True)
@@ -46,6 +44,7 @@ class CRMAdmission:
     def __init__(self, engine, allowance, workspace_id, clock):
         self.engine,self.allowance,self.workspace_id,self.clock=engine,allowance,UUID(str(workspace_id)),clock
 
+    @storage_retry
     def reserve(self):
         now=self.clock();spec=asdict(self.allowance);expiry=self.allowance.expires_at
         if isinstance(self.allowance,ManualCRMAllowance):spec['policy']='local_owner_manual'
@@ -53,7 +52,7 @@ class CRMAdmission:
         if expiry is not None and now>=expiry:raise CRMFailure('CRM_ALLOWANCE_EXPIRED')
         digest=hashlib.sha256(json.dumps(spec,sort_keys=True,separators=(',',':')).encode()).hexdigest()
         with Session(self.engine) as db,db.begin():
-            db.execute(text('SELECT pg_advisory_xact_lock(45868,1)'))
+            advisory(db,45868,1)
             if expiry is not None and self.clock()>=expiry:raise CRMFailure('CRM_ALLOWANCE_EXPIRED')
             row=db.get(CRMGrant,self.allowance.grant_id)
             if row and (row.spec_hash!=digest or row.app_id!=self.allowance.app_id):raise CRMFailure('CRM_ALLOWANCE_CHANGED')
@@ -61,8 +60,7 @@ class CRMAdmission:
                 row=CRMGrant(id=self.allowance.grant_id,app_id=self.allowance.app_id,spec_hash=digest,requests=0)
                 db.add(row);db.flush()
             if not isinstance(self.allowance,ManualCRMAllowance):
-                guest=db.scalar(select(func.count()).select_from(CRMCall).where(
-                    CRMCall.grant_id==row.id,CRMCall.scope_key==str(self.workspace_id)))
+                guest=len(repo_rows(db, CRMCall, filters={'grant_id': row.id, 'scope_key': str(self.workspace_id)}))
                 if row.requests>=self.allowance.requests or guest>=self.allowance.workspace_requests:
                     raise CRMFailure('CRM_ALLOWANCE_LIMIT')
             row.requests+=1

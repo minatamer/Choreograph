@@ -4,10 +4,9 @@ import secrets
 from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
-from sqlalchemy import func, select, text
-
 from .errors import DomainError
 from .models import Workspace
+from .persistence import advisory, repo_first, repo_rows
 
 COOKIE = "choreograph_guest"
 MAX_RETAINED_WORKSPACES = 256
@@ -32,10 +31,7 @@ def validate_zone(zone: str) -> str:
 def find_workspace(db, token: str | None, now: datetime, *, lock: bool = False, allow_retired=False):
     if not token or len(token) > 128:
         raise DomainError("SESSION_REQUIRED", "Start a new demo to continue.", 401)
-    query = select(Workspace).where(Workspace.session_hash == digest(token))
-    if lock:
-        query = query.with_for_update()
-    workspace = db.scalar(query)
+    workspace = repo_first(db,Workspace,filters={'session_hash':digest(token)},lock=lock)
     if workspace is None:
         raise DomainError("SESSION_REQUIRED", "Start a new demo to continue.", 401)
     if not allow_retired and (not workspace.active or workspace.expires_at <= now):
@@ -52,9 +48,9 @@ def create_workspace(db, zone: str, now: datetime, *, embedding_profile_id: str 
     validate_zone(zone)
     # Serialize every creation path until its caller commits or rolls back.
     # Retired rows still consume storage and may retain unresolved cleanup.
-    db.execute(text('SELECT pg_advisory_xact_lock(45865,1)'))
+    advisory(db,45865,1)
     db.flush()
-    if db.scalar(select(func.count()).select_from(Workspace)) >= MAX_RETAINED_WORKSPACES:
+    if len(repo_rows(db, Workspace)) >= MAX_RETAINED_WORKSPACES:
         raise DomainError('DEMO_CAPACITY', 'The demo is busy. Please try again later.', 429)
     token = secrets.token_urlsafe(48)
     workspace = Workspace(session_hash=digest(token), timezone=zone, created_at=now,

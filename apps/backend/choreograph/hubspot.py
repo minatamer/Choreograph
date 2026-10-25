@@ -9,11 +9,9 @@ from urllib.parse import urlencode
 from uuid import uuid4
 
 import httpx
-from sqlalchemy import select
-from sqlalchemy.dialects.postgresql import insert
-from sqlalchemy.orm import Session
 
 from .models import SimulatedRecord
+from .persistence import Session, repo_first
 
 SCOPES=('oauth','crm.objects.contacts.read','crm.objects.contacts.write','crm.objects.deals.read','crm.objects.deals.write',
         'crm.schemas.contacts.read','crm.schemas.contacts.write','crm.schemas.deals.read','crm.schemas.deals.write','settings.currencies.read')
@@ -42,10 +40,13 @@ class FakeHubSpot:
     def upsert(self,tokens,kind,key,properties):
         self.calls.append('upsert-'+kind)
         with Session(self.engine) as db,db.begin():
-            db.execute(insert(SimulatedRecord).values(account_id=tokens['account_id'],object_type=kind,external_key=key,
-                       id='sim-'+uuid4().hex,properties=properties,archived=False).on_conflict_do_update(
-                       index_elements=['account_id','object_type','external_key'],set_={'properties':properties,'archived':False}))
             row=db.get(SimulatedRecord,(tokens['account_id'],kind,key))
+            if row is None:
+                row=SimulatedRecord(account_id=tokens['account_id'],object_type=kind,external_key=key,
+                    id='sim-'+uuid4().hex,properties=properties,archived=False)
+                db.add(row)
+            else:row.properties=properties;row.archived=False
+            db.flush()
             return row.id
     def read(self,tokens,kind,key):
         self.calls.append('read-'+kind)
@@ -55,14 +56,14 @@ class FakeHubSpot:
     def associate(self,tokens,contact_id,deal_id):
         self.calls.append('associate')
         with Session(self.engine) as db,db.begin():
-            contact=db.scalar(select(SimulatedRecord).where(SimulatedRecord.account_id==tokens['account_id'],SimulatedRecord.id==contact_id,SimulatedRecord.object_type=='contacts'))
-            deal=db.scalar(select(SimulatedRecord).where(SimulatedRecord.account_id==tokens['account_id'],SimulatedRecord.id==deal_id,SimulatedRecord.object_type=='deals'))
+            contact=repo_first(db, SimulatedRecord, filters={'account_id': tokens['account_id'], 'id': contact_id, 'object_type': 'contacts'})
+            deal=repo_first(db, SimulatedRecord, filters={'account_id': tokens['account_id'], 'id': deal_id, 'object_type': 'deals'})
             if not contact or not deal:raise CRMFailure('CRM_IDENTITY')
             deal.properties={**deal.properties,'__contact_id':contact_id}
     def verify_association(self,tokens,contact_id,deal_id):
         self.calls.append('verify-association')
         with Session(self.engine) as db:
-            deal=db.scalar(select(SimulatedRecord).where(SimulatedRecord.account_id==tokens['account_id'],SimulatedRecord.id==deal_id,SimulatedRecord.object_type=='deals'))
+            deal=repo_first(db, SimulatedRecord, filters={'account_id': tokens['account_id'], 'id': deal_id, 'object_type': 'deals'})
             return bool(deal and deal.properties.get('__contact_id')==contact_id)
     def archive(self,tokens,kind,key):
         self.calls.append('archive-'+kind)
