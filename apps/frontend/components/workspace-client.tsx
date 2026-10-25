@@ -1,5 +1,6 @@
 'use client';
-import {useEffect,useLayoutEffect,useRef,useState} from 'react';
+import {useEffect,useLayoutEffect,useRef,useState,useTransition} from 'react';
+import {useRouter} from 'next/navigation';
 import {motion} from 'motion/react';
 import {useDemoGuest} from './demo-guest';
 import {Button,Spinner} from './ui';
@@ -18,11 +19,16 @@ import {businessPages,workspaceLocation,workspaceSearch,type BusinessPage} from 
 import type {CalendarStatus} from '@/lib/appointment-status';
 
 export function WorkspaceClient(){
+ const router=useRouter();const [resetNavigating,startResetNavigation]=useTransition();const resetFrom=useRef<string|null>(null);
  const guest=useDemoGuest();const [business,setBusiness]=useState(false),[page,setPage]=useState<BusinessPage>('overview'),[collapsed,setCollapsed]=useState(false),[zone,setZone]=useState('');
  const [composerText,setComposerText]=useState(''),[calendarWeek,setCalendarWeek]=useState('');
  const [visible,setVisible]=useState<Set<CalendarStatus>>(()=>new Set(['confirmed','completed','cancelled']));
  const [tourOpen,setTourOpen]=useState(false);const checkedTour=useRef(false),workspace=useRef<HTMLDivElement>(null),heading=useRef<HTMLHeadingElement>(null);
  const {state,pending,error,initialize}=guest;
+ useEffect(()=>{
+  if(!resetFrom.current||!state||state.workspace_id===resetFrom.current)return;
+  resetFrom.current=null;setTourOpen(false);startResetNavigation(()=>router.replace('/demo?step=connect'));
+ },[state,router]);
  useEffect(()=>{if(!state&&!error&&!guest.needsZone)void initialize();},[initialize]);
  useEffect(()=>{setComposerText('');setCalendarWeek('');setVisible(new Set(['confirmed','completed','cancelled']));},[state?.workspace_id]);
  useEffect(()=>{const restore=()=>{const value=workspaceLocation(window.location.search);setBusiness(value.business);setPage(value.page);};restore();window.addEventListener('popstate',restore);return()=>window.removeEventListener('popstate',restore);},[]);
@@ -47,9 +53,13 @@ export function WorkspaceClient(){
  const destination=businessPages.find(item=>item.id===page)!;
  const week=calendarWeek||state?.calendar_week_start||state?.scenario.week_start||'';
  const perspective=(value:boolean)=>navigate(value,page,true);
+ async function reset(){
+  if(!state)return false;resetFrom.current=state.workspace_id;
+  return Boolean(await guest.reset());
+ }
  return <><div ref={workspace} className={business?'business-workspace':'customer-workspace'} data-collapsed={collapsed} data-demo-workspace-root>
   {!business&&state&&<HeroCollage faded/>}
-  {business&&<BusinessSidebar ready={!!state} businessName="Juniper Cleaning" page={page} collapsed={collapsed} onCollapse={()=>setCollapsed(value=>!value)} onNavigate={value=>navigate(true,value)} onReset={()=>void guest.reset()} onPerspective={perspective}/>}
+  {business&&<BusinessSidebar ready={!!state&&!pending&&!resetNavigating} businessName="Juniper Cleaning" page={page} collapsed={collapsed} onCollapse={()=>setCollapsed(value=>!value)} onNavigate={value=>navigate(true,value)} onReset={reset} onPerspective={perspective}/>}
   <main id="main" className={`workspace-page ${business?'business-page':'customer-page'}`}>
    {error&&<div className="error-banner" role="alert"><p>{error.message}</p>{['SESSION_EXPIRED','SESSION_REQUIRED'].includes(error.code)?<Button kind="secondary" onClick={()=>void guest.initialize(undefined,true)}>Start a new demo</Button>:<div><Button kind="secondary" onClick={()=>void retry()}>Try again</Button><Button kind="quiet" onClick={()=>void guest.initialize()}>Refresh</Button></div>}</div>}
    {guest.needsZone&&<form onSubmit={event=>{event.preventDefault();if(!pending)void guest.initialize(zone);}} className="timezone-choice"><h1>Choose your timezone</h1><label>Timezone<input value={zone} onChange={event=>setZone(event.target.value)} placeholder="UTC" disabled={pending} required/></label><Button busy={pending}>Continue</Button></form>}
@@ -61,6 +71,6 @@ export function WorkspaceClient(){
     {page==='guides'&&<Documents key={state.workspace_id} state={state} pending={pending} onReplace={(slot,fields)=>guest.mutate(`documents/${slot}/replace`,fields)}/>}
     {page==='connections'&&<CRMControls state={state} pending={pending} mutate={guest.mutate} manageConnection/>}
    </motion.div></>:<ChatWorkspace key={state.workspace_id} state={state} pending={pending} text={composerText} setText={setComposerText} onSend={text=>guest.mutate('chat',{text})} onEdit={fields=>guest.mutate('draft',fields,'PUT')} onSubmit={request=>void (request?guest.mutate(`requests/${request.id}/approve`,{request_revision:request.revision,confirm:true}):guest.mutate('bookings',{accept_quote:true}))} onBookingAction={(record,action,fields)=>guest.mutate(`requests/${record.id}/${action}`,{request_revision:record.revision,confirm:true,...fields})} onBusiness={()=>navigate(true,'requests')} onTour={()=>setTourOpen(true)}/>}</>}
-  </main>{!business&&<CustomerFooter ready={!!state} onReset={()=>void guest.reset()} onPerspective={perspective}/>}
+  </main>{!business&&<CustomerFooter ready={!!state&&!pending&&!resetNavigating} onReset={reset} onPerspective={perspective}/>}
  </div>{state&&tourOpen&&<WorkspaceTour key={state.workspace_id} business={business} page={page} onPerspective={(value,nextPage)=>navigate(value,nextPage??page,true)} onClose={()=>setTourOpen(false)}/>}</>;
 }
