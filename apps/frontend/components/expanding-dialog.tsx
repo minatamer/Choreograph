@@ -6,7 +6,7 @@ import {useDialogFocus} from './use-dialog-focus';
 
 export const cardSpring={type:'spring' as const,stiffness:250,damping:29,mass:.9};
 
-export function ExpandingDialog({layoutId,className,children,onClose,opener,titleId,label}:{layoutId:string;className:string;children:ReactNode;onClose:()=>void;opener:HTMLElement|null;titleId?:string;label?:string}){
+export function ExpandingDialog({layoutId,className,children,onClose,opener,fallbackFocus,titleId,label}:{layoutId:string;className:string;children:ReactNode;onClose:()=>void;opener:HTMLElement|null;fallbackFocus?:HTMLElement|null;titleId?:string;label?:string}){
  const panel=useRef<HTMLElement>(null);
  const [layoutRevision,setLayoutRevision]=useState(0);
  useLayoutEffect(()=>{
@@ -31,12 +31,12 @@ export function ExpandingDialog({layoutId,className,children,onClose,opener,titl
    previous.forEach(({node,inert})=>{node.inert=inert;});
    html.style.overflow=htmlOverflow;body.style.overflow=bodyOverflow;body.style.paddingRight=padding;
    // Restore after the focus hook, once the underlying layer is interactive.
-   const target=opener?.isConnected?opener:document.querySelector<HTMLElement>('#enquiry,.workspace-reset');
+   const target=opener?.isConnected?opener:fallbackFocus?.isConnected?fallbackFocus:document.querySelector<HTMLElement>('#enquiry,.workspace-reset');
    target?.focus({preventScroll:true});
   };
- },[opener]);
+ },[opener,fallbackFocus]);
  return createPortal(<motion.div layoutRoot className="expanding-dialog-layer">
   <motion.div className="expanding-dialog-backdrop" aria-hidden="true" initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} transition={{duration:.24}} onClick={onClose}/>
-  <motion.section layoutId={layoutId} layoutDependency={layoutRevision} className={`expanding-dialog ${className}`} style={{borderRadius:28}} transition={cardSpring} role="dialog" aria-modal="true" aria-labelledby={titleId} aria-label={label} ref={panel}>{children}</motion.section>
+  <motion.section layoutId={layoutId} layoutDependency={layoutRevision} className={`expanding-dialog ${className}`} style={{borderRadius:28}} transition={cardSpring} role="dialog" aria-modal="true" aria-labelledby={titleId} aria-label={label} tabIndex={-1} ref={panel}>{children}</motion.section>
  </motion.div>,document.body);
 }

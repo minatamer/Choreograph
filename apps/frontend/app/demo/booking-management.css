@@ -1,4 +1,5 @@
 .chat-booking-management{display:grid;gap:16px;padding:20px;border:1px solid #ffffffd6;border-radius:22px;background:transparent;box-shadow:var(--material-rim)}
+.booking-management-dialog.booking-action-dialog{width:min(520px,100%)}.booking-action-dialog>.management-current{margin-bottom:16px}.booking-action-dialog .booking-action-error{color:#b3261e;margin-top:16px}.request-record:focus-visible{outline:2px solid var(--color-action-primary);outline-offset:4px}
 .chat-booking-management.compact{padding:12px 14px;border-radius:16px}
 .chat-booking-management h3{margin:0;font-size:19px;letter-spacing:-.03em;font-weight:500}.chat-booking-management p{margin:7px 0;font-size:13px;line-height:1.6}.chat-booking-management small{color:var(--muted);font-size:11px}.chat-management-actions{display:flex;flex-wrap:wrap;gap:8px}.chat-management-actions .button{min-height:42px}
 .booking-management-dialog{width:min(780px,100%);max-height:calc(100dvh - 48px);overflow:auto;overscroll-behavior:contain;padding:26px;border:1px solid #ffffffe0;background:transparent;backdrop-filter:blur(30px) saturate(1.15);box-shadow:var(--material-rim),0 24px 90px -24px #18345473;color:var(--ink)}
