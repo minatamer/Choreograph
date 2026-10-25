@@ -29,6 +29,8 @@ def test_new_setup_uses_fake_ai_disabled_crm_and_is_repeatable(checkout):
     assert values['FAKE_MODE'] == 'true'
     assert 'CHOREOGRAPH_CRM_PROVIDER' not in values
     assert values['PAID_DEMO_ENABLED'] == 'false'
+    assert all(not line.partition('=')[2].startswith(("'",'"')) for line in backend.read_text().splitlines()
+               if line and not line.startswith('#'))
     assert values['CHOREOGRAPH_BRIDGE_SECRET'] == public['CHOREOGRAPH_BRIDGE_SECRET']
     assert set(public) == {'CHOREOGRAPH_API_URL',
                            'CHOREOGRAPH_ORIGIN', 'CHOREOGRAPH_BRIDGE_SECRET'}
@@ -98,3 +100,14 @@ def test_unrecognized_or_conflicting_configuration_is_not_silently_lost(checkout
     with pytest.raises(ValueError):setup.prepare(checkout)
     assert backend.read_text()==source
     assert not (checkout/'apps/frontend/.env.local').exists()
+
+
+@pytest.mark.parametrize('value',['leading ', ' trailing', 'value#comment', 'value$EXPANSION',
+                                  'two\nlines', "'wrapping-quotes'"])
+def test_unquoted_setup_refuses_ambiguous_values_without_writes(checkout,value):
+    backend=checkout/'apps/backend/.env.local'
+    before=backend.with_name('.env.example').read_bytes()
+    with pytest.raises(ValueError,match='UNQUOTED_LOCAL_VALUE_UNSUPPORTED'):
+        setup.render(backend.with_name('.env.example'),{'OPENAI_API_KEY':value})
+    assert not backend.exists()
+    assert backend.with_name('.env.example').read_bytes()==before

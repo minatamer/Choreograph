@@ -4,6 +4,7 @@ import os
 import re
 import secrets
 import sys
+from io import StringIO
 from pathlib import Path
 
 from dotenv import dotenv_values
@@ -20,10 +21,15 @@ def read_values(path):
 def render(example, values):
     source = example.read_text(encoding='utf-8')
     for key, value in values.items():
-        quoted = "'" + value.replace('\\', '\\\\').replace("'", "\\'") + "'"
-        source, count = re.subn(rf'^{re.escape(key)}=.*$', lambda _, key=key, quoted=quoted: f'{key}={quoted}', source, flags=re.M)
+        # Never add wrapping quotes. Refuse values that would be interpreted
+        # differently by the Python, Node or Compose environment loaders.
+        rendered = value
+        if (any(char in value for char in '\r\n\0#$') or value != value.strip() or
+                dotenv_values(stream=StringIO(f'{key}={value}\n'), interpolate=False).get(key) != value):
+            raise ValueError('UNQUOTED_LOCAL_VALUE_UNSUPPORTED')
+        source, count = re.subn(rf'^{re.escape(key)}=.*$', lambda _, key=key, rendered=rendered: f'{key}={rendered}', source, flags=re.M)
         if not count:
-            source += f'\n{key}={quoted}\n'
+            source += f'\n{key}={rendered}\n'
     return source
 
 
