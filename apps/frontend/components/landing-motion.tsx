@@ -1,16 +1,28 @@
 'use client';
 
-import {useRef,type ReactNode} from 'react';
+import {useEffect,useRef,type ReactNode} from 'react';
 import {motion,useScroll,useSpring,useTransform} from 'motion/react';
 import {ActionLink} from './ui';
 
 export function LandingHero(){
+  const lead=useRef<HTMLDivElement>(null);
+  useEffect(()=>{
+    let cancelled=false,frame=0;
+    // Prepare font metrics and a painted layer before starting the entrance.
+    // No fixed delay: the next two frames separate preparation from playback.
+    const start=()=>{if(cancelled)return;frame=requestAnimationFrame(()=>{
+      frame=requestAnimationFrame(()=>{if(!cancelled&&lead.current)lead.current.dataset.entered='true';});
+    });};
+    void (document.fonts?.ready??Promise.resolve()).then(start,start);
+    return()=>{cancelled=true;cancelAnimationFrame(frame);};
+  },[]);
   return <div className="hero-intro">
-      <motion.div className="landing-lead" initial={{opacity:.85,y:16}} animate={{opacity:1,y:0}} transition={{duration:.8,ease:[.2,.8,.2,1]}}>
+      <noscript><style>{'.landing-lead{animation:hero-lead-enter .8s cubic-bezier(.2,.8,.2,1) both}'}</style></noscript>
+      <div ref={lead} className="landing-lead">
         <h1>Hire a choreographer. <span>Give your business a better rhythm.</span></h1>
         <p>An AI front desk that brings every enquiry, quote and booking into harmony.</p>
         <div className="hero-actions"><ActionLink href="/demo">Try demo</ActionLink></div>
-      </motion.div>
+      </div>
   </div>;
 }
 

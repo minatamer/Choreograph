@@ -1,5 +1,13 @@
 # SBS-008 — Verify the complete responsive demo
 
+## Owner hero entrance correction —25 October2026
+
+The owner reports a small initial stutter in the otherwise approved headline fade. Actual100-sample reload inspection reproduced the near-visible85%-opacity/16px-down frame staying unchanged from267–545ms, with first observed progress at598ms; heading dimensions stayed stable in that pass. The original Motion entrance could expose that initial state before client playback was ready. A CSS-only version still exposed early startup holds in subsequent local development runs.
+
+`LandingHero` now prepares the local font metrics and two rendering frames, with cancellation on unmount, then starts one compositor-friendly CSS opacity/transform entrance. It begins transparent so preparation is not shown as a frozen near-opaque heading, while preserving the16px lift,800ms duration, original cubic-bezier easing, blue type, glow, layout and CTA. Font readiness is resource-driven, not a fixed timeout. A CSS-animation noscript fallback retains the rendered heading/action without JavaScript. No recurring React animation state, motion suppression, reduced-motion override or changes to the moving collage/scroll animations were introduced.
+
+Final read-only100-sample actual-browser runs at1366×679,581×800 and390×844 show progressive visible opacity with zero backward steps, stable heading height during visible playback (at most0.000031px numeric noise), final opacity1, no settled horizontal overflow and a reachable CTA. Temporary viewport override was reset. The first visible sample occurred at1012/799/641ms respectively under local development sampling; this is transparent resource preparation, not a claimed faster paint or production latency result. `.runtime/hero-entrance-review.json` records the before/after summaries. Four actual-effect tests cover resource/frame ordering, cancellation before font readiness, cancellation between frames and browsers without the font API. All84 Node tests, frontend typecheck and scoped whitespace pass. No extra preview, service restart, provider/account call, Figma or Git action occurred. Human visual acceptance and production performance remain separate.
+
 ## Continuation visual review — SBS-012–015
 
 Fresh local fake core review produced18 captures across desktop1440, short laptop1280x720 and phone390, including landing, guided customer conversation, actual coordinator approval/calendar, Documents and page2 source reader. Three actual-component injected-account setup captures passed separate schema/export consent, destination selection, reset during pending work, no horizontal overflow and zero page errors. The latter is a PostgreSQL/MockTransport snapshot, not a real HubSpot connection.
