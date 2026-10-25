@@ -7,8 +7,6 @@ from uuid import UUID, uuid4
 
 import pytest
 from fastapi.testclient import TestClient
-from sqlalchemy import select
-from sqlalchemy.orm import Session
 from test_requests import NOW, command
 
 from choreograph import assistant, knowledge
@@ -16,6 +14,7 @@ from choreograph.api import create_app
 from choreograph.composition import compose_ai
 from choreograph.errors import DomainError
 from choreograph.models import AIInteraction, Manifest, Workspace
+from choreograph.persistence import Session, is_object, repo_first
 
 
 def start(database, provider=None, embedder=None):
@@ -41,7 +40,7 @@ def test_delayed_external_work_keeps_reset_edit_reachable_and_rejects_stale_resu
 
     def wait():
         # Neither a checked-out connection nor a workspace lock spans external work.
-        assert engine.pool.checkedout() == 0
+        assert is_object(engine) or engine.pool.checkedout() == 0
         entered.set()
         assert release.wait(8)
 
@@ -87,7 +86,7 @@ def test_delayed_external_work_keeps_reset_edit_reachable_and_rejects_stale_resu
             workspace = db.get(Workspace, UUID(state['workspace_id']))
             assert not workspace.messages
             assert workspace.draft.get('bedrooms') is None
-            interaction = db.scalar(select(AIInteraction).where(AIInteraction.workspace_id == workspace.id))
+            interaction = repo_first(db, AIInteraction, filters={'workspace_id': workspace.id})
             assert interaction.state != 'completed'
     finally:
         release.set()
@@ -151,7 +150,7 @@ def test_delayed_replacement_cannot_publish_over_an_edit_and_does_not_refund_att
 
     class SlowEmbedding(knowledge.FakeEmbedding):
         def _get_text_embedding(self, text):
-            assert database[0].pool.checkedout() == 0
+            assert is_object(database[0]) or database[0].pool.checkedout() == 0
             entered.set()
             assert release.wait(8)
             return super()._get_text_embedding(text)

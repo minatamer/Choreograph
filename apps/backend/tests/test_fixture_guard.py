@@ -33,7 +33,7 @@ def test_unsafe_source_is_rejected_before_admin_engine(monkeypatch, url):
 
     monkeypatch.setattr(Path, 'read_text', fake_configuration)
     monkeypatch.setattr(conftest, 'create_engine', forbidden_engine)
-    fixture = conftest.database.__wrapped__()
+    fixture = conftest.postgres_database.__wrapped__()
     with pytest.raises(RuntimeError, match='OWNED_LOCAL_POSTGRES_REQUIRED'):
         next(fixture)
     assert calls == []

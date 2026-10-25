@@ -5,8 +5,6 @@ from uuid import UUID, uuid4
 
 import pytest
 from fastapi.testclient import TestClient
-from sqlalchemy import func, select
-from sqlalchemy.orm import Session
 from test_booking import book, prepare
 from test_requests import NOW, begin, command
 
@@ -14,6 +12,7 @@ from choreograph import service
 from choreograph.api import create_app
 from choreograph.errors import DomainError
 from choreograph.models import Connection, Enquiry, Outbox, Reservation, Workspace
+from choreograph.persistence import Session, repo_rows
 
 
 def ready(database):
@@ -48,9 +47,8 @@ def test_customer_booking_is_reserved_replayable_and_persisted(database):
         refreshed=client.get('/v1/session',headers=headers).json()
         assert refreshed['requests']==current['requests'] and refreshed['messages']==current['messages']
         with Session(engine) as db:
-            assert db.scalar(select(func.count()).select_from(Reservation).where(
-                Reservation.workspace_id==state['workspace_id'],Reservation.state=='confirmed'))==1
-            assert db.scalar(select(func.count()).select_from(Outbox).where(Outbox.workspace_id==state['workspace_id']))==0
+            assert len(repo_rows(db, Reservation, filters={'workspace_id': state['workspace_id'], 'state': 'confirmed'}))==1
+            assert len(repo_rows(db, Outbox, filters={'workspace_id': state['workspace_id']}))==0
     finally:client.close()
 
 
@@ -103,11 +101,9 @@ def test_connected_customer_booking_and_confirmation_commit_or_roll_back_togethe
         current=client.get('/v1/session',headers=headers).json()
         assert len(current['requests'])==len(current['messages'])==(0 if fail_after_receipt else 1)
         with Session(engine) as db:
-            assert db.scalar(select(func.count()).select_from(Enquiry).where(
-                Enquiry.workspace_id==state['workspace_id']))==(0 if fail_after_receipt else 1)
-            assert db.scalar(select(func.count()).select_from(Reservation).where(
-                Reservation.workspace_id==state['workspace_id'],Reservation.state=='confirmed'))==(0 if fail_after_receipt else 1)
-            outbox=list(db.scalars(select(Outbox).where(Outbox.workspace_id==state['workspace_id'])))
+            assert len(repo_rows(db, Enquiry, filters={'workspace_id': state['workspace_id']}))==(0 if fail_after_receipt else 1)
+            assert len(repo_rows(db, Reservation, filters={'workspace_id': state['workspace_id'], 'state': 'confirmed'}))==(0 if fail_after_receipt else 1)
+            outbox=list(repo_rows(db, Outbox, filters={'workspace_id': state['workspace_id']}))
             assert len(outbox)==(0 if fail_after_receipt else 1)
             if outbox:
                 assert outbox[0].connection_id==connection_id and outbox[0].account_id=='fake-customer-booking'

@@ -6,14 +6,14 @@ from uuid import UUID
 
 import httpx
 import pytest
-from conftest import database as database_fixture
-from sqlalchemy.orm import Session
+from conftest import postgres_database as database_fixture
 from test_jobs import claim_for, connected_booking
 from test_requests import NOW
 from test_task_enqueue import CONFIG
 
 from choreograph import dispatch, jobs
 from choreograph.models import Outbox, TaskPublication
+from choreograph.persistence import Session, repo_first, repo_rows, repo_value
 from choreograph.task_delivery import task_payload
 from choreograph.task_enqueue import CloudTasks, PublishFailure
 
@@ -116,8 +116,6 @@ def test_two_connection_leadership_releases_pool_session_lock_after_rollout(isol
 def test_unattended_cycle_expires_private_sources_and_only_enqueues_cleanup(isolated,monkeypatch):
     from uuid import uuid4
 
-    from sqlalchemy import func, select
-
     from choreograph import knowledge
     from choreograph.dispatcher import cycle, status
     from choreograph.models import DocumentVersion, Workspace
@@ -140,8 +138,8 @@ def test_unattended_cycle_expires_private_sources_and_only_enqueues_cleanup(isol
         assert cycle(engine,queue,lambda:now,uuid4())==1 and len(queue.calls)==1 and crm.calls==calls
         with Session(engine) as db:
             assert not db.get(Workspace,UUID(state['workspace_id'])).active
-            assert db.scalar(select(func.count()).select_from(DocumentVersion).where(DocumentVersion.owner_id==UUID(state['workspace_id'])))==0
-            cleanup=db.scalar(select(Outbox).where(Outbox.workspace_id==UUID(state['workspace_id']),Outbox.kind=='crm_cleanup'))
+            assert len(repo_rows(db, DocumentVersion, filters={'owner_id': UUID(state['workspace_id'])}))==0
+            cleanup=repo_first(db, Outbox, filters={'workspace_id': UUID(state['workspace_id']), 'kind': 'crm_cleanup'})
             assert cleanup.state=='pending' and cleanup.attempts==0
         snapshot=status(engine,now);assert snapshot['cycles']==1 and snapshot['published']==1 and snapshot['publications']=={'accepted':1}
     finally:client.close()
@@ -149,7 +147,7 @@ def test_unattended_cycle_expires_private_sources_and_only_enqueues_cleanup(isol
 
 def test_dispatcher_filters_provider_secrets_and_status_never_constructs_google_client(isolated,monkeypatch,capsys):
     from choreograph import dispatcher
-    values={'CHOREOGRAPH_DATABASE_URL':isolated[1].database_url,'FAKE_MODE':'false',
+    values={'DATABASE_ENABLED':'true','CHOREOGRAPH_DATABASE_URL':isolated[1].database_url,'FAKE_MODE':'false',
         'OPENAI_API_KEY':'synthetic-must-be-ignored','CHOREOGRAPH_CRM_PROVIDER':'hubspot',
         'CHOREOGRAPH_TASKS_ENABLED':'true','CHOREOGRAPH_TASK_PROJECT':CONFIG.project,
         'CHOREOGRAPH_TASK_REGION':CONFIG.region,'CHOREOGRAPH_TASK_QUEUE':CONFIG.queue,
@@ -159,7 +157,7 @@ def test_dispatcher_filters_provider_secrets_and_status_never_constructs_google_
     assert settings.profile=='fake' and settings.crm_provider=='disabled' and settings.live_ai is None and settings.live_crm is None
     def forbidden(*args,**kwargs):raise AssertionError('Status must not create a Google client')
     monkeypatch.setattr(dispatcher,'CloudTasks',forbidden)
-    dispatcher.run({'CHOREOGRAPH_DATABASE_URL':isolated[1].database_url},inspect=True)
+    dispatcher.run({'DATABASE_ENABLED':'true','CHOREOGRAPH_DATABASE_URL':isolated[1].database_url},inspect=True)
     output=capsys.readouterr().out
     assert 'DISPATCH_NOT_STARTED' in output and 'synthetic-must-be-ignored' not in output
 
@@ -188,8 +186,7 @@ def test_three_hour_window_stops_late_provider_access_and_remains_observable(iso
         with Session(engine) as db,db.begin():
             jobs.retire_workspace(db,db.get(Workspace,UUID(state['workspace_id'])),expiry)
             db.flush()
-            from sqlalchemy import select
-            event=db.scalar(select(Outbox.id).where(Outbox.workspace_id==UUID(state['workspace_id']),Outbox.kind=='crm_cleanup'))
+            event=repo_value(db, Outbox, 'id', filters={'workspace_id': UUID(state['workspace_id']), 'kind': 'crm_cleanup'})
         job=claim_for(engine,state,event,expiry)
         calls=list(crm.calls);late=NOW+timedelta(hours=3)
         # Even direct late delivery cannot refresh or contact the external system.

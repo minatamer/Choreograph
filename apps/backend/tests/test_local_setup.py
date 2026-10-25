@@ -74,7 +74,7 @@ def test_conflicting_existing_frontend_prevents_migration_without_changes(checko
 def test_current_full_local_file_becomes_private_only_without_changing_choices(checkout):
     from choreograph.runtime_config import APPLICATION, ENV_FIELDS
     backend=checkout/'apps/backend/.env.local'
-    private={'FAKE_MODE':'false','PAID_DEMO_ENABLED':'true','OPENAI_API_KEY':"synthetic-a'\\b",
+    private={'DATABASE_ENABLED':'true','FAKE_MODE':'false','PAID_DEMO_ENABLED':'true','OPENAI_API_KEY':"synthetic-a'\\b",
         'TURNSTILE_SITE_KEY':'synthetic-site','TURNSTILE_SECRET_KEY':'synthetic-turnstile',
         'CHOREOGRAPH_ORIGIN':'http://127.0.0.1:45860','CHOREOGRAPH_DATABASE_URL':'synthetic-db',
         'CHOREOGRAPH_DB_PASSWORD':'synthetic-password','CHOREOGRAPH_TOKEN_KEY':'synthetic-token',

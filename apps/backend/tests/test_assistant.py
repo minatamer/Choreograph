@@ -5,12 +5,12 @@ from uuid import uuid4
 import pytest
 from fastapi.testclient import TestClient
 from llama_index.core.schema import NodeWithScore, TextNode
-from sqlalchemy.orm import Session
 from test_requests import NOW, begin, command
 
 from choreograph import assistant, knowledge
 from choreograph.api import create_app
 from choreograph.errors import DomainError
+from choreograph.persistence import Session
 from choreograph.providers import GroundedOutput, Interpretation, OpenAITransport, parse_envelope
 
 

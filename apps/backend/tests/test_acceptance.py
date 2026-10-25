@@ -8,7 +8,7 @@ from datetime import UTC, datetime, timedelta
 from uuid import UUID, uuid4
 
 import pytest
-from conftest import database as database_fixture
+from conftest import postgres_database as database_fixture
 from fastapi.testclient import TestClient
 from sqlalchemy import event, func, select
 from sqlalchemy.orm import Session
@@ -131,7 +131,7 @@ def test_initializer_rejects_remote_and_libpq_overrides_without_connection(monke
     monkeypatch.setattr('sqlalchemy.create_engine',lambda *_args,**_kwargs:pytest.fail('unsafe connection'))
     for url in ['postgresql+psycopg://u:p@elsewhere:45862/choreograph',
                 'postgresql+psycopg://u:p@127.0.0.1:45862/choreograph?host=elsewhere']:
-        with pytest.raises(ValueError):acceptance.initialize_database({'CHOREOGRAPH_DATABASE_URL':url},uuid4())
+        with pytest.raises(ValueError):acceptance.initialize_database({'DATABASE_ENABLED':'true','CHOREOGRAPH_DATABASE_URL':url},uuid4())
 
 
 def test_dry_cli_reads_no_env_file(monkeypatch,capsys):

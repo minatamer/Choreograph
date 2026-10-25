@@ -4,12 +4,11 @@ from datetime import datetime, timedelta
 from uuid import uuid4
 
 from fastapi.testclient import TestClient
-from sqlalchemy import func, select
-from sqlalchemy.orm import Session
 from test_requests import NOW, begin, command
 
 from choreograph.api import create_app
 from choreograph.models import Connection, Outbox, Reservation, Workspace
+from choreograph.persistence import Session, repo_first, repo_rows
 
 
 def prepare(database):
@@ -51,8 +50,8 @@ def test_approval_replay_conflict_and_two_staff_authority(database):
         assert result.status_code==200
         assert result.json()['state']['summary']=={'requests_count':2,'awaiting_count':0,'confirmed_count':2,'booked_cents':16000}
         with Session(engine) as db:
-            assert db.scalar(select(func.count()).select_from(Reservation).where(Reservation.workspace_id==s['workspace_id'],Reservation.state=='confirmed'))==2
-            assert db.scalar(select(func.count()).select_from(Outbox).where(Outbox.workspace_id==s['workspace_id']))==0
+            assert len(repo_rows(db, Reservation, filters={'workspace_id': s['workspace_id'], 'state': 'confirmed'}))==2
+            assert len(repo_rows(db, Outbox, filters={'workspace_id': s['workspace_id']}))==0
     finally:c.close()
 
 
@@ -118,10 +117,10 @@ def test_authorized_connected_booking_and_outbox_commit_together(database):
         result=book(c,h,s,s['requests'][0]['id'])
         assert result.status_code==200 and result.json()['receipt']['crm_state']=='pending'
         with Session(engine) as db:
-            row=db.scalar(select(Outbox).where(Outbox.workspace_id==s['workspace_id']))
+            row=repo_first(db, Outbox, filters={'workspace_id': s['workspace_id']})
             assert row and row.connection_id==cid and row.account_id=='fake-account-a'
             assert row.workspace_generation==s['generation'] and row.revision==2 and row.state=='pending'
-            assert db.scalar(select(func.count()).select_from(Reservation).where(Reservation.workspace_id==s['workspace_id'],Reservation.state=='confirmed'))==1
+            assert len(repo_rows(db, Reservation, filters={'workspace_id': s['workspace_id'], 'state': 'confirmed'}))==1
     finally:c.close()
 
 

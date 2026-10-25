@@ -9,13 +9,13 @@ import httpx
 import pytest
 from pypdf import PdfWriter
 from pypdf.actions import JavaScript
-from sqlalchemy import event, func, select
-from sqlalchemy.orm import Session
+from sqlalchemy import event
 
 from choreograph import knowledge
 from choreograph.api import create_app
 from choreograph.errors import DomainError
 from choreograph.models import Chunk, DocumentVersion, Manifest
+from choreograph.persistence import Session, repo_rows
 from choreograph.sessions import create_workspace, retire
 
 NOW=datetime(2026,10,22,8,tzinfo=UTC)
@@ -43,9 +43,9 @@ def test_actual_pgvector_retrieval_and_manifest_scope(database):
     engine,_=database
     with Session(engine) as db,db.begin():
         knowledge.prepare_samples(db,NOW)
-        count=db.scalar(select(func.count()).select_from(Chunk))
+        count=len(repo_rows(db, Chunk))
         knowledge.prepare_samples(db,NOW)
-        assert db.scalar(select(func.count()).select_from(Chunk))==count
+        assert len(repo_rows(db, Chunk))==count
         a,_=create_workspace(db,'Africa/Cairo',NOW);b,_=create_workspace(db,'Asia/Kathmandu',NOW)
         knowledge.attach_samples(db,a);knowledge.attach_samples(db,b)
         evaluation=json.loads((knowledge.PACK/'evaluation.json').read_text())
@@ -69,7 +69,7 @@ def test_actual_pgvector_retrieval_and_manifest_scope(database):
         with pytest.raises(DomainError):knowledge.replace(db,a,'preparation',b'any','text',NOW)
         retire(a);knowledge.purge_private(db,a);db.flush()
         assert db.get(DocumentVersion,replacement) is None
-        assert db.scalar(select(func.count()).select_from(Chunk).where(Chunk.version_id==replacement))==0
+        assert len(repo_rows(db, Chunk, filters={'version_id': replacement}))==0
         assert len(knowledge.documents(db,b))==6
 
 

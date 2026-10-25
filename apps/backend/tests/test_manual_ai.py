@@ -27,7 +27,7 @@ from choreograph.sessions import create_workspace
 
 
 def local_values():
-    return {**live_values(),'CHOREOGRAPH_DATABASE_URL':
+    return {'DATABASE_ENABLED':'true',**live_values(),'CHOREOGRAPH_DATABASE_URL':
             'postgresql+psycopg://fixture:fixture@127.0.0.1:45862/choreograph'}
 
 
@@ -60,9 +60,9 @@ def test_actual_local_loader_selects_manual_but_environment_stays_finite(tmp_pat
 
 @pytest.mark.parametrize('changes',[
     {'CHOREOGRAPH_ORIGIN':'https://example.invalid'},
-    {'CHOREOGRAPH_DATABASE_URL':'postgresql+psycopg://fixture:fixture@database.example.invalid:45862/choreograph'},
-    {'CHOREOGRAPH_DATABASE_URL':'postgresql+psycopg://fixture:fixture@127.0.0.1:5432/choreograph'},
-    {'CHOREOGRAPH_DATABASE_URL':'postgresql+psycopg://fixture:fixture@127.0.0.1:45862/another_database'},
+    {'DATABASE_ENABLED':'true','CHOREOGRAPH_DATABASE_URL':'postgresql+psycopg://fixture:fixture@database.example.invalid:45862/choreograph'},
+    {'DATABASE_ENABLED':'true','CHOREOGRAPH_DATABASE_URL':'postgresql+psycopg://fixture:fixture@127.0.0.1:5432/choreograph'},
+    {'DATABASE_ENABLED':'true','CHOREOGRAPH_DATABASE_URL':'postgresql+psycopg://fixture:fixture@127.0.0.1:45862/another_database'},
 ])
 def test_manual_policy_is_rejected_outside_owned_loopback(changes):
     with pytest.raises(ValueError,match='LOCAL_MANUAL_AI_ONLY'):

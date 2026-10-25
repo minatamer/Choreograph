@@ -3,7 +3,7 @@ from datetime import UTC, datetime
 from uuid import uuid4
 
 import pytest
-from conftest import database as database_fixture
+from conftest import postgres_database as database_fixture
 from sqlalchemy import delete, select, text
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session

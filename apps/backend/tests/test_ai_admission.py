@@ -7,8 +7,6 @@ from datetime import UTC, datetime, timedelta
 from uuid import uuid4
 
 import pytest
-from sqlalchemy import delete, select
-from sqlalchemy.orm import Session
 
 from choreograph.ai_admission import (
     FAKE_SPEC,
@@ -23,6 +21,7 @@ from choreograph.ai_admission import (
 )
 from choreograph.errors import DomainError
 from choreograph.models import AIAttempt, AIGrant, AIInteraction, Workspace
+from choreograph.persistence import Session, remove, repo_first
 from choreograph.sessions import create_workspace
 
 NOW=datetime(2026,10,22,10,tzinfo=UTC)
@@ -48,9 +47,9 @@ def setup_admission(database):
     try:yield engine,grant,scope
     finally:
         with Session(engine) as db,db.begin():
-            db.execute(delete(Workspace).where(Workspace.id.in_(owned)))
-            db.execute(delete(AIAttempt).where(AIAttempt.grant_id.in_(grants)))
-            db.execute(delete(AIGrant).where(AIGrant.id.in_(grants)))
+            remove(db,Workspace,predicate=lambda row:row.id in owned)
+            remove(db,AIAttempt,predicate=lambda row:row.grant_id in grants)
+            remove(db,AIGrant,predicate=lambda row:row.id in grants)
 
 
 def test_concurrent_last_allowance_has_one_external_call(setup_admission):
@@ -83,11 +82,11 @@ def test_uncertain_call_replay_business_rollback_and_purge_keep_spend(setup_admi
         db.get(Workspace,current.workspace_id).draft={'service':'deep'}
         raise RuntimeError('synthetic rollback')
     with Session(engine) as db:
-        attempt=db.scalar(select(AIAttempt).where(AIAttempt.workspace_id==current.workspace_id))
+        attempt=repo_first(db, AIAttempt, filters={'workspace_id': current.workspace_id})
         assert attempt.state=='unknown' and attempt.actual_input_tokens is None
         assert db.get(Workspace,current.workspace_id).draft=={}
     finish_interaction(engine,claim,now=NOW)
-    with Session(engine) as db,db.begin():db.execute(delete(Workspace).where(Workspace.id==current.workspace_id))
+    with Session(engine) as db,db.begin():remove(db,Workspace,filters={'id':current.workspace_id})
     with Session(engine) as db:assert db.get(AIGrant,allowance.grant_id).requests==1
     operator=AttemptScope(None,0,str(uuid4()))
     with pytest.raises(DomainError) as changed:
@@ -150,7 +149,7 @@ def test_usage_overrun_blocks_grant_without_refunding_or_repeating(setup_admissi
     with Session(engine) as db:
         row=db.get(AIGrant,allowance.grant_id)
         assert row.blocked and row.requests==1 and row.cost_micros==2
-        attempt=db.scalar(select(AIAttempt).where(AIAttempt.grant_id==row.id))
+        attempt=repo_first(db, AIAttempt, filters={'grant_id': row.id})
         assert attempt.state=='unknown' and attempt.actual_input_tokens==2
     with pytest.raises(DomainError) as blocked:gate.reserve('evidence',0,input_tokens=1,output_tokens=1)
     assert blocked.value.code=='AI_GRANT_REVIEW'
@@ -168,7 +167,7 @@ def test_absolute_deadline_stops_next_phase_but_records_late_usage(setup_admissi
     assert calls==[1]
     with Session(engine) as db:
         assert db.get(AIGrant,allowance.grant_id).requests==1
-        attempt=db.scalar(select(AIAttempt).where(AIAttempt.grant_id==allowance.grant_id))
+        attempt=repo_first(db, AIAttempt, filters={'grant_id': allowance.grant_id})
         assert attempt.state=='completed' and attempt.actual_input_tokens==1
 
 

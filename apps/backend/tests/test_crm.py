@@ -5,14 +5,13 @@ from uuid import uuid4
 import httpx
 import pytest
 from fastapi.testclient import TestClient
-from sqlalchemy import func, select
-from sqlalchemy.orm import Session
 from test_requests import NOW, command
 
 from choreograph import crm
 from choreograph.api import create_app
 from choreograph.hubspot import KEY_PROPERTY, SCOPES, CRMFailure, FakeHubSpot, HubSpotConfig, HubSpotTransport
 from choreograph.models import Connection, Installation, OAuthState, Outbox, SimulatedRecord
+from choreograph.persistence import Session, repo_first, repo_rows
 
 
 def begin(database,provider=None):
@@ -27,6 +26,32 @@ def connect(c,h,s):
     challenge=result.json()['oauth'];s=result.json()['state']
     result=command(c,h,s,{'state':challenge['state'],'code':'approved'},'/v1/crm/callback',method='post');assert result.status_code==200,result.text
     return result.json()['state'],challenge
+
+
+def test_crashed_oauth_exchange_is_one_use_and_retains_unknown_capacity(database):
+    engine,_=database
+    class Interrupted(FakeHubSpot):
+        capacity=1
+        def exchange(self,*args):
+            self.calls.append('exchange')
+            raise RuntimeError('synthetic-process-interruption')
+    provider=Interrupted(engine);provider.app_id='interrupted-'+uuid4().hex
+    client,headers,state,_=begin(database,provider)
+    try:
+        attempt=command(client,headers,state,{},'/v1/crm/connect',method='post').json()
+        fields={'state':attempt['oauth']['state'],'code':'approved'}
+        with pytest.raises(RuntimeError,match='synthetic-process-interruption'):
+            command(client,headers,attempt['state'],fields,'/v1/crm/callback',method='post')
+        with Session(engine) as db:
+            saved=repo_first(db,OAuthState,filters={'workspace_id':state['workspace_id']})
+            assert saved.used and saved.outcome=='unknown'
+            assert not crm.available(db,provider,NOW+timedelta(days=1))
+        retried=command(client,headers,attempt['state'],fields,'/v1/crm/callback',method='post')
+        assert retried.status_code==409 and retried.json()['code']=='OAUTH_STATE'
+        assert provider.calls==['exchange']
+        skipped=command(client,headers,attempt['state'],{},'/v1/crm/skip',method='post')
+        assert skipped.status_code==200 and skipped.json()['state']['crm_mode']=='skipped'
+    finally:client.close()
 
 
 def test_skip_denial_no_calls_and_state_binding(database):
@@ -64,7 +89,7 @@ def test_connection_encryption_consent_install_dedup_and_shared_uninstall(databa
         assert sa['connection']['provider']=='fake' and sa['connection']['state']=='ready'
         assert 'access_token' not in json.dumps(sa) and not sa['connection']['consented']
         with Session(engine) as db:
-            assert db.scalar(select(func.count()).select_from(Installation).where(Installation.account_id==p.account_id))==1
+            assert len(repo_rows(db, Installation, filters={'account_id': p.account_id}))==1
             row=db.get(Connection,(sa['workspace_id'],sa['connection']['id']))
             assert b'fake-refresh' not in row.encrypted_tokens
             assert crm.tokens_for(db,row,settings.token_key,p,NOW)['account_id']==p.account_id
@@ -121,13 +146,13 @@ def test_unverified_callback_preserves_skip_without_export_or_releasing_unknown_
         late=command(c,h,skipped.json()['state'],fields,'/v1/crm/callback',method='post')
         assert late.status_code==409 and late.json()['code']=='OAUTH_STATE'
         with Session(engine) as db,db.begin():
-            challenge=db.scalar(select(OAuthState).where(OAuthState.workspace_id==current['workspace_id']))
+            challenge=repo_first(db, OAuthState, filters={'workspace_id': current['workspace_id']})
             assert challenge.used and challenge.outcome==('installed' if boundary=='preflight' else 'unknown')
             install=db.get(Installation,(p.app_id,p.account_id))
             assert (install is not None and install.state=='unknown') if boundary=='preflight' else install is None
-            assert db.scalar(select(func.count()).select_from(Connection).where(Connection.workspace_id==current['workspace_id']))==0
-            assert db.scalar(select(func.count()).select_from(Outbox).where(Outbox.workspace_id==current['workspace_id']))==0
-            assert db.scalar(select(func.count()).select_from(SimulatedRecord).where(SimulatedRecord.account_id==p.account_id))==0
+            assert len(repo_rows(db, Connection, filters={'workspace_id': current['workspace_id']}))==0
+            assert len(repo_rows(db, Outbox, filters={'workspace_id': current['workspace_id']}))==0
+            assert len(repo_rows(db, SimulatedRecord, filters={'account_id': p.account_id}))==0
             for i in range(24):db.add(Installation(app_id=p.app_id,account_id='capacity-'+str(i),state='installed',checked_at=NOW))
             db.flush()
             assert crm.available(db,p,NOW+timedelta(minutes=11)) is False

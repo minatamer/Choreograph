@@ -11,7 +11,7 @@ NOW = datetime(2026, 10, 22, tzinfo=UTC)
 
 
 def live_values():
-    values = {
+    values = {'DATABASE_ENABLED':'true',
         'FAKE_MODE':'false', 'PAID_DEMO_ENABLED': 'true',
         'CHOREOGRAPH_DATABASE_URL': 'postgresql+psycopg://fixture:fixture@127.0.0.1:45862/choreograph_test_config',
         'CHOREOGRAPH_BRIDGE_SECRET': 'synthetic-bridge-' + 'x' * 40,

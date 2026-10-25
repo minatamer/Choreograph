@@ -4,8 +4,6 @@ from datetime import datetime
 from uuid import uuid4
 
 import pytest
-from sqlalchemy import select
-from sqlalchemy.orm import Session
 from test_assistant import send, setup_pack
 from test_booking import book
 from test_customer_booking import confirm, ready
@@ -13,6 +11,7 @@ from test_requests import NOW, begin, command
 
 from choreograph import assistant, knowledge
 from choreograph.models import Reservation, Workspace
+from choreograph.persistence import Session, repo_first
 from choreograph.sessions import create_workspace
 
 
@@ -76,7 +75,7 @@ def test_fake_chat_management_preserves_changes_until_review_and_appends_actual_
         state=send(client,headers,state,'Is my booking confirmed?')
         assert 'cancelled' in state['messages'][-1]['text']
         with Session(database[0]) as db:
-            reservation=db.scalar(select(Reservation).where(Reservation.enquiry_id==record['id']))
+            reservation=repo_first(db, Reservation, filters={'enquiry_id': record['id']})
             assert reservation.state=='cancelled'
     finally:client.close()
 

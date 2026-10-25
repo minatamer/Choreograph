@@ -5,8 +5,6 @@ from zoneinfo import ZoneInfo
 
 import pytest
 from fastapi.testclient import TestClient
-from sqlalchemy import func, select
-from sqlalchemy.orm import Session
 from test_live_assistant import live_runtime
 from test_requests import command
 
@@ -14,6 +12,7 @@ from choreograph import assistant, knowledge
 from choreograph.ai_admission import AttemptScope
 from choreograph.api import create_app
 from choreograph.models import Enquiry, Outbox, Reservation
+from choreograph.persistence import Session, repo_rows, repo_values
 
 NOW=datetime(2026,10,30,23,40,tzinfo=UTC)
 TEXT='Reserve an appointment.'
@@ -55,7 +54,7 @@ def test_shortcut_browses_next_seven_local_days_without_choosing_or_booking(data
         assert any(day['status']=='available' for day in overview['days'])
         assert all(not day['slots'] for day in overview['days']) and not overview['can_previous'] and overview['can_next']
         with Session(engine) as db:
-            ids=list(db.scalars(select(Reservation.id).where(Reservation.workspace_id==UUID(state['workspace_id']))))
+            ids=list(repo_values(db, Reservation, 'id', filters={'workspace_id': UUID(state['workspace_id'])}))
         state=command(client,headers,state,{'bedrooms':3,'oven':True}).json()['state']
         partial=client.get('/v1/availability?start='+today.isoformat(),headers=headers).json()
         assert partial['preview'] and partial['minutes']==180  # shortest eligible completion of the known details
@@ -80,9 +79,9 @@ def test_shortcut_browses_next_seven_local_days_without_choosing_or_booking(data
         assert client.get('/v1/availability?start='+(today-timedelta(days=1)).isoformat(),headers=headers).status_code==422
         assert client.get('/v1/availability?start='+today.isoformat()+'&week='+today.isoformat(),headers=headers).status_code==422
         with Session(engine) as db:
-            assert list(db.scalars(select(Reservation.id).where(Reservation.workspace_id==UUID(state['workspace_id']))))==ids
-            assert db.scalar(select(func.count()).select_from(Enquiry).where(Enquiry.workspace_id==UUID(state['workspace_id'])))==0
-            assert db.scalar(select(func.count()).select_from(Outbox).where(Outbox.workspace_id==UUID(state['workspace_id'])))==0
+            assert list(repo_values(db, Reservation, 'id', filters={'workspace_id': UUID(state['workspace_id'])}))==ids
+            assert len(repo_rows(db, Enquiry, filters={'workspace_id': UUID(state['workspace_id'])}))==0
+            assert len(repo_rows(db, Outbox, filters={'workspace_id': UUID(state['workspace_id'])}))==0
         assert not calls and len(embeddings)==before_embeddings
     finally:
         client.close()

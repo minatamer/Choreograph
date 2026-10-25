@@ -21,7 +21,7 @@ from choreograph.readiness import hubspot_report
 
 
 def local_values():
-    return {**values(),**config_values(),'FAKE_MODE':'true','PAID_DEMO_ENABLED':'false',
+    return {'DATABASE_ENABLED':'true',**values(),**config_values(),'FAKE_MODE':'true','PAID_DEMO_ENABLED':'false',
             'CHOREOGRAPH_ORIGIN':'http://localhost:45860','CHOREOGRAPH_CRM_PROVIDER':'hubspot',
             'CHOREOGRAPH_DATABASE_URL':'postgresql+psycopg://fixture:fixture@localhost:45862/choreograph'}
 
@@ -58,9 +58,9 @@ def test_local_loader_selects_manual_but_environment_and_acceptance_remain_finit
 
 
 @pytest.mark.parametrize('changes',[
-    {'CHOREOGRAPH_DATABASE_URL':'postgresql+psycopg://fixture:fixture@remote.invalid:45862/choreograph'},
-    {'CHOREOGRAPH_DATABASE_URL':'postgresql+psycopg://fixture:fixture@localhost:5432/choreograph'},
-    {'CHOREOGRAPH_DATABASE_URL':'postgresql+psycopg://fixture:fixture@localhost:45862/another_database'},
+    {'DATABASE_ENABLED':'true','CHOREOGRAPH_DATABASE_URL':'postgresql+psycopg://fixture:fixture@remote.invalid:45862/choreograph'},
+    {'DATABASE_ENABLED':'true','CHOREOGRAPH_DATABASE_URL':'postgresql+psycopg://fixture:fixture@localhost:5432/choreograph'},
+    {'DATABASE_ENABLED':'true','CHOREOGRAPH_DATABASE_URL':'postgresql+psycopg://fixture:fixture@localhost:45862/another_database'},
     {'CHOREOGRAPH_ORIGIN':'https://example.invalid'},
 ])
 def test_manual_crm_cannot_escape_owned_local_target(changes):

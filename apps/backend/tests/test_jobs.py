@@ -3,8 +3,6 @@ from concurrent.futures import ThreadPoolExecutor
 from datetime import timedelta
 from uuid import UUID, uuid4
 
-from sqlalchemy import func, select
-from sqlalchemy.orm import Session
 from test_booking import book
 from test_crm import begin, connect
 from test_requests import NOW, command
@@ -21,6 +19,7 @@ from choreograph.models import (
     SimulatedRecord,
     Workspace,
 )
+from choreograph.persistence import Session, repo_first, repo_rows, repo_value
 
 
 def connected_booking(database,provider=None):
@@ -33,7 +32,7 @@ def connected_booking(database,provider=None):
     s=command(c,h,s,{'accept_quote':True},'/v1/requests',method='post').json()['state']
     s=book(c,h,s,s['requests'][0]['id']).json()['state']
     with Session(database[0]) as db:
-        event=db.scalar(select(Outbox).where(Outbox.workspace_id==s['workspace_id'],Outbox.kind=='crm_upsert'))
+        event=repo_first(db, Outbox, filters={'workspace_id': s['workspace_id'], 'kind': 'crm_upsert'})
         eid=event.id
     return c,h,s,p,eid
 
@@ -55,7 +54,7 @@ def test_durable_duplicate_and_concurrent_delivery(database):
         current=c.get('/v1/session',headers=h).json();record=current['requests'][0]
         assert record['crm_state']=='simulated_synced' and record['crm_receipt']['provider']=='fake' and not record['crm_links']
         with Session(engine) as db:
-            assert db.scalar(select(func.count()).select_from(SimulatedRecord).where(SimulatedRecord.account_id=='simulated-'+s['workspace_id'],SimulatedRecord.archived.is_(False)))==2
+            assert len(repo_rows(db, SimulatedRecord, filters={'account_id': 'simulated-' + s['workspace_id']}, predicate=lambda candidate: candidate.archived is False))==2
         assert p.calls.count('upsert-contacts')==1
     finally:c.close()
 
@@ -82,7 +81,7 @@ def test_shared_install_appearing_during_cleanup_preserves_progress_and_reports_
         assert response.status_code==200
         state=response.json()['state']
         with Session(engine) as db:
-            cleanup=db.scalar(select(Outbox.id).where(Outbox.workspace_id==state['workspace_id'],Outbox.kind=='crm_cleanup'))
+            cleanup=repo_value(db, Outbox, 'id', filters={'workspace_id': state['workspace_id'], 'kind': 'crm_cleanup'})
         provider.on_archived=lambda:connect(other,other_headers,other_state)
         assert jobs.deliver(engine,settings,provider,claim_for(engine,state,cleanup),lambda:NOW)
         current=c.get('/v1/session',headers=h).json()
@@ -96,8 +95,7 @@ def test_shared_install_appearing_during_cleanup_preserves_progress_and_reports_
             event=db.get(Outbox,(UUID(state['workspace_id']),cleanup))
             assert event.state=='needs_attention' and event.code=='CRM_SHARED_INSTALL'
             assert db.get(Installation,(provider.app_id,provider.account_id)).state=='installed'
-            assert db.scalar(select(func.count()).select_from(SimulatedRecord).where(
-                SimulatedRecord.account_id==provider.account_id,SimulatedRecord.archived.is_(True)))==2
+            assert len(repo_rows(db, SimulatedRecord, filters={'account_id': provider.account_id}, predicate=lambda candidate: candidate.archived is True))==2
     finally:c.close();other.close()
 
 
@@ -128,7 +126,7 @@ def test_revoked_auth_keeps_booking_and_exposes_attention_without_stale_sync(dat
         record=s['requests'][0]
         s=book(c,h,s,record['id'],'reschedule',{'staff_id':'noah','preferred_at':record['preferred_at']}).json()['state']
         with Session(engine) as db:
-            eid=db.scalar(select(Outbox.id).where(Outbox.workspace_id==s['workspace_id'],Outbox.kind=='crm_upsert',Outbox.revision==s['requests'][0]['revision']))
+            eid=repo_value(db, Outbox, 'id', filters={'workspace_id': s['workspace_id'], 'kind': 'crm_upsert', 'revision': s['requests'][0]['revision']})
         p.revoked=True
         assert jobs.deliver(engine,settings,p,claim_for(engine,s,eid),lambda:NOW)
         current=c.get('/v1/session',headers=h).json();record=current['requests'][0]
@@ -157,7 +155,7 @@ def test_ambiguous_create_reconciles_by_unique_owned_key(database):
         with Session(engine) as db:assert db.get(Outbox,(UUID(s['workspace_id']),eid)).state=='reconciling'
         later=NOW+timedelta(seconds=6);assert jobs.deliver(engine,settings,p,claim_for(engine,s,eid,later),lambda:later)
         account='simulated-'+s['workspace_id']
-        with Session(engine) as db:assert db.scalar(select(func.count()).select_from(SimulatedRecord).where(SimulatedRecord.account_id==account))==2
+        with Session(engine) as db:assert len(repo_rows(db, SimulatedRecord, filters={'account_id': account}))==2
         assert c.get('/v1/session',headers=h).json()['requests'][0]['crm_state']=='simulated_synced'
     finally:c.close()
 
@@ -168,7 +166,7 @@ def test_new_revision_retires_old_delivery_before_external_call(database):
         old=claim_for(engine,s,eid);before=len(p.calls)
         s=book(c,h,s,s['requests'][0]['id'],'cancel').json()['state']
         assert jobs.deliver(engine,settings,p,old,lambda:NOW) is False and len(p.calls)==before
-        with Session(engine) as db:new=db.scalar(select(Outbox).where(Outbox.workspace_id==s['workspace_id'],Outbox.kind=='crm_upsert',Outbox.revision==s['requests'][0]['revision'])).id
+        with Session(engine) as db:new=repo_first(db, Outbox, filters={'workspace_id': s['workspace_id'], 'kind': 'crm_upsert', 'revision': s['requests'][0]['revision']}).id
         assert jobs.deliver(engine,settings,p,claim_for(engine,s,new),lambda:NOW)
         current=c.get('/v1/session',headers=h).json();assert current['requests'][0]['status']=='cancelled' and current['requests'][0]['crm_state']=='simulated_synced'
     finally:c.close()
@@ -188,12 +186,12 @@ def test_reset_during_external_create_fences_late_work_and_cleans_it(database):
         p.reset=lambda:c.post('/v1/reset',headers=h,json={'generation':s['generation'],'timezone':s['timezone']})
         assert jobs.deliver(engine,settings,p,claim_for(engine,s,eid),lambda:NOW) is False
         with Session(engine) as db:
-            cleanup=db.scalar(select(Outbox).where(Outbox.workspace_id==old_workspace,Outbox.kind=='crm_cleanup')).id
+            cleanup=repo_first(db, Outbox, filters={'workspace_id': old_workspace, 'kind': 'crm_cleanup'}).id
             assert not db.get(Workspace,old_workspace).active
         job=jobs.claim(engine,NOW,event_id=cleanup,workspace_id=UUID(old_workspace));assert job
         assert jobs.deliver(engine,settings,p,job,lambda:NOW)
         with Session(engine) as db:
-            assert db.scalar(select(func.count()).select_from(SimulatedRecord).where(SimulatedRecord.account_id=='simulated-'+old_workspace,SimulatedRecord.archived.is_(False)))==0
+            assert len(repo_rows(db, SimulatedRecord, filters={'account_id': 'simulated-' + old_workspace}, predicate=lambda candidate: candidate.archived is False))==0
             assert db.get(Installation,(p.app_id,'simulated-'+old_workspace)).state=='installed'
         assert 'uninstall' not in p.calls
     finally:c.close()
@@ -211,15 +209,15 @@ def test_expiry_purges_private_sources_and_does_not_uninstall(database):
         # Maintenance is intentionally bounded; drain due batches until this
         # fixture retires rather than assuming it belongs to the first batch.
         with Session(engine) as db:
-            due=db.scalar(select(func.count()).select_from(Workspace).where(Workspace.active.is_(True),Workspace.expires_at<=later))
+            due=len(repo_rows(db, Workspace, predicate=lambda candidate: (candidate.active is True) and (candidate.expires_at <= later)))
         for _ in range(due+1):
             jobs.maintenance(engine,later)
             with Session(engine) as db:
                 if not db.get(Workspace,s['workspace_id']).active:break
         with Session(engine) as db:
-            assert db.get(DocumentVersion,private) is None and db.scalar(select(func.count()).select_from(Chunk).where(Chunk.version_id==private))==0
+            assert db.get(DocumentVersion,private) is None and len(repo_rows(db, Chunk, filters={'version_id': private}))==0
             assert not db.get(Workspace,s['workspace_id']).messages
-            assert db.scalar(select(func.count()).select_from(DocumentVersion).where(DocumentVersion.owner_id.is_(None)))>=6
+            assert len(repo_rows(db, DocumentVersion, predicate=lambda candidate: (candidate.owner_id is None)))>=6
         assert not p.calls.count('upsert-contacts') and 'uninstall' not in p.calls
     finally:c.close()
 
@@ -245,7 +243,7 @@ def test_retry_attempt_limit_and_explicit_cleanup_uninstall_receipts(database):
         s=c.get('/v1/session',headers=h).json()
         result=command(c,h,s,{'connection_id':s['connection']['id'],'confirm':True,'cleanup':True,'uninstall':True},'/v1/crm/finish',method='post')
         assert result.status_code==200,result.text
-        with Session(engine) as db:cleanup=db.scalar(select(Outbox).where(Outbox.workspace_id==s['workspace_id'],Outbox.kind=='crm_cleanup')).id
+        with Session(engine) as db:cleanup=repo_first(db, Outbox, filters={'workspace_id': s['workspace_id'], 'kind': 'crm_cleanup'}).id
         assert jobs.deliver(engine,settings,p,claim_for(engine,s,cleanup),lambda:NOW)
         current=c.get('/v1/session',headers=h).json()['connection'];assert current['cleanup_state']=='removed' and current['uninstall_state']=='removed'
         with Session(engine) as db:assert db.get(Installation,(p.app_id,'simulated-'+s['workspace_id'])).state=='uninstalled'

@@ -10,11 +10,10 @@ from zoneinfo import ZoneInfo
 
 import httpx
 import pytest
-from conftest import database as database_fixture
+from conftest import postgres_database as database_fixture
 from fastapi.testclient import TestClient
-from sqlalchemy import func, select, text
+from sqlalchemy import text
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy.orm import Session
 from test_booking import book
 from test_crm import begin, connect
 from test_requests import NOW, command
@@ -35,6 +34,7 @@ from choreograph.models import (
     OAuthState,
     Outbox,
 )
+from choreograph.persistence import Session, repo_first, repo_rows
 from choreograph.settings import Settings
 
 
@@ -188,7 +188,7 @@ def test_native_account_destination_schema_consent_booking_verified_links_and_cl
         with Session(database[0]) as db,db.begin():db.get(ExternalMapping,mapping_key).contact_id='not-numeric'
         assert set(client.get('/v1/session',headers=headers).json()['requests'][0]['crm_links'])=={'booking'}
         with Session(database[0]) as db,db.begin():db.get(ExternalMapping,mapping_key).contact_id='111'
-        with Session(database[0]) as db,pytest.raises(IntegrityError),db.begin():
+        with Session(database[0]) as db,pytest.raises((IntegrityError,ValueError)),db.begin():
             db.get(Connection,mapping_key[:2]).destination={'pipeline_id':'different','stage_id':'queue'}
         assert wire.records['deals']['properties']['pipeline']=='visitor-pipeline'
         assert wire.records['deals']['properties']['dealstage']=='queue'
@@ -261,7 +261,7 @@ def test_true_skip_has_zero_real_calls_and_mismatched_tokens_and_oauth_never_rea
             '/v1/crm/callback',method='post')
         assert result.status_code==409 and result.json()['code']=='CRM_PROVIDER_CHANGED' and not wire.requests
         with Session(database[0]) as db:
-            assert db.scalar(select(func.count()).select_from(Outbox).where(Outbox.workspace_id==state['workspace_id']))==0
+            assert len(repo_rows(db, Outbox, filters={'workspace_id': state['workspace_id']}))==0
     finally:client.close();fake.close();http.close()
 
 
@@ -284,7 +284,7 @@ def test_existing_booking_exports_only_after_consent_and_tracks_move_cancel_with
         state=command(client,headers,state,consent,'/v1/crm/consent',method='post').json()['state']
         state=command(client,headers,state,consent,'/v1/crm/consent',method='post').json()['state']
         with Session(database[0]) as db:
-            assert db.scalar(select(func.count()).select_from(Outbox).where(Outbox.workspace_id==state['workspace_id'],Outbox.kind=='crm_upsert'))==1
+            assert len(repo_rows(db, Outbox, filters={'workspace_id': state['workspace_id'], 'kind': 'crm_upsert'}))==1
         assert jobs.tick(database[0],settings,provider,lambda:NOW)==1
         deal=wire.records['deals']['properties']
         assert deal['amount']=='60' and deal['deal_currency_code']=='USD'
@@ -380,7 +380,7 @@ def test_native_readback_mismatch_never_claims_sync_or_loses_local_booking(datab
         assert current['status']=='confirmed' and current['booking']==record['booking']
         assert current['crm_state']=='reconciling' and current['crm_receipt'] is None and not current['crm_links']
         with Session(database[0]) as db:
-            event=db.scalar(select(Outbox).where(Outbox.workspace_id==state['workspace_id'],Outbox.kind=='crm_upsert'))
+            event=repo_first(db, Outbox, filters={'workspace_id': state['workspace_id'], 'kind': 'crm_upsert'})
             assert event.code==code and event.state=='reconciling'
     finally:client.close();http.close()
 
@@ -418,7 +418,7 @@ def test_currency_mismatch_blocks_schema_setup_and_later_export_without_changing
         wire.currency='EGP';assert jobs.tick(database[0],settings,provider,lambda:NOW)==1
         assert not wire.records
         with Session(database[0]) as db:
-            event=db.scalar(select(Outbox).where(Outbox.workspace_id==state['workspace_id'],Outbox.kind=='crm_upsert'))
+            event=repo_first(db, Outbox, filters={'workspace_id': state['workspace_id'], 'kind': 'crm_upsert'})
             assert event.code=='CRM_CURRENCY_REQUIRED' and event.state=='needs_attention'
         assert all(request.method=='GET' for request in wire.requests if request.url.path.startswith(('/settings/','/account-info/')))
     finally:client.close();http.close()
@@ -432,7 +432,7 @@ def test_last_crm_request_has_one_winner_and_survives_business_rollback(database
     with ThreadPoolExecutor(max_workers=2) as pool:assert sorted(pool.map(lambda _:reserve(),range(2)))==[False,True]
     with Session(engine) as db:
         assert db.get(CRMGrant,allowance.grant_id).requests==1
-        assert db.scalar(select(func.count()).select_from(CRMCall).where(CRMCall.grant_id==allowance.grant_id))==1
+        assert len(repo_rows(db, CRMCall, filters={'grant_id': allowance.grant_id}))==1
     assert reserve() is False
 
 
@@ -473,7 +473,7 @@ def test_composed_real_provider_requires_workspace_admission_and_test_settings_r
         with pytest.raises(CRMFailure) as error:provider._request('GET','/crm/v3/pipelines/deals')
         assert error.value.code=='CRM_NOT_CONFIGURED' and not wire.requests
         with pytest.raises(ValueError,match='TEST_PROVIDER_FORBIDDEN'):
-            Settings.parse({**config_values(),'CHOREOGRAPH_CRM_PROVIDER':'hubspot',
+            Settings.parse({'DATABASE_ENABLED':str(settings.database_enabled).lower(),**config_values(),'CHOREOGRAPH_CRM_PROVIDER':'hubspot',
                 'CHOREOGRAPH_DATABASE_URL':settings.database_url,'CHOREOGRAPH_ORIGIN':settings.origin,
                 'CHOREOGRAPH_BRIDGE_SECRET':settings.bridge_secret,'CHOREOGRAPH_TOKEN_KEY':settings.token_key},testing=True)
         expired=replace(settings.live_crm,allowance=replace(settings.live_crm.allowance,expires_at=NOW-timedelta(seconds=1)))

@@ -6,14 +6,13 @@ from datetime import timedelta
 from uuid import UUID, uuid4
 
 import pytest
-from sqlalchemy import func, select
-from sqlalchemy.orm import Session
 from test_crm import begin, connect
 from test_requests import NOW, command
 
 from choreograph import crm, jobs
 from choreograph.hubspot import CRMFailure, FakeHubSpot
 from choreograph.models import Connection, Installation, OAuthState, Outbox
+from choreograph.persistence import Session, repo_first, repo_rows, repo_value, repo_values
 
 
 def provider_for(engine, provider_type=FakeHubSpot):
@@ -29,8 +28,7 @@ def uninstall_job(engine, client, headers, state):
     assert response.status_code == 200, response.text
     state = response.json()['state']
     with Session(engine) as db:
-        event = db.scalar(select(Outbox.id).where(Outbox.workspace_id == state['workspace_id'],
-                                                Outbox.kind == 'crm_cleanup'))
+        event = repo_value(db, Outbox, 'id', filters={'workspace_id': state['workspace_id'], 'kind': 'crm_cleanup'})
     job = jobs.claim(engine, NOW, event_id=event, workspace_id=UUID(state['workspace_id']))
     assert job
     return state, job
@@ -149,11 +147,11 @@ def test_repeated_definitive_fake_denial_does_not_reserve_capacity(database):
             state = denied.json()['state']
             assert state['crm_mode'] == 'skipped' and state['crm_available']
         with Session(engine) as db:
-            outcomes = list(db.scalars(select(OAuthState.outcome).where(OAuthState.workspace_id == state['workspace_id'])))
+            outcomes = list(repo_values(db, OAuthState, 'outcome', filters={'workspace_id': state['workspace_id']}))
             assert outcomes == ['denied'] * 25
             assert crm.installed_count(db, provider.app_id) == 0
-            assert db.scalar(select(func.count()).select_from(Connection).where(Connection.workspace_id == state['workspace_id'])) == 0
-            assert db.scalar(select(func.count()).select_from(Outbox).where(Outbox.workspace_id == state['workspace_id'])) == 0
+            assert len(repo_rows(db, Connection, filters={'workspace_id': state['workspace_id']})) == 0
+            assert len(repo_rows(db, Outbox, filters={'workspace_id': state['workspace_id']})) == 0
             assert crm.available(db, provider, NOW + timedelta(days=1))
         assert command(client, headers, state, {}, '/v1/crm/connect', method='post').json()['oauth']
     finally:
@@ -187,9 +185,9 @@ def test_identified_preflight_failure_reserves_one_registry_installation(databas
             installation = db.get(Installation, (provider.app_id, provider.account_id))
             assert installation.state == 'unknown' and installation.checked_at == NOW
             assert crm.installed_count(db, provider.app_id) == 1
-            outcome = db.scalar(select(OAuthState).where(OAuthState.workspace_id == state['workspace_id']))
+            outcome = repo_first(db, OAuthState, filters={'workspace_id': state['workspace_id']})
             assert outcome.used and outcome.outcome == 'installed'
-            assert db.scalar(select(func.count()).select_from(Connection).where(Connection.workspace_id == state['workspace_id'])) == 0
+            assert len(repo_rows(db, Connection, filters={'workspace_id': state['workspace_id']})) == 0
     finally:
         client.close()
 
@@ -215,7 +213,7 @@ def test_capacity_failure_restores_known_previously_uninstalled_account(database
             installation = db.get(Installation, (provider.app_id, provider.account_id))
             assert installation.state == 'unknown' and installation.checked_at == NOW
             assert crm.installed_count(db, provider.app_id) == 26
-            assert db.scalar(select(OAuthState.outcome).where(OAuthState.workspace_id == state['workspace_id'])) == 'installed'
+            assert repo_value(db, OAuthState, 'outcome', filters={'workspace_id': state['workspace_id']}) == 'installed'
     finally:
         client.close()
 
@@ -238,7 +236,7 @@ def test_nonfake_denial_keeps_unidentified_installation_uncertain(database):
                            '/v1/crm/callback', method='post')
         assert response.status_code == 200, response.text
         with Session(engine) as db:
-            outcome = db.scalar(select(OAuthState).where(OAuthState.workspace_id == state['workspace_id']))
+            outcome = repo_first(db, OAuthState, filters={'workspace_id': state['workspace_id']})
             assert outcome.used and outcome.outcome == 'unknown' and outcome.expires_at < NOW + timedelta(days=1)
             assert crm.installed_count(db, provider.app_id) == 0
     finally:

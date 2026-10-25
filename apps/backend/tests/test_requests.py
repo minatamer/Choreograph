@@ -2,11 +2,10 @@ from datetime import UTC, datetime
 from uuid import uuid4
 
 from fastapi.testclient import TestClient
-from sqlalchemy import func, select
-from sqlalchemy.orm import Session
 
 from choreograph.api import create_app
 from choreograph.models import Enquiry, Reservation
+from choreograph.persistence import Session, repo_rows, repo_values
 
 NOW=datetime(2026,10,22,10,tzinfo=UTC)
 
@@ -37,11 +36,11 @@ def test_seed_is_persisted_busy_alternative_and_open_week_share_records(database
         assert busy['status']=='busy' and not busy['slots'] and len(busy['occupied'])==2
         assert alternative['slots'][0]['staff_ids']==['ada','noah']
         with Session(engine) as db:
-            first=list(db.scalars(select(Reservation.id).where(Reservation.workspace_id==s['workspace_id']).order_by(Reservation.id)))
+            first=list(repo_values(db, Reservation, 'id', filters={'workspace_id': s['workspace_id']}, order=lambda candidate: (candidate.id,)))
         assert c.get('/v1/availability?week='+s['scenario']['week_start'],headers=h).json()==week
         c.get('/v1/session',headers=h)
         with Session(engine) as db:
-            assert list(db.scalars(select(Reservation.id).where(Reservation.workspace_id==s['workspace_id']).order_by(Reservation.id)))==first
+            assert list(repo_values(db, Reservation, 'id', filters={'workspace_id': s['workspace_id']}, order=lambda candidate: (candidate.id,)))==first
         occupied_start=busy['occupied'][0]['start']
         assert command(c,h,s,{'preferred_at':occupied_start}).status_code==409
         s=command(c,h,s,{'preferred_at':alternative['slots'][0]['start']}).json()['state']
@@ -53,8 +52,8 @@ def test_seed_is_persisted_busy_alternative_and_open_week_share_records(database
         assert replay.json()['state']['revision']==before+1
         assert result.json()['state']['requests'][0]['status']=='awaiting_review'
         with Session(engine) as db:
-            assert db.scalar(select(func.count()).select_from(Enquiry).where(Enquiry.workspace_id==s['workspace_id']))==1
-            assert db.scalar(select(func.count()).select_from(Reservation).where(Reservation.workspace_id==s['workspace_id'],Reservation.state=='confirmed'))==0
+            assert len(repo_rows(db, Enquiry, filters={'workspace_id': s['workspace_id']}))==1
+            assert len(repo_rows(db, Reservation, filters={'workspace_id': s['workspace_id'], 'state': 'confirmed'}))==0
         assert command(c,h,s,{'oven':False}).json()['code']=='STALE_REVISION'
         assert command(c,h,s,{'accept_quote':False},'/v1/requests',str(uuid4()),method='post').status_code==422
     finally:c.close()

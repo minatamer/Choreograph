@@ -1,0 +1,35 @@
+"""The same publication/crash/retry scenarios on private object persistence."""
+import pytest
+from test_dispatch import (
+    test_crash_before_create_and_wrong_receipt_never_claim_business_success as test_crash_before_create_and_wrong_receipt_never_claim_business_success,
+)
+from test_dispatch import (
+    test_dedup_tombstone_reconciles_missing_before_new_epoch_and_publish_limit_stops as test_dedup_tombstone_reconciles_missing_before_new_epoch_and_publish_limit_stops,
+)
+from test_dispatch import (
+    test_health_probes_expose_no_maintenance_operation_or_diagnostic_data as test_health_probes_expose_no_maintenance_operation_or_diagnostic_data,
+)
+from test_dispatch import (
+    test_lost_create_ack_reconciles_then_deleted_task_gets_new_epoch as test_lost_create_ack_reconciles_then_deleted_task_gets_new_epoch,
+)
+from test_dispatch import (
+    test_shared_claim_has_one_winner_and_changed_target_requires_attention as test_shared_claim_has_one_winner_and_changed_target_requires_attention,
+)
+from test_dispatch import (
+    test_stale_publication_ack_cannot_overwrite_new_lease_and_reset_stops_network as test_stale_publication_ack_cannot_overwrite_new_lease_and_reset_stops_network,
+)
+from test_dispatch import (
+    test_three_hour_window_stops_late_provider_access_and_remains_observable as test_three_hour_window_stops_late_provider_access_and_remains_observable,
+)
+from test_dispatch import (
+    test_unattended_cycle_expires_private_sources_and_only_enqueues_cleanup as test_unattended_cycle_expires_private_sources_and_only_enqueues_cleanup,
+)
+from test_dispatch import (
+    test_unattended_sql_recovery_resolves_a_crashed_fifth_domain_attempt as test_unattended_sql_recovery_resolves_a_crashed_fifth_domain_attempt,
+)
+from test_object_storage import object_database as object_database
+
+
+@pytest.fixture
+def isolated(object_database):
+    return object_database

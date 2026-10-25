@@ -7,12 +7,12 @@ from uuid import UUID, uuid4
 import httpx
 import pytest
 from fastapi.testclient import TestClient
-from sqlalchemy.orm import Session
 from test_requests import NOW, command
 
 from choreograph import assistant, knowledge
 from choreograph.api import create_app
 from choreograph.models import Workspace
+from choreograph.persistence import Session, is_object
 from choreograph.verification import (
     CHAT_COOKIE,
     CHAT_VERIFICATION_SECONDS,
@@ -43,7 +43,7 @@ def protected(database):
     provider = Counted()
 
     def siteverify(request):
-        assert engine.pool.checkedout() == 0
+        assert is_object(engine) or engine.pool.checkedout() == 0
         token = json.loads(request.content)['response']
         calls.append(token)
         if token not in proofs or token in used:

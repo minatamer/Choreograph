@@ -8,8 +8,6 @@ from uuid import uuid4
 import httpx
 import pytest
 from fastapi.testclient import TestClient
-from sqlalchemy import func, select
-from sqlalchemy.orm import Session
 from test_ai_config import live_values
 from test_requests import NOW, command
 
@@ -21,6 +19,7 @@ from choreograph.assistant_context import turn_context
 from choreograph.composition import compose_ai
 from choreograph.errors import DomainError
 from choreograph.models import AIAttempt, Enquiry, Reservation
+from choreograph.persistence import Session, repo_rows
 from choreograph.providers import GroundedOutput, Interpretation, parse_envelope, strict_schema
 from choreograph.sessions import create_workspace
 
@@ -183,9 +182,8 @@ def test_live_composition_policy_history_preferences_review_booking_and_status(d
         assert state['messages'][-1]['cards']==['booking'] and 'cancelled' in state['messages'][-1]['text']
         assert 'cancelled' in send('Is it booked?')['text']
         with Session(engine) as db:
-            assert db.scalar(select(func.count()).select_from(Reservation).where(
-                Reservation.workspace_id==state['workspace_id'],Reservation.state=='cancelled',Reservation.enquiry_id.is_not(None)))==1
-            attempts=list(db.scalars(select(AIAttempt).where(AIAttempt.grant_id==settings.live_ai.grant.grant_id)))
+            assert len(repo_rows(db, Reservation, filters={'workspace_id': state['workspace_id'], 'state': 'cancelled'}, predicate=lambda candidate: candidate.enquiry_id is not None))==1
+            attempts=list(repo_rows(db, AIAttempt, filters={'grant_id': settings.live_ai.grant.grant_id}))
             assert len(attempts)==len(requests)+len(embeddings)
             assert all(row.state=='completed' for row in attempts)
         assert runtime.assistant.context=={}  # no cross-visitor mutable history
@@ -237,7 +235,7 @@ def test_date_only_and_time_only_preferences_do_not_reuse_a_wrong_slot(database)
         assert workspace.messages[-1]['requested_date']==workspace.scenario['requested_date']
         if workspace.draft['preferred_at']:
             assert workspace.draft['preferred_at']!=slot['start'].isoformat()
-        assert db.scalar(select(func.count()).select_from(Enquiry).where(Enquiry.workspace_id==workspace.id))==0
+        assert len(repo_rows(db, Enquiry, filters={'workspace_id': workspace.id}))==0
 
 
 def test_explicit_combined_policy_request_keeps_quote_but_pure_policy_cannot_edit(database):

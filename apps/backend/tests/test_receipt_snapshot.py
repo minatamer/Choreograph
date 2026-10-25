@@ -17,10 +17,10 @@ from choreograph.models import Connection, ExternalMapping, Outbox
 
 
 @pytest.fixture(scope='module')
-def prepared_database(database):
-    with Session(database[0]) as db,db.begin():
+def prepared_database(postgres_database):
+    with Session(postgres_database[0]) as db,db.begin():
         knowledge.prepare_samples(db,NOW)
-    return database
+    return postgres_database
 
 
 def counted_snapshot(engine,client,headers):
