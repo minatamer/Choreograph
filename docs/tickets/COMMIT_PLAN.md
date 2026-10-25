@@ -790,3 +790,144 @@ The first seven commits below were created after their individual exact staged-a
 | 8 | Read from `git log` after this documentation commit | SBS-028: Record the owner-authorized current-work checkpoint | 8 |
 
 All76 allocated files are covered exactly once. The final commit is checked against the remaining eight documentation paths; its own SHA, all eight commit parents/subjects/file allocations, private-path exclusions and final empty worktree/index are verified from Git and retained in ignored `.runtime/checkpoint-20261025-final.json`. No post-commit tracked-file receipt edit is needed.
+
+
+## Native HubSpot / shared UI / deployment checkpoint —25 October2026
+
+The latest direct owner request explicitly authorizes a file-level plan, multiple ticket-prefixed local commits and staging/committing all current work. No push is requested. Baseline is `6019c8b3343d54c99a2ec97b3851b9d24e8ce65e`, with an empty index. Existing real-mode services, configuration, data and sibling apps remain untouched by this Git operation.
+
+The eleven groups below preserve useful feature/repair boundaries. Four shared files appear in more than one group; explicitly described staged snapshots split their changes without editing the working files. Every other path is allocated once. There are **38 distinct files /43 commit-file allocations**, including this plan. Partial staged Python snapshots parse successfully.
+
+### Commit 1: SBS-030: Share branded confirmation and keyboard safeguards
+
+Centralize guarded asynchronous confirmations and migrate Business booking actions to the shared animated dialog.
+
+| Exact file | Allocation |
+| --- | --- |
+| `apps/frontend/components/confirmation-dialog.tsx` | Reusable animated async confirmation with duplicate, failure, exit and focus guards. |
+| `apps/frontend/components/booking-action-dialog.tsx` | Migrate reviewed booking completion/cancel/decline to the shared dialog. |
+| `apps/frontend/components/use-dialog-focus.ts` | Yield keyboard handling to the top-layer human-check dialog. |
+| `apps/frontend/app/demo/booking-management.css` | Shared confirmation sizing and inline failure styling. |
+| `scripts/booking-action-dialog.test.mjs` | Exercise migrated action binding, confirmation and focus behavior. |
+
+### Commit 2: SBS-024: Verify USD through account details and account identity
+
+Repair unavailable currency lookup, distinguish unreadable currency from mismatch and bind the response to the selected account.
+
+| Exact file | Allocation |
+| --- | --- |
+| `apps/backend/choreograph/hubspot.py` | Read USD company currency from account details and verify portal identity. |
+| `apps/backend/choreograph/crm.py` | Only setup currency notices; contact construction remains for commit4. |
+| `apps/backend/tests/test_crm.py` | Align the injected adapter fixture with the supported account-details schema. |
+| `apps/backend/tests/test_hubspot_readiness.py` | Cover USD mismatch/unavailable/account change and read-only route restrictions. |
+| `apps/backend/tests/test_live_crm.py` | Only the account-details currency fixture; later tests stay for commits3/4. |
+
+### Commit 3: SBS-024: Preserve cleanup progress when uninstall becomes blocked
+
+Keep completed cleanup receipts honest when a competing active workspace prevents uninstall; cover explicit native removal separately.
+
+| Exact file | Allocation |
+| --- | --- |
+| `apps/backend/choreograph/jobs.py` | Only cleanup-progress/shared-use failure handling; contact payload stays for commit4. |
+| `apps/backend/tests/test_jobs.py` | Reproduce a concurrent shared installation appearing after owned-record cleanup. |
+| `apps/backend/tests/test_live_crm.py` | Currency fixture plus injected native uninstall/helper changes; export/readback additions stay for commit4. |
+
+### Commit 4: SBS-024: Export demo contacts without rejected synthetic email
+
+Use the existing unique app-owned identity without email; reproduce INVALID_EMAIL and verify same-deal lifecycle/readback failures.
+
+| Exact file | Allocation |
+| --- | --- |
+| `apps/backend/choreograph/crm.py` | Omit rejected synthetic email and keep the consent preview truthful. |
+| `apps/backend/choreograph/jobs.py` | Build no-email contact payloads while retaining unique identity and readback. |
+| `apps/backend/tests/test_live_crm.py` | Add email validation and same-deal lifecycle/mismatch/association regressions. |
+
+### Commit 5: SBS-024: Simplify connection actions and complete sharing onboarding
+
+Expose one confirmed Uninstall action, inline setup feedback and automatic post-consent entry with tracked finite navigation recovery.
+
+| Exact file | Allocation |
+| --- | --- |
+| `apps/frontend/components/crm-controls.tsx` | Single confirmed uninstall, optional cleanup, concise consent, setup/progress/recovery feedback. |
+| `apps/frontend/app/demo/workspace.css` | Style inline setup errors and tracked entry progress. |
+| `apps/frontend/components/workspace-client.tsx` | Only dashboard manageConnection wiring; Reset/navigation changes stay for commit6. |
+| `apps/frontend/components/entry-client.tsx` | Enter only after server-confirmed sharing; finite document-navigation recovery. |
+| `scripts/hubspot-uninstall.test.mjs` | Exercise uninstall, verify/sharing locks, errors, data review and bounded navigation. |
+
+### Commit 6: SBS-030: Confirm Reset and return to connection choices
+
+Replace the last browser prompt, preserve asynchronous reset acknowledgement and reuse the existing connection-entry transition.
+
+| Exact file | Allocation |
+| --- | --- |
+| `apps/frontend/components/workspace-controls.tsx` | Replace native Reset confirmation with the shared guarded dialog. |
+| `apps/frontend/components/business-sidebar.tsx` | Support async Reset and close the mobile drawer before confirmation. |
+| `apps/frontend/components/workspace-client.tsx` | Acknowledge successful Reset before routing to the existing connection-choice entry. |
+| `apps/frontend/app/demo/page.tsx` | Recognize the explicit connection-choice entry step. |
+| `scripts/confirmation-reset.test.mjs` | Cover reset confirmation, cancellation, uncertain failures and correct route acknowledgement. |
+| `scripts/native-prompts.test.mjs` | Prevent native alert/confirm/prompt calls throughout authored app source. |
+| `docs/tickets/SBS-030-shared-confirmation.md` | Own Reset/shared-dialog requirements, implementation and actual evidence limitations. |
+
+### Commit 7: SBS-023: Guide availability replies with in-card choices
+
+Explain missing cleaning/home details, send selected-date shortcuts through ordinary chat and retain the calendar during clarification.
+
+| Exact file | Allocation |
+| --- | --- |
+| `apps/frontend/app/demo/availability.css` | Fit reply guidance and compact in-card controls on narrow preview calendars. |
+| `apps/frontend/components/chat-workspace.tsx` | Send in-card choices through ordinary chat and keep requested-date clarification visible. |
+| `apps/frontend/components/week-calendar.tsx` | Expose missing-detail reply choices scoped to the selected available date. |
+| `apps/frontend/lib/availability-copy.ts` | Derive service/bedroom prompts/examples without inventing defaults. |
+| `scripts/availability-window.test.mjs` | Use the shared reply helper in rolling-calendar fixtures. |
+| `scripts/reservation-shortcut.test.mjs` | Cover typed drafts, selected dates, pending/read-only guards and no automatic booking. |
+| `docs/tickets/SBS-023-assistant-quality.md` | Record current interactive availability changes and offline checks. |
+
+### Commit 8: SBS-029: Prepare a reviewed Cloud Run spending cap example
+
+Provide the separate opt-in USD5 Cloud Run cap configuration without applying it or misrepresenting notification-only alerts as caps.
+
+| Exact file | Allocation |
+| --- | --- |
+| `infra/budget-cloud-run-cap.example.json` | Reviewed opt-in cap example only; no activation or actual alert modification. |
+
+### Commit 9: SBS-029: Document deployment budgets secrets and private database steps
+
+Record the existing project, actual notification-only budgets and empty exact-name secrets; document costs/private topology and remaining release gates.
+
+| Exact file | Allocation |
+| --- | --- |
+| `docs/tickets/SBS-029-deployment-readiness.md` | Own real budget/empty-secret receipts, private deployment plan and open gates. |
+| `infra/README.md` | Exact-name secret guidance, costs/private topology/CLI steps and current HubSpot test operations. |
+
+### Commit 10: SBS-024: Record native booking verification and expiry cleanup
+
+Consolidate owner-account diagnostics, successful scoped export and immediate automatic expiry deletion without claiming an active native record.
+
+| Exact file | Allocation |
+| --- | --- |
+| `docs/tickets/SBS-024-hubspot-free-readiness.md` | Record registration/onboarding/uninstall repairs, native booking readback and subsequent expiry. |
+
+### Commit 11: SBS-028: Record the approved integration and UX checkpoint
+
+Preserve owner instructions, current evidence boundaries, execution queue and this exact file/hunk commit allocation.
+
+| Exact file | Allocation |
+| --- | --- |
+| `AGENTS.md` | Preserve the owner's permanent shared-dialog/native-prompt restriction. |
+| `docs/CHOREOGRAPH.md` | Reconcile current product/evidence state with retained historical decisions. |
+| `docs/tickets/README.md` | Update the owning ticket statuses and register the new continuation packets. |
+| `docs/tickets/COMMIT_PLAN.md` | This exact approved file/hunk allocation, checks and execution safeguards. |
+
+### Settled checks and execution safeguards
+
+- **376 backend tests passed in191.51seconds**, with fake/injected external providers and actual isolated PostgreSQL (`.runtime/checkpoint-hubspot-backend.log`). No real app data/provider was used as a test fixture.
+- **160 Node tests passed**, zero failures/skips (`.runtime/checkpoint-hubspot-node.log`), including the owned process fixture. Frontend types and configured Ruff for the full backend pass. Dependencies/contracts did not change; no new dependency installation or provider test was performed.
+- All38 modified/new paths exactly match the plan; index is empty before staging. The five partial snapshots were checked against their stated boundaries and Python snapshots parse. Keeping the entry consumer and CRM prop change in the same commit preserves their interface; Reset producer/caller changes share commit6.
+- Prior implementation receipts distinguish65 focused CRM checks, actual native create/readback and automatic expiry cleanup from this no-provider checkpoint. Frontend/API/runner remain owned/running; no service restart or app operation is needed for Git.
+- Read-only checkpoint review covers the current tracked/untracked source/tests/docs against baseline6019c8b, including four shared-file staging sequences. No actionable allocation/implementation finding remains; original browser/native lifecycle/uninstall/hosted acceptance gaps remain documented. The known-value scan and exact staged-byte verification are enforced before every commit. Checks above preceded the read-only review; no new implementation/test/provider action occurred during it.
+
+The image input fingerprint is `6ba812ef25ae75ef3de6d3b16acffa06653df644f9e53e3a2db30f9d711c50b7` across196 files. Older Linux smoke/image receipts are historical and no fresh hosted/build acceptance is asserted by this checkpoint. Native proof is a successful contact/deal/association readback followed by the existing two-hour expiry cleanup; that deal is no longer active. Other native lifecycle/uninstall and physical-device visual acceptance remain open.
+
+Before staging, freeze exact working bytes and each intermediate staged snapshot; verify the38-file plan exactly covers tracked/untracked changes and the index is empty. Scan both final source and actual staged blobs against raw/URL-encoded/base64 variants of only this app's known private values, without printing them. Reject private runtime/env/cache paths, unexpected HEAD changes, unplanned staged paths, byte changes after review and whitespace errors. Stage explicit paths only.
+
+Each commit is verified against its exact planned paths, message and expected staged bytes, with an empty index afterward. An ignored `.runtime/checkpoint-hubspot-commits.json` records actual identities as they are created. The final clean-tree/parent-chain/file coverage verification is retained in `.runtime/checkpoint-hubspot-final.json`, avoiding a post-commit tracked receipt edit. No provider/cloud call, deployment, app restart or push is performed as part of staging/committing.
