@@ -108,7 +108,7 @@ def prepare(engine,settings,provider,job,clock):
             enquiry=db.get(Enquiry,(workspace.id,row.enquiry_id));booking=db.scalar(select(Reservation).where(Reservation.workspace_id==workspace.id,Reservation.enquiry_id==enquiry.id))
             if not booking:raise CRMFailure('CRM_RETIRED')
             data['deal_key']=crm.record_key(settings.bridge_secret,workspace.id,connection.id,'deals',enquiry.id)
-            contact=crm.contact_details(settings.bridge_secret,workspace,connection)
+            contact=crm.contact_details()
             local=booking.starts_at.astimezone(ZoneInfo(workspace.timezone))
             local_end=booking.ends_at.astimezone(ZoneInfo(workspace.timezone))
             data['contact']={**contact,KEY_PROPERTY:data['contact_key']}

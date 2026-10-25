@@ -171,9 +171,10 @@ def record_key(secret,workspace_id,connection_id,kind,enquiry_id=''):
     return hmac.new(secret.encode(),value.encode(),hashlib.sha256).hexdigest()
 
 
-def contact_details(secret,workspace,connection):
-    key=record_key(secret,workspace.id,connection.id,'contacts')
-    return {'firstname':'Demo','lastname':'Guest','email':f'guest-{key[:16]}@example.invalid'}
+def contact_details():
+    # The unique demo key owns identity. HubSpot rejects .invalid email domains;
+    # omit email rather than substituting a potentially deliverable address.
+    return {'firstname':'Demo','lastname':'Guest'}
 
 
 def other_uses(db,workspace,connection,now):
@@ -185,7 +186,6 @@ def other_uses(db,workspace,connection,now):
 
 def public_view(db,workspace,secret,now,*,connection,events,provider=None):
     if not connection:return None
-    contact=contact_details(secret,workspace,connection)
     cleanup=max((row for row in events if row.workspace_id==workspace.id and row.connection_id==connection.id
                  and row.kind=='crm_cleanup'),key=lambda row:(row.revision,row.id),default=None)
     outcomes=cleanup.payload.get('result',{}) if cleanup else {}
@@ -193,7 +193,7 @@ def public_view(db,workspace,secret,now,*,connection,events,provider=None):
             'provider':connection.provider,'state':connection.state if provider is None or matches(connection,provider) else 'needs_attention',
             'consented':connection.export_consent if provider is None or matches(connection,provider) else False,
             'destinations':connection.destination_options,'destination_label':connection.destination.get('label'),
-            'can_uninstall':not other_uses(db,workspace,connection,now),'contact_name':'Demo Guest','contact_email':contact['email'],
+            'can_uninstall':not other_uses(db,workspace,connection,now),'contact_name':'Demo Guest','contact_email':'',
             'cleanup_state':outcomes.get('cleanup',cleanup.state if cleanup and cleanup.payload.get('cleanup') else 'not_requested'),
             'uninstall_state':outcomes.get('uninstall',cleanup.state if cleanup and cleanup.payload.get('uninstall') else 'not_requested')}
 

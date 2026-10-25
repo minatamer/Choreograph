@@ -2,10 +2,11 @@
 import json
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import replace
-from datetime import timedelta
+from datetime import datetime, timedelta
 from types import SimpleNamespace
 from urllib.parse import parse_qs
 from uuid import UUID, uuid4
+from zoneinfo import ZoneInfo
 
 import httpx
 import pytest
@@ -91,6 +92,9 @@ class NativeFixture:
         if request.method=='GET':return httpx.Response(200,json=self.records[kind]) if kind in self.records else httpx.Response(404)
         if request.method=='DELETE':self.records.pop(kind,None);return httpx.Response(204)
         data=json.loads(request.content)['properties']
+        if kind=='contacts' and str(data.get('email','')).endswith('.invalid'):
+            return httpx.Response(400,json={'category':'VALIDATION_ERROR','errors':[
+                {'code':'INVALID_EMAIL','context':{'propertyName':['email']}}]})
         self.records[kind]={'id':'111' if kind=='contacts' else '222','properties':data}
         return httpx.Response(200,json=self.records[kind])
 
@@ -302,6 +306,101 @@ def test_existing_booking_exports_only_after_consent_and_tracks_move_cancel_with
     finally:client.close();http.close()
 
 
+def test_booking_schedule_and_completion_update_same_verified_native_deal(database):
+    client,headers,state,provider,wire,settings,http=native(database,'Asia/Kathmandu')
+    try:
+        state,_=connect(client,headers,state);state=setup(client,headers,state).json()['state']
+        state=command(client,headers,state,{'connection_id':state['connection']['id'],'confirm':True},
+            '/v1/crm/consent',method='post').json()['state']
+        state=command(client,headers,state,{'service':'regular','bedrooms':1}).json()['state']
+        week=client.get('/v1/availability',headers=headers).json()
+        start=next(slot['start'] for day in week['days'] for slot in day['slots'])
+        state=command(client,headers,state,{'preferred_at':start}).json()['state']
+        assert not wire.records  # Draft/calendar selection does not export a booking.
+        state=command(client,headers,state,{'accept_quote':True},'/v1/bookings',method='post').json()['state']
+        record=state['requests'][0]
+        assert record['crm_state']=='pending' and not record['crm_links']
+        assert jobs.tick(database[0],settings,provider,lambda:NOW)==1
+        current=client.get('/v1/session',headers=headers).json()['requests'][0]
+        assert current['crm_state']=='synced' and set(current['crm_links'])=={'contact','booking'}
+        links=dict(current['crm_links'])
+        local_start=datetime.fromisoformat(record['booking']['starts_at']).astimezone(ZoneInfo('Asia/Kathmandu'))
+        local_end=datetime.fromisoformat(record['booking']['ends_at']).astimezone(ZoneInfo('Asia/Kathmandu'))
+        assert local_end-local_start==timedelta(minutes=90)
+        expected_description=(f'Fictional demo booking\nStatus: confirmed\nAppointment: {local_start.isoformat(timespec="minutes")}\n'
+            f'Ends: {local_end.isoformat(timespec="minutes")}\nCleaner: {record["booking"]["staff_id"].title()}\n'
+            'Quote: USD 60.00\nDuration: 90 minutes\nNo real service or payment.')
+        deal=wire.records['deals']['properties']
+        assert deal['description']==expected_description and deal['amount']=='60'
+        assert deal['deal_currency_code']=='USD' and deal['pipeline']=='visitor-pipeline' and deal['dealstage']=='queue'
+        contact=wire.records['contacts']['properties']
+        assert contact['firstname']=='Demo' and contact['lastname']=='Guest' and 'email' not in contact
+        assert state['connection']['contact_email']==''
+        assert wire.associated
+        state=client.get('/v1/session',headers=headers).json()
+        state=book(client,headers,state,record['id'],'complete').json()['state']
+        assert state['requests'][0]['status']=='completed' and state['requests'][0]['crm_state']=='pending'
+        assert not state['requests'][0]['crm_links']
+        assert jobs.tick(database[0],settings,provider,lambda:NOW)==1
+        current=client.get('/v1/session',headers=headers).json()['requests'][0]
+        assert current['crm_state']=='synced' and current['crm_links']==links
+        assert wire.records['deals']['properties']['description']==expected_description.replace('Status: confirmed','Status: completed')
+        assert wire.records['deals']['properties']['dealstage']=='queue'
+        for kind in ('contacts','deals'):
+            assert sum(request.method=='POST' and request.url.path==f'/crm/v3/objects/{kind}' for request in wire.requests)==1
+        assert not any('/meetings' in request.url.path or '/appointments' in request.url.path for request in wire.requests)
+    finally:client.close();http.close()
+
+
+@pytest.mark.parametrize('tamper,code',[('deal','CRM_READBACK'),('association','CRM_ASSOCIATION')])
+def test_native_readback_mismatch_never_claims_sync_or_loses_local_booking(database,tamper,code):
+    class UnverifiedResult(NativeFixture):
+        def __call__(self,request):
+            result=super().__call__(request)
+            if request.method=='GET' and result.status_code==200:
+                if tamper=='deal' and request.url.path.startswith('/crm/v3/objects/deals/'):
+                    payload=result.json()
+                    return httpx.Response(200,json={**payload,'properties':{**payload['properties'],'amount':'999'}})
+                if tamper=='association' and request.url.path.endswith('/associations/contacts'):
+                    return httpx.Response(200,json={'results':[]})
+            return result
+    client,headers,state,provider,wire,settings,http=native(database,wire=UnverifiedResult())
+    try:
+        state,_=connect(client,headers,state);state=setup(client,headers,state).json()['state']
+        state=command(client,headers,state,{'connection_id':state['connection']['id'],'confirm':True},
+            '/v1/crm/consent',method='post').json()['state']
+        state=command(client,headers,state,{'service':'regular','bedrooms':1}).json()['state']
+        week=client.get('/v1/availability',headers=headers).json()
+        start=next(slot['start'] for day in week['days'] for slot in day['slots'])
+        state=command(client,headers,state,{'preferred_at':start}).json()['state']
+        state=command(client,headers,state,{'accept_quote':True},'/v1/bookings',method='post').json()['state']
+        record=state['requests'][0]
+        assert jobs.tick(database[0],settings,provider,lambda:NOW)==1
+        current=client.get('/v1/session',headers=headers).json()['requests'][0]
+        assert current['status']=='confirmed' and current['booking']==record['booking']
+        assert current['crm_state']=='reconciling' and current['crm_receipt'] is None and not current['crm_links']
+        with Session(database[0]) as db:
+            event=db.scalar(select(Outbox).where(Outbox.workspace_id==state['workspace_id'],Outbox.kind=='crm_upsert'))
+            assert event.code==code and event.state=='reconciling'
+    finally:client.close();http.close()
+
+
+def test_missing_account_currency_response_is_not_reported_as_non_usd_or_allowed_to_write_schema(database):
+    class MissingDetails(NativeFixture):
+        def __call__(self,request):
+            if request.url.path=='/account-info/2026-09/details':
+                self.requests.append(request);return httpx.Response(404)
+            return super().__call__(request)
+    client,headers,state,_,wire,_,http=native(database,wire=MissingDetails())
+    try:
+        state,_=connect(client,headers,state)
+        rejected=setup(client,headers,state).json()
+        assert rejected['state']['connection']['state']=='setup'
+        assert 'currency could not be verified' in rejected['crm_notice'] and 'USD' not in rejected['crm_notice']
+        assert not wire.properties and not wire.records
+    finally:client.close();http.close()
+
+
 def test_currency_mismatch_blocks_schema_setup_and_later_export_without_changing_account(database):
     client,headers,state,provider,wire,settings,http=native(database)
     try:
@@ -321,7 +420,7 @@ def test_currency_mismatch_blocks_schema_setup_and_later_export_without_changing
         with Session(database[0]) as db:
             event=db.scalar(select(Outbox).where(Outbox.workspace_id==state['workspace_id'],Outbox.kind=='crm_upsert'))
             assert event.code=='CRM_CURRENCY_REQUIRED' and event.state=='needs_attention'
-        assert all(request.method=='GET' for request in wire.requests if request.url.path.startswith('/settings/'))
+        assert all(request.method=='GET' for request in wire.requests if request.url.path.startswith(('/settings/','/account-info/')))
     finally:client.close();http.close()
 
 
