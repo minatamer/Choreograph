@@ -140,7 +140,7 @@ class ChatMessage(Contract):
     role: Literal['user','assistant']
     text: str
     claims: list[SourceClaim] = Field(default_factory=list)
-    cards: list[Literal['services','clarify','quote','week','review','booking','manage']] = Field(default_factory=list)
+    cards: list[Literal['services','clarify','quote','week','reserve','review','booking','manage']] = Field(default_factory=list)
     request_id: UUID | None = None
     suggestions: list[Suggestion] = Field(default_factory=list)
     requested_date: date | None = None
@@ -300,6 +300,7 @@ class WeekView(Contract):
     days: list[DayView]
     can_previous: bool
     can_next: bool
+    preview: bool = False
 
 
 class MutationView(Contract):

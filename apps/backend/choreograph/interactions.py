@@ -14,7 +14,7 @@ from .assistant_context import bind_context, turn_context
 from .contracts import MutationView
 from .errors import DomainError
 from .models import DocumentVersion, Manifest
-from .verification import require_verification
+from .verification import remember_verification, require_chat_verification, require_verification
 
 OPERATION_SECONDS = 55
 
@@ -74,7 +74,7 @@ def _failed(app, claim):
     ai_admission.finish_interaction(app.state.engine, claim, now=app.state.clock())
 
 
-def chat(app, request, body):
+def chat(app, request, body, response):
     if app.state.engine is None:
         raise DomainError('STORAGE_UNAVAILABLE', 'Please try again in a moment.', 503)
     deadline = time.monotonic() + OPERATION_SECONDS
@@ -86,7 +86,7 @@ def chat(app, request, body):
             return MutationView(state=app.state.full_view(db, workspace, token), **previous)
         if len(workspace.messages) >= 60:
             raise DomainError('CHAT_LIMIT', 'This demo has reached its conversation limit. Start a new demo.', 429)
-    require_verification(app,request,'assistant')
+    verified_at = require_chat_verification(app, request, workspace)
     claim = ai_admission.claim_interaction(app.state.engine, snapshot.scope, operation='chat',
         request_hash=snapshot.request_hash, profile_id=snapshot.profile.profile_id,
         manifest_ids=snapshot.manifest_ids, now=app.state.clock())
@@ -94,7 +94,11 @@ def chat(app, request, body):
         scoped = app.state.ai_runtime.for_scope(snapshot.scope, clock=app.state.clock, deadline=deadline)
         provider = bind_context(scoped.assistant,snapshot.conversation)
         _guard(app, request, body, claim, deadline)
-        intent = provider.interpret(body.text, snapshot.draft, snapshot.timezone, snapshot.local_date)
+        # This explicit ordinary-chat shortcut browses authoritative scheduling
+        # data in either mode; it needs no model interpretation or invented quote.
+        intent = (assistant.Interpretation(intent='schedule',service=None,bedrooms=None,oven=None,
+                  requested_date=None,requested_time=None,guide_question=None) if assistant.is_reservation_shortcut(body.text)
+                  else provider.interpret(body.text, snapshot.draft, snapshot.timezone, snapshot.local_date))
         _guard(app, request, body, claim, deadline)
         hits = []
         output = None
@@ -119,6 +123,7 @@ def chat(app, request, body):
                                             intent=intent, hits=hits, output=output))
             _deadline(deadline)
             ai_admission.complete_interaction(db, claim, workspace, app.state.clock())
+            remember_verification(app, response, workspace, verified_at)
             return MutationView(state=app.state.full_view(db, workspace, token), **result)
     except BaseException:
         _failed(app, claim)

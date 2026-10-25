@@ -600,7 +600,7 @@ export interface components {
             /** Claims */
             claims: components["schemas"]["SourceClaim"][];
             /** Cards */
-            cards: ("services" | "clarify" | "quote" | "week" | "review" | "booking" | "manage")[];
+            cards: ("services" | "clarify" | "quote" | "week" | "reserve" | "review" | "booking" | "manage")[];
             /** Request Id */
             request_id: string | null;
             /** Suggestions */
@@ -1097,6 +1097,11 @@ export interface components {
             can_previous: boolean;
             /** Can Next */
             can_next: boolean;
+            /**
+             * Preview
+             * @default false
+             */
+            preview: boolean;
         };
     };
     responses: never;
@@ -1237,6 +1242,7 @@ export interface operations {
         parameters: {
             query?: {
                 week?: string | null;
+                start?: string | null;
             };
             header?: never;
             path?: never;
@@ -1435,6 +1441,7 @@ export interface operations {
         parameters: {
             query?: {
                 week?: string | null;
+                start?: string | null;
             };
             header?: never;
             path: {

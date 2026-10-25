@@ -82,14 +82,16 @@ export function useGuest(autoInitialize=true,verify?:Verify){
     last.current=operation;setPending(true);setError(null);
     try{
       const action:VerificationAction|undefined=operation.path==='chat'?'assistant':operation.path==='reset'?'workspace':/^documents\/[^/]+\/replace$/.test(operation.path)?'documents':undefined;
-      let proof=action?await verify?.(action,operation.key,controller.signal):undefined;
+      // Chat first lets the server validate its recent, session-bound human
+      // receipt. Missing/expired receipts fail before any AI work and ask once.
+      let proof=action&&action!=='assistant'?await verify?.(action,operation.key,controller.signal):undefined;
       let value:Mutation|SessionState;
       try{value=await api<Mutation|SessionState>(operation.path,{...operation,proof,signal:controller.signal});}
       catch(problem){
         if(!(problem instanceof ApiError)||problem.code!=='VERIFICATION_REQUIRED'||!action||!verify)throw problem;
-        // This fixed error is returned before paid/business work. One explicit
-        // human recovery can reuse the unchanged command key; no provider retry.
-        proof=await verify(action,operation.key,controller.signal,true);
+        // Missing proof is the ordinary first check, not a failed human check.
+        // An actually rejected proof keeps the existing explicit recovery UI.
+        proof=await verify(action,operation.key,controller.signal,proof!==undefined);
         value=await api<Mutation|SessionState>(operation.path,{...operation,proof,signal:controller.signal});
       }
       const next='state'in value?value.state:value;

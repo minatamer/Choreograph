@@ -12,6 +12,15 @@ export const useVerification=()=>useContext(VerificationContext);
 
 export function VerificationProvider({children}:{children:ReactNode}){
  const [pending,setPending]=useState<Pending|null>(null);const current=useRef<Pending|null>(null);
+ useEffect(()=>{
+  // Warm the bridge and public script while the visitor reads the intro.
+  // A fresh command-bound check still starts only through verify below.
+  const controller=new AbortController();
+  void api<VerificationConfig>('verification',{signal:controller.signal}).then(config=>{
+   if(!controller.signal.aborted&&config.required&&config.enabled&&config.site_key)return loadTurnstile();
+  }).catch(()=>{});
+  return()=>controller.abort();
+ },[]);
  const verify=useCallback<Verify>(async(action,binding,signal,recover=false)=>{
   const config=await api<VerificationConfig>('verification',{signal});
   if(signal.aborted)throw new DOMException('Cancelled','AbortError');

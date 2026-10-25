@@ -73,9 +73,10 @@ def working_day_after(day: date) -> date:
     return day + timedelta(days=1) if day.weekday() == 6 else day
 
 
-def availability(week: date, minutes: int, zone: str, now: datetime, busy: list[Busy]):
+def availability(week: date, minutes: int, zone: str, now: datetime, busy: list[Busy], *, rolling=False):
     today = now.astimezone(ZoneInfo(zone)).date()
-    if week.weekday() != 0 or week < week_start(today) or week > today + timedelta(days=29):
+    if (rolling and not today <= week < today + timedelta(days=30)) or (not rolling and (
+            week.weekday() != 0 or week < week_start(today) or week > today + timedelta(days=29))):
         raise DomainError("WEEK_UNAVAILABLE", "Choose a week within the next 30 days.", 422)
     days = []
     for offset in range(7):
@@ -97,4 +98,5 @@ def availability(week: date, minutes: int, zone: str, now: datetime, busy: list[
         occupied = [{"start": b.start, "end": b.end, "staff_id": b.staff_id} for b in busy if b.start.astimezone(ZoneInfo(zone)).date() == day]
         days.append({"date": day, "weekday": day.strftime('%a'), "status": status, "slots": slots, "occupied": occupied})
     return {"week_start": week, "timezone": zone, "minutes": minutes, "days": days,
-            "can_previous":week > week_start(today), "can_next":week + timedelta(days=7) <= today + timedelta(days=29)}
+            "can_previous":week>today if rolling else week > week_start(today),
+            "can_next":week + timedelta(days=7) <= today + timedelta(days=29)}

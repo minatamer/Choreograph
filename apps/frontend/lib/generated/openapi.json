@@ -154,6 +154,23 @@
               ],
               "title": "Week"
             }
+          },
+          {
+            "name": "start",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Start"
+            }
           }
         ],
         "responses": {
@@ -412,6 +429,23 @@
                 }
               ],
               "title": "Week"
+            }
+          },
+          {
+            "name": "start",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Start"
             }
           }
         ],
@@ -1388,6 +1422,7 @@
                 "clarify",
                 "quote",
                 "week",
+                "reserve",
                 "review",
                 "booking",
                 "manage"
@@ -2748,6 +2783,11 @@
           "can_next": {
             "type": "boolean",
             "title": "Can Next"
+          },
+          "preview": {
+            "type": "boolean",
+            "title": "Preview",
+            "default": false
           }
         },
         "additionalProperties": false,
@@ -2758,7 +2798,8 @@
           "minutes",
           "days",
           "can_previous",
-          "can_next"
+          "can_next",
+          "preview"
         ],
         "title": "WeekView"
       }

@@ -16,6 +16,10 @@ from .providers import EvidenceQuote, GroundedOutput, Interpretation
 WEEKDAYS=['monday','tuesday','wednesday','thursday','friday','saturday','sunday']
 
 
+def is_reservation_shortcut(text):
+    return text.strip().lower().rstrip('.!?').strip()=='reserve an appointment'
+
+
 class FakeAssistant:
     def interpret(self,text,draft,zone,local_date):
         q=text.lower();service_name='move-out' if re.search(r'mov(?:e|ing)[ -]?out',q) else 'deep' if 'deep' in q else 'regular' if 'regular' in q else None
@@ -216,6 +220,14 @@ def apply_chat(db,workspace,text,revision,now,*,intent:Interpretation,hits,outpu
         elif intent.intent=='about':
             paragraphs.append('I can explain Juniper’s services using its guides, prepare a quote and help you find an appointment. You review the details before booking. You can also check your booking or manage it from Business view.')
             cards=['services']
+        elif is_reservation_shortcut(text):
+            view=service.rolling_view(db,workspace,now)
+            requested_date=view['week_start'];cards=['reserve']
+            count=sum(day['status']=='available' for day in view['days'])
+            if view['preview']:
+                paragraphs.append(f'Here are the next seven days, with potential openings on {count} days. Choose your cleaning and home size so I can check exact appointment times.')
+            else:
+                paragraphs.append(f'Here are the next seven days, with appointments that fit your whole clean on {count} days. Choose a day and time below, then review the details before booking.')
         elif not quote:
             if intent.intent!='guide':paragraphs.append(_clarification(workspace));cards=['clarify']
         else:

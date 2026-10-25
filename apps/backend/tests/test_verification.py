@@ -109,6 +109,8 @@ def test_api_proof_precedes_work_and_completed_chat_replay_needs_no_new_proof(da
         initial={**headers,'x-turnstile-token':'session-proof','idempotency-key':nonce}
         result=client.post('/v1/session',headers=initial,json={'timezone':'UTC'});assert result.status_code==200
         state=result.json();headers['x-csrf-token']=state['csrf']
+        # Exercise the missing-proof boundary without a recent session receipt.
+        client.cookies.delete('choreograph_human')
         failed=command(client,headers,state,{'text':'Hello'},'/v1/chat',method='post')
         assert failed.status_code==403 and provider.count==0
         key=str(uuid4());proofs['chat-proof']=('assistant',key)

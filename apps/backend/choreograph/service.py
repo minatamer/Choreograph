@@ -142,6 +142,24 @@ def week_view(db, workspace, now, week: date | None = None):
     return domain.availability(week,quote['minutes'],workspace.timezone,now,busy_records(db,workspace))
 
 
+def rolling_view(db, workspace, now, start: date | None = None):
+    """Seven saved-local days; incomplete details expose day previews only."""
+    ensure_seeded(db,workspace,now)
+    quote=current_quote(workspace)
+    if quote:minutes=quote['minutes']
+    else:
+        services=[workspace.draft['service']] if workspace.draft.get('service') else domain.RATES
+        sizes=[workspace.draft['bedrooms']] if workspace.draft.get('bedrooms') else (1,2,3)
+        minutes=min(domain.quote(name,size,workspace.draft.get('oven',False))['minutes'] for name in services for size in sizes)
+    start=start or now.astimezone(ZoneInfo(workspace.timezone)).date()
+    result=domain.availability(start,minutes,workspace.timezone,now,busy_records(db,workspace),rolling=True)
+    result['preview']=quote is None
+    if quote is None:
+        # Potential openings are not exact times for an unspecified clean.
+        for day in result['days']:day['slots']=[]
+    return result
+
+
 def idempotency_status(db, workspace, key: str | None, operation: str, body: dict):
     """Validate/replay before external work without claiming business success."""
     try:
@@ -328,7 +346,12 @@ def booking_command(db,workspace,request_id,action,body,now):
     return booking_receipt(db,workspace,enquiry,reservation,{'approve':'confirmed','reschedule':'rescheduled','cancel':'cancelled','complete':'completed'}[action],now)
 
 
-def request_week(db,workspace,enquiry,now,week=None):
+def request_week(db,workspace,enquiry,now,week=None,*,start=None):
+    if start is not None:
+        if week is not None:
+            raise DomainError('WEEK_UNAVAILABLE','Choose one availability range.',422)
+        return domain.availability(start,enquiry.quote['minutes'],workspace.timezone,now,
+                                   busy_records(db,workspace,exclude_enquiry=enquiry.id),rolling=True)
     day=week or domain.week_start(enquiry.preferred_at.astimezone(ZoneInfo(workspace.timezone)).date())
     # A past preference does not hide today's actionable alternatives.
     today_week=domain.week_start(now.astimezone(ZoneInfo(workspace.timezone)).date())

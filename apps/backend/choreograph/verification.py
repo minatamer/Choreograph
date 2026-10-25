@@ -1,13 +1,21 @@
 """Bounded operation-specific Turnstile verification; no IP or token logging."""
+import hashlib
+import hmac
 import json
+import re
 import time
 from dataclasses import dataclass, field
+from datetime import UTC, datetime
 from urllib.parse import urlsplit
 from uuid import UUID
 
 import httpx
 
 from .errors import DomainError
+from .runtime_config import CHAT_VERIFICATION_SECONDS
+
+CHAT_COOKIE = 'choreograph_human'
+_RECEIPT = re.compile(r'v1\.([0-9]{1,12})\.([0-9]{1,12})\.([0-9a-f]{64})', re.ASCII)
 
 
 @dataclass(frozen=True)
@@ -68,3 +76,55 @@ def require_verification(app,request,action):
     except (ValueError,TypeError):valid_binding=False
     if not valid_binding or not proof or len(proof)>2048 or not proof.isascii() or any(c.isspace() for c in proof) or not verifier.verify(proof,action,binding):
         raise DomainError('VERIFICATION_REQUIRED','Please complete the quick human check and try again.',403)
+    return True
+
+
+def _receipt_mac(app, workspace, issued, until):
+    config = app.state.settings.turnstile
+    if config is None:
+        return None
+    # Separate purpose; rotating either verification key or the bridge key
+    # invalidates receipts. Nothing here contains a reusable Cloudflare token.
+    scope = json.dumps(['choreograph-chat-human-v1', config.site_key, config.secret_key, config.hostname,
+                        str(workspace.id), workspace.generation, workspace.session_hash, issued, until],
+                       separators=(',', ':')).encode()
+    return hmac.new(app.state.settings.bridge_secret.encode(), scope, hashlib.sha256).hexdigest()
+
+
+def _recent_chat_verification(app, request, workspace):
+    value = request.cookies.get(CHAT_COOKIE, '')
+    match = _RECEIPT.fullmatch(value) if isinstance(value, str) and len(value) <= 110 else None
+    if match is None:
+        return False
+    issued, until = int(match[1]), int(match[2])
+    now = app.state.clock().timestamp()
+    if not (issued <= now < until <= min(issued + CHAT_VERIFICATION_SECONDS, workspace.expires_at.timestamp())):
+        return False
+    expected = _receipt_mac(app, workspace, issued, until)
+    return expected is not None and hmac.compare_digest(match[3], expected)
+
+
+def require_chat_verification(app, request, workspace):
+    """Only the authenticated workspace can reuse a recent human check for chat.
+
+    Explicit proofs are always checked, even alongside a valid receipt. Reset
+    and document replacement continue through fresh require_verification calls.
+    """
+    if (app.state.verification is not None and not request.headers.get('x-turnstile-token') and
+            _recent_chat_verification(app, request, workspace)):
+        return None
+    return app.state.clock() if require_verification(app, request, 'assistant') else None
+
+
+def remember_verification(app, response, workspace, checked_at):
+    """Mint only after genuine verification; ordinary chat never extends expiry."""
+    if checked_at is None or app.state.verification is None:
+        return
+    issued = int(checked_at.timestamp())
+    until = min(issued + CHAT_VERIFICATION_SECONDS, int(workspace.expires_at.timestamp()))
+    signature = _receipt_mac(app, workspace, issued, until)
+    if signature is None or until <= app.state.clock().timestamp():
+        return
+    response.set_cookie(CHAT_COOKIE, f'v1.{issued}.{until}.{signature}',
+                        max_age=until-int(app.state.clock().timestamp()), expires=datetime.fromtimestamp(until, UTC),
+                        httponly=True, secure=app.state.settings.origin.startswith('https://'), samesite='lax', path='/')

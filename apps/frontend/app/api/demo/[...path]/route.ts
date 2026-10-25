@@ -7,19 +7,23 @@ async function bridge(request: NextRequest, context: {params: Promise<{path:stri
   if (!approvedRoute(request.method,path)) return Response.json({code:'ROUTE_UNAVAILABLE'}, {status:404});
   const origin = process.env.CHOREOGRAPH_ORIGIN ?? 'http://127.0.0.1:45860';
   if (!['GET','HEAD'].includes(request.method) && request.headers.get('origin') !== origin)
-    return Response.json({code:'ORIGIN_REQUIRED'}, {status:403});
+    return Response.json({code:'ORIGIN_REQUIRED',message:'This page uses an old address. Reload the demo and try again.'}, {status:403});
   const secret = process.env.CHOREOGRAPH_BRIDGE_SECRET;
   if (!secret) return Response.json({code:'SERVICE_UNAVAILABLE'}, {status:503});
   let api:URL;
   try{api=configuredAPI();}catch{return Response.json({code:'SERVICE_UNAVAILABLE'},{status:503});}
   const url = new URL(`/v1/${path.join('/')}`,api);
-  for (const key of ['week','version','page']) {
+  for (const key of ['week','start','version','page']) {
     const value = request.nextUrl.searchParams.get(key);
     if (value && value.length <= 80) url.searchParams.set(key,value);
   }
   const headers = new Headers({'x-choreograph-bridge':secret,'origin':origin});
   const guestCookie=request.cookies.get('choreograph_guest')?.value;
-  if(guestCookie && /^[A-Za-z0-9_-]{32,128}$/.test(guestCookie))headers.set('cookie',`choreograph_guest=${guestCookie}`);
+  const cookies:string[]=[];
+  if(guestCookie && /^[A-Za-z0-9_-]{32,128}$/.test(guestCookie))cookies.push(`choreograph_guest=${guestCookie}`);
+  const humanCookie=request.cookies.get('choreograph_human')?.value;
+  if(humanCookie&&/^v1\.[0-9]{1,12}\.[0-9]{1,12}\.[0-9a-f]{64}$/.test(humanCookie))cookies.push(`choreograph_human=${humanCookie}`);
+  if(cookies.length)headers.set('cookie',cookies.join('; '));
   for (const key of ['content-type','x-csrf-token','idempotency-key']) {
     const value=request.headers.get(key); if(value) headers.set(key,value);
   }

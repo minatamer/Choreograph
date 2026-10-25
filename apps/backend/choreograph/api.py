@@ -43,7 +43,7 @@ from .sessions import (
     require_generation,
 )
 from .settings import Settings
-from .verification import TurnstileVerifier, require_verification
+from .verification import TurnstileVerifier, remember_verification, require_verification
 
 
 class Boundary:
@@ -242,7 +242,7 @@ def create_app(settings: Settings, engine=None, clock=None,assistant_provider=No
 
     @app.post('/v1/session', response_model=SessionView)
     def start_session(body: StartSession, request: Request, response: Response, db=Depends(unit_of_work, scope='function')):
-        require_verification(app,request,'workspace')
+        verified_at = app.state.clock() if require_verification(app, request, 'workspace') else None
         token = request.cookies.get(COOKIE)
         if token:
             try:
@@ -253,6 +253,7 @@ def create_app(settings: Settings, engine=None, clock=None,assistant_provider=No
                 workspace,token=new_workspace(db,body.timezone)
                 cookie(response,token)
                 service.ensure_seeded(db,workspace,app.state.clock())
+                remember_verification(app, response, workspace, verified_at)
                 return full_view(db,workspace,token)
             if body.restart:
                 if workspace.active and workspace.expires_at>app.state.clock():
@@ -265,6 +266,7 @@ def create_app(settings: Settings, engine=None, clock=None,assistant_provider=No
             workspace, token = new_workspace(db, body.timezone)
             cookie(response, token)
         service.ensure_seeded(db,workspace,app.state.clock())
+        remember_verification(app, response, workspace, verified_at)
         return full_view(db,workspace,token)
 
     @app.get('/v1/session', response_model=SessionView)
@@ -277,7 +279,7 @@ def create_app(settings: Settings, engine=None, clock=None,assistant_provider=No
 
     @app.post('/v1/reset', response_model=SessionView)
     def reset_session(body: ResetSession, request: Request, response: Response, db=Depends(unit_of_work, scope='function')):
-        require_verification(app,request,'workspace')
+        verified_at = app.state.clock() if require_verification(app, request, 'workspace') else None
         token = request.cookies.get(COOKIE)
         workspace = find_workspace(db, token, app.state.clock(), lock=True, allow_retired=True)
         require_csrf(token, request.headers.get('x-csrf-token'), settings.bridge_secret)
@@ -289,6 +291,7 @@ def create_app(settings: Settings, engine=None, clock=None,assistant_provider=No
         workspace, token = new_workspace(db, body.timezone)
         service.ensure_seeded(db,workspace,app.state.clock())
         cookie(response, token)
+        remember_verification(app, response, workspace, verified_at)
         return full_view(db,workspace,token)
 
     def authorize(request,db,body=None):
@@ -303,8 +306,11 @@ def create_app(settings: Settings, engine=None, clock=None,assistant_provider=No
     app.state.full_view=full_view
 
     @app.get('/v1/availability',response_model=WeekView)
-    def get_availability(request:Request,week:date|None=None,db=Depends(unit_of_work,scope='function')):
+    def get_availability(request:Request,week:date|None=None,start:date|None=None,db=Depends(unit_of_work,scope='function')):
         workspace,_=authorize(request,db)
+        if start is not None:
+            if week is not None:raise DomainError('WEEK_UNAVAILABLE','Choose one availability range.',422)
+            return service.rolling_view(db,workspace,app.state.clock(),start)
         return service.week_view(db,workspace,app.state.clock(),week)
 
     @app.put('/v1/draft',response_model=MutationView)
@@ -331,9 +337,9 @@ def create_app(settings: Settings, engine=None, clock=None,assistant_provider=No
         return MutationView(state=full_view(db,workspace,token),**result)
 
     @app.post('/v1/chat',response_model=MutationView)
-    def send_chat(body:ChatCommand,request:Request):
+    def send_chat(body:ChatCommand,request:Request,response:Response):
         from .interactions import chat
-        return chat(app,request,body)
+        return chat(app,request,body,response)
 
     @app.post('/v1/calendar/{booking_id}/clear',response_model=MutationView)
     def clear_calendar(booking_id:UUID,body:Command,request:Request,db=Depends(unit_of_work,scope='function')):
@@ -344,10 +350,10 @@ def create_app(settings: Settings, engine=None, clock=None,assistant_provider=No
         return MutationView(state=full_view(db,workspace,token),**result)
 
     @app.get('/v1/requests/{request_id}/availability',response_model=WeekView)
-    def request_availability(request_id:UUID,request:Request,week:date|None=None,db=Depends(unit_of_work,scope='function')):
+    def request_availability(request_id:UUID,request:Request,week:date|None=None,start:date|None=None,db=Depends(unit_of_work,scope='function')):
         workspace,_=authorize(request,db)
         enquiry=service.owned_request(db,workspace,request_id)
-        return service.request_week(db,workspace,enquiry,app.state.clock(),week)
+        return service.request_week(db,workspace,enquiry,app.state.clock(),week,start=start)
 
     @app.post('/v1/requests/{request_id}/{action}',response_model=MutationView)
     def update_booking(request_id:UUID,action:str,body:BookingCommand,request:Request,db=Depends(unit_of_work,scope='function')):
