@@ -14,7 +14,7 @@ import {Documents} from './documents';
 import {ChatWorkspace} from './chat-workspace';
 import {CRMControls} from './crm-controls';
 import {WorkspaceTour} from './workspace-tour';
-import {tourWasSeen} from '@/lib/tour-preference';
+import {markTourSeen,tourVisit,tourWasSeen} from '@/lib/tour-preference';
 import {businessPages,workspaceLocation,workspaceSearch,type BusinessPage} from '@/lib/workspace-navigation';
 import type {CalendarStatus} from '@/lib/appointment-status';
 
@@ -23,11 +23,12 @@ export function WorkspaceClient(){
  const guest=useDemoGuest();const [business,setBusiness]=useState(false),[page,setPage]=useState<BusinessPage>('overview'),[collapsed,setCollapsed]=useState(false),[zone,setZone]=useState('');
  const [composerText,setComposerText]=useState(''),[calendarWeek,setCalendarWeek]=useState('');
  const [visible,setVisible]=useState<Set<CalendarStatus>>(()=>new Set(['confirmed','completed','cancelled']));
- const [tourOpen,setTourOpen]=useState(false);const checkedTour=useRef(false),workspace=useRef<HTMLDivElement>(null),heading=useRef<HTMLHeadingElement>(null);
+ const [tourOpen,setTourOpen]=useState(false),[welcomeVisit,setWelcomeVisit]=useState<string|null>(null);
+ const checkedTour=useRef<string|null>(null),shownWelcome=useRef(new Set<string>()),workspace=useRef<HTMLDivElement>(null),heading=useRef<HTMLHeadingElement>(null);
  const {state,pending,error,initialize}=guest;
  useEffect(()=>{
   if(!resetFrom.current||!state||state.workspace_id===resetFrom.current)return;
-  resetFrom.current=null;setTourOpen(false);startResetNavigation(()=>router.replace('/demo?step=connect'));
+  checkedTour.current=tourVisit(state);resetFrom.current=null;setTourOpen(false);startResetNavigation(()=>router.replace('/demo?step=connect'));
  },[state,router]);
  useEffect(()=>{if(!state&&!error&&!guest.needsZone)void initialize();},[initialize]);
  useEffect(()=>{setComposerText('');setCalendarWeek('');setVisible(new Set(['confirmed','completed','cancelled']));},[state?.workspace_id]);
@@ -42,7 +43,21 @@ export function WorkspaceClient(){
   return()=>{cancelAnimationFrame(frame);document.documentElement.style.overflow=htmlOverflow;document.body.style.overflow=bodyOverflow;window.removeEventListener('resize',schedule);window.visualViewport?.removeEventListener('resize',schedule);window.visualViewport?.removeEventListener('scroll',schedule);};
  },[business]);
  useEffect(()=>{if(business&&!tourOpen)heading.current?.focus({preventScroll:true});},[business,page,tourOpen,state?.workspace_id]);
- useEffect(()=>{if(!state||pending||checkedTour.current)return;checkedTour.current=true;if(!tourWasSeen(()=>localStorage)&&!composerText&&!document.querySelector('.source-reader')&&!document.activeElement?.matches('input,textarea'))setTourOpen(true);},[state,pending,composerText]);
+ useEffect(()=>{
+  if(!state||pending||resetNavigating||resetFrom.current)return;
+  const visit=tourVisit(state);if(checkedTour.current===visit||composerText||document.querySelector('.source-reader'))return;
+  const url=new URL(window.location.href),requested=url.searchParams.get('tour')==='start';
+  if(requested){url.searchParams.delete('tour');window.history.replaceState(null,'',url);}
+  checkedTour.current=visit;
+  const completed=!requested&&tourWasSeen(()=>sessionStorage,visit);
+  if(completed)shownWelcome.current.add(visit);
+  setWelcomeVisit(completed?visit:null);setTourOpen(!completed);
+ },[state,pending,composerText,resetNavigating]);
+ function finishTour(){
+  if(!state)return;const visit=tourVisit(state);
+  shownWelcome.current.delete(visit);
+  markTourSeen(()=>sessionStorage,visit);setWelcomeVisit(visit);setTourOpen(false);
+ }
  function navigate(value:boolean,nextPage:BusinessPage=page,replace=false){
   const changed=value!==business||nextPage!==page;setBusiness(value);setPage(nextPage);
   const url=new URL(window.location.href);url.search=workspaceSearch(url.search,value,nextPage);
@@ -70,7 +85,7 @@ export function WorkspaceClient(){
     {page==='calendar'&&<StaffCalendar state={state} week={week} onWeek={setCalendarWeek} visible={visible} onVisibilityChange={setVisible} pending={pending} onClear={async id=>Boolean(await guest.mutate(`calendar/${id}/clear`,{}))}/>}
     {page==='guides'&&<Documents key={state.workspace_id} state={state} pending={pending} onReplace={(slot,fields)=>guest.mutate(`documents/${slot}/replace`,fields)}/>}
     {page==='connections'&&<CRMControls state={state} pending={pending} mutate={guest.mutate} manageConnection/>}
-   </motion.div></>:<ChatWorkspace key={state.workspace_id} state={state} pending={pending} text={composerText} setText={setComposerText} onSend={text=>guest.mutate('chat',{text})} onEdit={fields=>guest.mutate('draft',fields,'PUT')} onSubmit={request=>void (request?guest.mutate(`requests/${request.id}/approve`,{request_revision:request.revision,confirm:true}):guest.mutate('bookings',{accept_quote:true}))} onBookingAction={(record,action,fields)=>guest.mutate(`requests/${record.id}/${action}`,{request_revision:record.revision,confirm:true,...fields})} onBusiness={()=>navigate(true,'requests')} onTour={()=>setTourOpen(true)}/>}</>}
+   </motion.div></>:<ChatWorkspace key={state.workspace_id} state={state} pending={pending} text={composerText} setText={setComposerText} welcome={!tourOpen&&welcomeVisit===tourVisit(state)} animateWelcome={!shownWelcome.current.has(tourVisit(state))} onWelcomeShown={()=>shownWelcome.current.add(tourVisit(state))} onSend={text=>guest.mutate('chat',{text})} onEdit={fields=>guest.mutate('draft',fields,'PUT')} onSubmit={request=>void (request?guest.mutate(`requests/${request.id}/approve`,{request_revision:request.revision,confirm:true}):guest.mutate('bookings',{accept_quote:true}))} onBookingAction={(record,action,fields)=>guest.mutate(`requests/${record.id}/${action}`,{request_revision:record.revision,confirm:true,...fields})} onBusiness={()=>navigate(true,'requests')} onTour={()=>setTourOpen(true)}/>}</>}
   </main>{!business&&<CustomerFooter ready={!!state&&!pending&&!resetNavigating} onReset={reset} onPerspective={perspective}/>}
- </div>{state&&tourOpen&&<WorkspaceTour key={state.workspace_id} business={business} page={page} onPerspective={(value,nextPage)=>navigate(value,nextPage??page,true)} onClose={()=>setTourOpen(false)}/>}</>;
+ </div>{state&&tourOpen&&<WorkspaceTour key={state.workspace_id} business={business} page={page} onPerspective={(value,nextPage)=>navigate(value,nextPage??page,true)} onClose={finishTour}/>}</>;
 }

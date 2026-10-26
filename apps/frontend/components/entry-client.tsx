@@ -12,6 +12,7 @@ const previewSteps=[
  {label:'Get a quote',path:'M8 3h8l4 4v14H4V3h4Zm8 0v5h4M8 11h6M8 15h8M8 18h5'},
  {label:'Book a clean',path:'M7 3v4M17 3v4M3 10h18M5 5h14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Zm3 10 3 3 5-5'},
 ];
+const frontDeskPath='/demo/workspace?tour=start';
 
 export function EntryClient({resumeSetup=false}:{resumeSetup?:boolean}){
  const guest=useDemoGuest();const {state,pending,error,needsZone,initialize}=guest;
@@ -56,19 +57,19 @@ function EntrySetup(){
   if(!state||pending||openingFrontDesk||destination==='skip'||state.crm_provider!=='hubspot'||state.crm_mode!=='connected'||connection?.provider!=='hubspot'||connection.state!=='ready'||!connection.consented)return;
   const key=state.workspace_id+':'+connection.id;if(continued.current===key)return;
   continued.current=key;setOpeningHubSpot(false);setDestination('connected');setEntryNavigation('opening');
-  startNavigation(()=>{try{router.replace('/demo/workspace');}catch{setEntryNavigation('stalled');}});
+  startNavigation(()=>{try{router.replace(frontDeskPath);}catch{setEntryNavigation('stalled');}});
  },[state,pending,openingFrontDesk,destination,router]);
  useEffect(()=>{
   if(!openingFrontDesk)return;
   const timer=setTimeout(()=>{
    if(entryNavigation==='opening'){
     setEntryNavigation('reloading');
-    try{window.location.replace('/demo/workspace');}catch{setEntryNavigation('stalled');}
+    try{window.location.replace(frontDeskPath);}catch{setEntryNavigation('stalled');}
    }else setEntryNavigation('stalled');
   },8_000);
   return()=>clearTimeout(timer);
  },[entryNavigation,openingFrontDesk]);
- function skip(){if(busy)return;setDestination('skip');startNavigation(async()=>{const result=await guest.mutate('crm/skip',{});if(result)startNavigation(()=>router.push('/demo/workspace'));});}
+ function skip(){if(busy)return;setDestination('skip');startNavigation(async()=>{const result=await guest.mutate('crm/skip',{});if(result)startNavigation(()=>router.push(frontDeskPath));});}
  return <main id="main" className="entry-page entry-setup"><h1 ref={heading} tabIndex={-1}>Juniper Cleaning</h1><p className="entry-intro">Both paths use Juniper’s documents, assistant and schedule. Connect your HubSpot to follow approved bookings in your own account.</p>
   <div className="entry-choices"><article>{state&&<CRMControls state={state} pending={busy} mutate={guest.mutate} continuing={openingFrontDesk} navigationStalled={entryNavigation==='stalled'} onOpeningChange={hubSpotOpening} feedback={error&&destination!=='skip'?<EntryFeedback title="Couldn’t connect to HubSpot" message={error.message}/>:notice?<EntryFeedback kind="notice" title="HubSpot connection" message={notice}/>:undefined}/>}</article><article className="subtle"><Badge tone="neutral">No connection needed</Badge><h2>Continue without HubSpot</h2><p>The complete Juniper experience: questions with sources, a quote, a time and a reviewed booking. Nothing is sent to HubSpot.</p>{error&&destination==='skip'&&<EntryFeedback title="Couldn’t continue yet" message={error.message}/>}<Button kind="secondary" disabled={!state||busy} busy={navigating&&destination==='skip'} onClick={skip}>Continue without HubSpot</Button></article></div></main>;
 }

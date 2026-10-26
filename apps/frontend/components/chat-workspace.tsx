@@ -1,7 +1,7 @@
 'use client';
-import {Fragment,useLayoutEffect,useRef,useState,type Dispatch,type SetStateAction} from 'react';
+import {Fragment,useEffect,useLayoutEffect,useRef,useState,type Dispatch,type RefObject,type SetStateAction} from 'react';
 import {money,duration,type SessionState,type Mutation,type RequestRecord} from '@/lib/api';
-import {conversationShortcuts,isTourRequest,RESERVATION_SHORTCUT} from '@/lib/chat-questions';
+import {conversationShortcuts,GUIDE_SHORTCUTS,isTourRequest,RESERVATION_SHORTCUT} from '@/lib/chat-questions';
 import {acceptedMessage,bookingMessageAnchors,conversationMessages,type PendingMessage} from '@/lib/chat-messages';
 import {Button,Badge,Arrow,Mark,Spinner} from './ui';
 import {WeekCalendar} from './week-calendar';
@@ -14,9 +14,10 @@ import {ReplyText} from './reply-text';
 import {ChatReview,type TimeSelection} from './chat-review';
 import {ChatBookingManagement,type BookingAction} from './chat-booking-management';
 
-type Props={state:SessionState;pending:boolean;text:string;setText:Dispatch<SetStateAction<string>>;onSend:(text:string)=>Promise<Mutation|SessionState|null>;onEdit:(fields:Record<string,unknown>)=>Promise<Mutation|SessionState|null>;onSubmit:(request?:RequestRecord)=>void;onBookingAction:BookingAction;onBusiness:()=>void;onTour:()=>void};
+type Starter={title:string;text:string;icon:string;detail:string};
+type Props={state:SessionState;pending:boolean;text:string;setText:Dispatch<SetStateAction<string>>;welcome?:boolean;animateWelcome?:boolean;onWelcomeShown?:()=>void;onSend:(text:string)=>Promise<Mutation|SessionState|null>;onEdit:(fields:Record<string,unknown>)=>Promise<Mutation|SessionState|null>;onSubmit:(request?:RequestRecord)=>void;onBookingAction:BookingAction;onBusiness:()=>void;onTour:()=>void};
 
-export function ChatWorkspace({state,pending,text,setText,onSend,onEdit,onSubmit,onBookingAction,onBusiness,onTour}:Props){
+export function ChatWorkspace({state,pending,text,setText,welcome=false,animateWelcome=false,onWelcomeShown,onSend,onEdit,onSubmit,onBookingAction,onBusiness,onTour}:Props){
  const [library,setLibrary]=useState<'questions'|'guides'|null>(null);
  const [sending,setSending]=useState<PendingMessage|null>(null);const sendingLock=useRef(false);
  const [selection,setSelection]=useState<TimeSelection|null>(null),[reviewRequest,setReviewRequest]=useState(0);
@@ -26,6 +27,8 @@ export function ChatWorkspace({state,pending,text,setText,onSend,onEdit,onSubmit
  const initialMessages=useRef(new Set(state.messages.map(message=>message.id)));
  const latestMessage=state.messages.at(-1);const reviewAnchor=reviewMessage(state.messages);
  const {pane,content,reveal}=useChatScroll(`${latestMessage?.id??''}:${sending?.key??''}`);
+ const welcomeTarget=useRef<HTMLElement>(null);
+ useLayoutEffect(()=>{if(welcome&&(!state.messages.length||animateWelcome)&&welcomeTarget.current)reveal.current(welcomeTarget.current);},[welcome,animateWelcome,state.messages.length,reveal]);
  useLayoutEffect(()=>{if(reviewRequest&&reviewTarget.current)reveal.current(reviewTarget.current);},[reviewRequest,reveal]);
  useLayoutEffect(()=>()=>{selectionSequence.current++;},[]);
  useLayoutEffect(()=>{const node=composer.current;if(!node)return;let width=0;const size=()=>{node.style.height='auto';node.style.height=Math.min(96,Math.max(44,node.scrollHeight))+'px';};size();const observer=new ResizeObserver(entries=>{const next=entries[0].contentRect.width;if(Math.abs(next-width)>.5){width=next;size();}});observer.observe(node);return()=>observer.disconnect();},[text]);
@@ -66,8 +69,8 @@ export function ChatWorkspace({state,pending,text,setText,onSend,onEdit,onSubmit
  return <><div className={`chat-layout customer-conversation ${state.messages.length?'has-messages':''}`}><section className="chat-column" aria-label="Juniper conversation">
   <header className="conversation-intro" data-tour="assistant"><span className="assistant-orb" aria-hidden="true"><Mark/></span><div><h1>Juniper’s front desk</h1><p>Questions, quotes & bookings</p></div><button type="button" className="guide-shelf-toggle" onClick={()=>setLibrary('guides')}>{state.documents.length} documents <span aria-hidden="true">↗</span></button></header>
   <div ref={pane} className="conversation-scroll" role="region" aria-label="Conversation history" tabIndex={0}><div ref={content} className="conversation-content">
-  {!state.messages.length&&<div className="conversation-empty"><h2>Let’s make room for your day.</h2><p>Choose a starting point, or ask below.</p><div className="chat-starters">{starters.map(start=><button key={start.title} disabled={busy} onClick={()=>void send(start.text)}><span aria-hidden="true">{start.icon}</span><strong>{start.title}</strong><small>{start.detail}</small></button>)}</div></div>}
   <div className="chat-messages" aria-live="polite" aria-relevant="additions">
+   {welcome&&<ChatWelcome starters={starters} busy={busy} animate={animateWelcome} onShown={onWelcomeShown} onSend={value=>void send(value)} anchor={welcomeTarget}/>}
    {conversationMessages(state.messages,sending,messageKeys.current).map(({key,message})=>{const booking=message.request_id?state.requests.find(record=>record.id===message.request_id):undefined;return <Fragment key={key}><article className={`chat-message ${message.role} ${initialMessages.current.has(message.id)?'history-message':'new-message'}`} aria-label={message.role==='user'?'Your message':'Juniper reply'}>
     {message.role==='assistant'&&<span className="assistant-orb" aria-hidden="true"><Mark/></span>}
     <div className="message-body"><p className="message-text">{message.role==='assistant'?<ReplyText text={message.text} animate={!initialMessages.current.has(message.id)}/>:message.text}</p>
@@ -92,4 +95,18 @@ export function ChatWorkspace({state,pending,text,setText,onSend,onEdit,onSubmit
    </form>
   </div>
  </section></div>{library&&<ConversationLibrary kind={library} documents={state.documents} onClose={()=>setLibrary(null)} onQuestion={question=>{setLibrary(null);void send(question);}} onTour={()=>{setLibrary(null);onTour();}}/>}</>;
+}
+
+function ChatWelcome({starters,busy,animate,onShown,onSend,anchor}:{starters:Starter[];busy:boolean;animate:boolean;onShown?:()=>void;onSend:(text:string)=>void;anchor:RefObject<HTMLElement|null>}){
+ const introduction=useRef(animate).current;
+ useEffect(()=>{onShown?.();},[onShown]);
+ return <article ref={anchor} tabIndex={-1} className={`chat-message assistant chat-welcome ${introduction?'new-message':'history-message'}`} aria-label="Juniper welcome">
+  <div className="message-body welcome-content">
+   <h2>Hi, I’m Juniper’s assistant.</h2>
+   <p className="message-text"><ReplyText animate={introduction} text="Let’s make room for your day. I can help you choose a clean, get a quote and find a time that works for you."/></p>
+   <p className="welcome-guidance">Curious about what’s included, pets or changing plans? Ask me — I’ll look through Juniper’s six guides and link to the pages behind my answers.</p>
+   <div className="welcome-guide-questions" role="group" aria-label="Ask Juniper’s guides">{[GUIDE_SHORTCUTS[0],GUIDE_SHORTCUTS[1],GUIDE_SHORTCUTS[5]].map(choice=><button type="button" key={choice.text} disabled={busy} onClick={()=>onSend(choice.text)}>{choice.label}<span aria-hidden="true">↗</span></button>)}</div>
+   <div className="welcome-start-label">Or, let’s plan your clean.</div><div className="chat-starters">{starters.map(start=><button type="button" key={start.title} disabled={busy} onClick={()=>onSend(start.text)}><span aria-hidden="true">{start.icon}</span><strong>{start.title}</strong><small>{start.detail}</small></button>)}</div>
+  </div>
+ </article>;
 }

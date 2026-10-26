@@ -4,6 +4,7 @@ import {readFileSync} from 'node:fs';
 import {createRequire} from 'node:module';
 import ts from 'typescript';
 import * as navigation from '../apps/frontend/lib/workspace-navigation.ts';
+import {tourVisit} from '../apps/frontend/lib/tour-preference.ts';
 
 const require=createRequire(import.meta.url),jsx=require('react/jsx-runtime'),noop=()=>null;
 const compile=file=>ts.transpileModule(readFileSync(new URL('../apps/frontend/'+file,import.meta.url),'utf8'),{
@@ -79,24 +80,29 @@ test('Reset respects external pending state and can restore focus to the mobile 
  assert.equal(h.modal().props.opener,h.menu);assert.equal(h.calls(),0);h.cleanup();
 });
 
-function workspace({business=false,section='calendar'}={}){
- const h=hooks(),routes=[];let tree,resetCalls=0,resolve;
+function workspace({business=false,section='calendar',tourSeen=true,requestTour=false,pending=false}={}){
+ const h=hooks(),routes=[],completed=[];let tree,resetCalls=0,resolve;
  const response=new Promise(yes=>{resolve=yes;});
- const guest={state:{workspace_id:'old-workspace',scenario:{week_start:'2026-10-26'},requests:[]},pending:false,error:null,
+ const guest={state:{workspace_id:'old-workspace',generation:1,scenario:{week_start:'2026-10-26'},requests:[]},pending,error:null,
   initialize:async()=>null,retry:async()=>null,reset:()=>{resetCalls++;return response;}};
- function Footer(){}function Sidebar(){}function CRMControls(){}
+ function Footer(){}function Sidebar(){}function CRMControls(){}function Tour(){}function Chat(){}
  const router={replace:path=>routes.push(path)};
  const deps={react:h.react,'react/jsx-runtime':jsx,'motion/react':{motion:{div:'div'}},'next/navigation':{useRouter:()=>router},
-  './demo-guest':{useDemoGuest:()=>guest},'@/lib/tour-preference':{tourWasSeen:()=>true},'@/lib/workspace-navigation':navigation,
+  './demo-guest':{useDemoGuest:()=>guest},'@/lib/tour-preference':{tourVisit,tourWasSeen:()=>tourSeen,markTourSeen:(_store,visit)=>completed.push(visit)},'@/lib/workspace-navigation':navigation,
   './workspace-controls':{CustomerFooter:Footer},'./business-sidebar':{BusinessSidebar:Sidebar},'./ui':{Button:noop,Spinner:noop}};
  for(const [file,name] of [['business-review','BusinessReview'],['business-overview','BusinessOverview'],['staff-calendar','StaffCalendar'],
-  ['hero-collage','HeroCollage'],['documents','Documents'],['chat-workspace','ChatWorkspace'],['workspace-tour','WorkspaceTour']])deps['./'+file]={[name]:noop};
+  ['hero-collage','HeroCollage'],['documents','Documents']])deps['./'+file]={[name]:noop};
+ deps['./chat-workspace']={ChatWorkspace:Chat};deps['./workspace-tour']={WorkspaceTour:Tour};
  deps['./crm-controls']={CRMControls};
- const window={location:{search:business?'?view=business&section='+section:''},addEventListener:noop,removeEventListener:noop};
- const Component=component('components/workspace-client.tsx','WorkspaceClient',deps,{window,document:{querySelector:()=>null}});
+ const params=new URLSearchParams(business?'view=business&section='+section:'');if(requestTour)params.set('tour','start');
+ const search=params.size?'?'+params:'';
+ const window={location:{search,href:'http://frontend.example.invalid/demo/workspace'+search},addEventListener:noop,removeEventListener:noop,scrollTo:noop,
+  history:{replaceState:(_data,_title,url)=>{window.location={href:String(url),search:new URL(url).search};},pushState:(_data,_title,url)=>{window.location={href:String(url),search:new URL(url).search};}}};
+ const document={querySelector:()=>null,activeElement:{matches:selector=>selector==='input,textarea'}};
+ const Component=component('components/workspace-client.tsx','WorkspaceClient',deps,{window,document});
  function render(){h.begin();tree=Component();h.flush();}
  render();render();
- return {guest,routes,render,resetCalls:()=>resetCalls,control:()=>find(tree,node=>node.type===(business?Sidebar:Footer)),crm:()=>find(tree,node=>node.type===CRMControls),
+ return {guest,routes,render,window,completed,document,tour:()=>find(tree,node=>node.type===Tour),chat:()=>find(tree,node=>node.type===Chat),resetCalls:()=>resetCalls,control:()=>find(tree,node=>node.type===(business?Sidebar:Footer)),crm:()=>find(tree,node=>node.type===CRMControls),
   settle:async(ok=true)=>{if(ok)guest.state={...guest.state,workspace_id:'fresh-workspace'};resolve(ok?guest.state:null);for(let n=0;n<5;n++)await Promise.resolve();render();},cleanup:h.cleanup};
 }
 
@@ -186,12 +192,12 @@ function entrySetup({consented=false,status='ready',provider='hubspot',mode='con
 test('HubSpot onboarding advances once only after the server confirms sharing for a ready real connection',()=>{
  const h=entrySetup();assert.deepEqual(h.routes,[]);assert.equal(h.crm().props.manageConnection,undefined);assert.equal(h.crm().props.onContinue,undefined);
  h.guest.pending=true;h.guest.state={...h.guest.state,connection:{...h.guest.state.connection,consented:true}};h.render();assert.deepEqual(h.routes,[]);
- h.guest.pending=false;h.render();assert.deepEqual(h.routes,['/demo/workspace']);assert.equal(h.replacements(),1);h.render();assert.equal(h.routes.length,1);
+ h.guest.pending=false;h.render();assert.deepEqual(h.routes,['/demo/workspace?tour=start']);assert.equal(h.replacements(),1);h.render();assert.equal(h.routes.length,1);
  h.guest.state={...h.guest.state,revision:2};h.render();assert.equal(h.routes.length,1);assert.equal(h.calls.length,0);h.cleanup();
 });
 
 test('a restored sharing-approved connection resumes chat; incomplete, fake or skipped connections do not advance',()=>{
- const restored=entrySetup({consented:true});assert.deepEqual(restored.routes,['/demo/workspace']);assert.equal(restored.calls.length,0);restored.cleanup();
+ const restored=entrySetup({consented:true});assert.deepEqual(restored.routes,['/demo/workspace?tour=start']);assert.equal(restored.calls.length,0);restored.cleanup();
  for(const options of [{status:'setup',consented:true},{consented:false},{provider:'fake',consented:true},{mode:'skipped',consented:true},{pending:true,consented:true}]){
   const h=entrySetup(options);assert.deepEqual(h.routes,[]);assert.equal(h.calls.length,0);h.cleanup();
  }
@@ -200,12 +206,12 @@ test('a restored sharing-approved connection resumes chat; incomplete, fake or s
 test('Continue without HubSpot still waits for its own successful skip and is independent of sharing',async()=>{
  for(const ok of [true,false]){
   const h=entrySetup();h.skip();h.render();assert.deepEqual(h.calls,[{path:'crm/skip',fields:{}}]);assert.deepEqual(h.routes,[]);
-  await h.settle(ok);assert.deepEqual(h.routes,ok?['/demo/workspace']:[]);assert.equal(h.replacements(),0);h.cleanup();
+  await h.settle(ok);assert.deepEqual(h.routes,ok?['/demo/workspace?tour=start']:[]);assert.equal(h.replacements(),0);h.cleanup();
  }
 });
 
 test('approved entry shows real navigation progress without a competing history restore',()=>{
- const h=entrySetup({consented:true});assert.deepEqual(h.routes,['/demo/workspace']);assert.equal(h.historyChanges(),0);
+ const h=entrySetup({consented:true});assert.deepEqual(h.routes,['/demo/workspace?tour=start']);assert.equal(h.historyChanges(),0);
  assert.equal(h.crm().props.continuing,true);assert.equal(h.crm().props.navigationStalled,false);
  assert.equal(h.timerCount(),1);h.cleanup();assert.equal(h.timerCount(),0);h.advance(16_000);assert.deepEqual(h.reloads,[]);
 });
@@ -213,12 +219,12 @@ test('approved entry shows real navigation progress without a competing history 
 test('a stale OAuth opening flag cannot block a server-confirmed sharing-approved workspace',()=>{
  const h=entrySetup();h.crm().props.onOpeningChange(true);h.render();assert.equal(h.crm().props.pending,true);assert.deepEqual(h.routes,[]);
  h.guest.state={...h.guest.state,connection:{...h.guest.state.connection,consented:true}};h.render();
- assert.deepEqual(h.routes,['/demo/workspace']);assert.equal(h.crm().props.continuing,true);h.cleanup();
+ assert.deepEqual(h.routes,['/demo/workspace?tour=start']);assert.equal(h.crm().props.continuing,true);h.cleanup();
 });
 
 test('a stalled client route gets one same-workspace document-navigation fallback, then a finite retry state',()=>{
  const h=entrySetup({consented:true});h.advance(7_999);assert.deepEqual(h.reloads,[]);assert.equal(h.crm().props.continuing,true);
- h.advance(1);assert.deepEqual(h.reloads,['/demo/workspace']);assert.equal(h.crm().props.continuing,true);assert.equal(h.calls.length,0);
+ h.advance(1);assert.deepEqual(h.reloads,['/demo/workspace?tour=start']);assert.equal(h.crm().props.continuing,true);assert.equal(h.calls.length,0);
  h.advance(8_000);assert.equal(h.crm().props.continuing,false);assert.equal(h.crm().props.navigationStalled,true);assert.equal(h.timerCount(),0);
  h.advance(60_000);assert.equal(h.reloads.length,1);assert.equal(h.routes.length,1);assert.equal(h.calls.length,0);h.cleanup();
 });
@@ -230,5 +236,56 @@ test('route and document-navigation failures stop progress and retain recovery w
  assert.equal(reload.crm().props.navigationStalled,true);assert.equal(reload.crm().props.continuing,false);assert.equal(reload.timerCount(),0);assert.equal(reload.calls.length,0);reload.cleanup();
  for(const options of [{consented:false},{consented:true,pending:true},{consented:true,mode:'skipped'}]){
   const idle=entrySetup(options);idle.advance(16_000);assert.equal(idle.crm().props.continuing,false);assert.deepEqual(idle.routes,[]);assert.deepEqual(idle.reloads,[]);idle.cleanup();
+ }
+});
+
+
+test('every explicit entry starts a tour despite completion, with welcome hidden until exit',()=>{
+ const h=workspace({tourSeen:true,requestTour:true});
+ assert.ok(h.tour());assert.equal(h.chat().props.welcome,false);
+ assert.equal(new URL(h.window.location.href).searchParams.has('tour'),false);
+ h.tour().props.onPerspective(false,'overview');h.tour().props.onClose();h.render();
+ assert.equal(h.tour(),undefined);assert.equal(h.chat().props.welcome,true);
+ assert.deepEqual(h.completed,['old-workspace:1']);h.cleanup();
+});
+
+test('focused composer cannot silently disable the default tour, and later workspaces start again',()=>{
+ const h=workspace({tourSeen:false});assert.ok(h.tour());
+ h.tour().props.onClose();h.render();assert.equal(h.tour(),undefined);
+ h.guest.state={...h.guest.state,workspace_id:'new-workspace'};h.render();h.render();
+ assert.ok(h.tour());assert.equal(h.chat().props.welcome,false);h.cleanup();
+});
+
+test('pending initialization, typed drafts and source readers defer rather than consume the default tour',()=>{
+ const h=workspace({tourSeen:false,pending:true});assert.equal(h.tour(),undefined);
+ h.chat().props.setText('Keep my draft');h.guest.pending=false;h.render();h.render();assert.equal(h.tour(),undefined);
+ h.chat().props.setText('');h.document.querySelector=()=>({});h.render();h.render();assert.equal(h.tour(),undefined);
+ h.document.querySelector=()=>null;h.guest.state={...h.guest.state,revision:2};h.render();h.render();assert.ok(h.tour());h.cleanup();
+});
+
+test('completed-visit refresh stays quiet, while an explicit tour exit animates the existing welcome',()=>{
+ const h=workspace();assert.equal(h.tour(),undefined);assert.equal(h.chat().props.welcome,true);assert.equal(h.chat().props.animateWelcome,false);
+ h.chat().props.onTour();h.render();assert.ok(h.tour());assert.equal(h.chat().props.welcome,false);
+ h.tour().props.onClose();h.render();assert.equal(h.chat().props.welcome,true);assert.equal(h.chat().props.animateWelcome,true);h.chat().props.onWelcomeShown();h.render();assert.equal(h.chat().props.animateWelcome,false);h.cleanup();
+});
+
+test('tour exits from every step wait for the fade and return to Customer chat, including from Business',()=>{
+ for(const step of [-1,0,1,2,3,4,5,6,7])for(const action of ['close','skip','escape','skip-during-next']){
+  const h=hooks(),timers=new Map(),perspectives=[],keys=new Map();let closed=0,id=0;
+  const root={inert:false};const document={body:{},activeElement:null,querySelector:selector=>selector==='[data-demo-workspace-root]'?root:null,
+   addEventListener:(type,handler)=>keys.set(type,handler),removeEventListener:(type)=>keys.delete(type)};
+  const deps={react:{...h.react,useState:initial=>h.react.useState(initial===-1?step:initial)},'react/jsx-runtime':jsx,'react-dom':{createPortal:node=>node},motion:{animate:noop},
+   '@/lib/tour-layout':{TOUR_FADE_MS:180,tourPanels:()=>[],tourPlacement:noop,tourSpotlight:noop,sameTourBox:noop},'./ui':{Button:noop,Mark:noop}};
+  const Tour=component('components/workspace-tour.tsx','WorkspaceTour',deps,{document,
+   setTimeout:(fn,ms)=>{assert.equal(ms,180);timers.set(++id,fn);return id;},clearTimeout:key=>timers.delete(key),requestAnimationFrame:noop});
+  h.begin();const tree=Tour({business:true,page:'connections',onPerspective:(...args)=>perspectives.push(args),onClose:()=>closed++});h.flush();
+  assert.equal(root.inert,true);
+  const close=find(tree,node=>node.props?.['aria-label']==='Close tour').props.onClick;
+  if(action==='skip-during-next'&&step<7)find(tree,node=>Array.isArray(node.props?.children)&&['Next','Show me around'].includes(node.props.children[0])).props.onClick();
+  if(action==='escape')keys.get('keydown')({key:'Escape',preventDefault:noop});
+  else if(action.startsWith('skip'))find(tree,node=>node.props?.children==='Skip tour').props.onClick();else close();
+  close();assert.equal(timers.size,1);assert.equal(closed,0);assert.deepEqual(perspectives,[]);
+  [...timers.values()][0]();assert.equal(closed,1);assert.deepEqual(perspectives,[[false,'overview']]);
+  h.cleanup();assert.equal(root.inert,false);
  }
 });

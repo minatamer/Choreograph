@@ -4,7 +4,6 @@ import {createPortal} from 'react-dom';
 import {animate} from 'motion';
 import {tourPanels,tourPlacement,tourSpotlight,sameTourBox,TOUR_FADE_MS,type TourBox,type TourViewport} from '@/lib/tour-layout';
 import {Button,Mark} from './ui';
-import {markTourSeen} from '@/lib/tour-preference';
 import type {BusinessPage} from '@/lib/workspace-navigation';
 
 const steps=[
@@ -25,7 +24,7 @@ export function WorkspaceTour({business,page,onPerspective,onClose}:{business:bo
  const card=useRef<HTMLElement>(null);const timer=useRef<ReturnType<typeof setTimeout>|null>(null);const moving=useRef(false);
  const closing=useRef(false);const stopScroll=useRef<(()=>void)|null>(null);
  const callbacks=useRef({onPerspective,onClose});callbacks.current={onPerspective,onClose};
- const origin=useRef({business,page,focus:typeof document==='undefined'?null:document.activeElement as HTMLElement|null});
+ const origin=useRef({focus:typeof document==='undefined'?null:document.activeElement as HTMLElement|null});
  const step=index>=0?steps[index]:null;
  useEffect(()=>{
   const root=document.querySelector<HTMLElement>('[data-demo-workspace-root]');const previousInert=root?.inert??false;
@@ -34,7 +33,7 @@ export function WorkspaceTour({business,page,onPerspective,onClose}:{business:bo
  },[]);
  function finish(){
   if(closing.current)return;closing.current=true;moving.current=true;stopScroll.current?.();if(timer.current)clearTimeout(timer.current);setLeaving(true);
-  timer.current=setTimeout(()=>{markTourSeen(()=>localStorage);callbacks.current.onPerspective(origin.current.business,origin.current.page);callbacks.current.onClose();},TOUR_FADE_MS);
+  timer.current=setTimeout(()=>{callbacks.current.onPerspective(false,'overview');callbacks.current.onClose();},TOUR_FADE_MS);
  }
  function move(next:number){
   if(moving.current)return;if(next>=steps.length){finish();return;}

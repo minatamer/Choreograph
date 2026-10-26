@@ -176,9 +176,9 @@ test('the entry spinner reflects an active route attempt and stalled navigation 
  const progress=find(h.panel(),node=>node.props?.className==='crm-entry-progress');assert.equal(progress.props.role,'status');assert.equal(progress.props['aria-busy'],'true');
  assert.ok(find(progress,node=>node.type?.name==='Spinner'));
  h.props.continuing=false;h.props.navigationStalled=true;h.render();assert.equal(find(h.panel(),node=>node.props?.className==='crm-entry-progress'),undefined);
- const retry=find(h.panel(),node=>node.type==='a'&&node.props.href==='/demo/workspace');assert.equal(retry.props.children,'Open the front desk');assert.equal(h.calls.length,0);h.cleanup();
+ const retry=find(h.panel(),node=>node.type==='a'&&node.props.href==='/demo/workspace?tour=start');assert.equal(retry.props.children,'Open the front desk');assert.equal(h.calls.length,0);h.cleanup();
  const dashboard=fixture();dashboard.props.continuing=true;dashboard.props.navigationStalled=true;dashboard.render();
- assert.equal(find(dashboard.panel(),node=>node.props?.className==='crm-entry-progress'),undefined);assert.equal(find(dashboard.panel(),node=>node.type==='a'&&node.props.href==='/demo/workspace'),undefined);dashboard.cleanup();
+ assert.equal(find(dashboard.panel(),node=>node.props?.className==='crm-entry-progress'),undefined);assert.equal(find(dashboard.panel(),node=>node.type==='a'&&node.props.href==='/demo/workspace?tour=start'),undefined);dashboard.cleanup();
 });
 
 test('failed or unknown sharing stays on the consent step with an inline error',async()=>{
