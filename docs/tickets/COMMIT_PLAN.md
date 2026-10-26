@@ -1090,3 +1090,28 @@ Direct owner authority: document Scheduler-only future deployment without implem
 | `scripts/prepare-knowledge.py` | Use the existing shared Session wrapper rather than SQL-only Session. |
 
 Validation is recorded in the owning ticket: fake/injected no-SQL tests, relevant regressions and current release fingerprint. Freeze raw hashes/Git blob IDs after this plan; stage explicit literal paths, scan actual staged/committed bytes for known local private-value variants/private-key patterns, check whitespace/parent/path coverage, then require a clean worktree/index. Store actual commit identities in ignored `.runtime/sbs-037-checkpoint-result.json`; do not edit a tracked file afterward just to embed its own hash. Existing runtime/private env/state remain outside Git.
+
+
+## SBS-038 AFK audit checkpoint —26 October2026
+Direct owner authority: document Scheduler-only future deployment without implementing it, then complete/commit quality before separately auditing/fixing/committing material security findings. AFK requires no questions. Baseline `e60092f933f6435a8b8c51de8bf4217734c00f65`; index empty. This checkpoint commits only the reviewed current 15 files. No push, cloud action, provider call or database startup.
+### Commit: SBS-038: audit security and patch Node runtime
+
+| Exact file | Allocation |
+| --- | --- |
+| `.github/workflows/ci.yml` | Run CI on the verified security-patched Node24.22.1 LTS version; no other workflow change. |
+| `AGENTS.md` | Record final fake/no-database audit evidence and the unresolved official Python image prerequisite. |
+| `README.md` | Reconcile committed quality, available security remedy, local-vs-container runtime scope and Python deployment blocker. |
+| `docs/CHOREOGRAPH.md` | Own AFK security selection, scoped remedy/handoff prompts and complete-local status with explicit external Python/owner limits. |
+| `docs/LESSONS_LEARNED.md` | Record runtime-vs-package advisory coverage, offline metadata privacy and truthful unavailable-artifact handling. |
+| `docs/security/SECURITY_OVERVIEW.html` | Present current severity-ranked findings/evidence and pre-deployment Python blocker; preserve historical reviews in details. |
+| `docs/security/SECURITY_REVIEW.md` | Own current full trust-boundary/advisory audit, two ranked findings, actual validation and bounded open Python disposition; retain history. |
+| `docs/tickets/COMMIT_PLAN.md` | This exact file-level staging allocation and private-byte safeguards. |
+| `docs/tickets/README.md` | Record separate quality commit and final security local completion/external block in the execution queue. |
+| `docs/tickets/SBS-038-final-security.md` | Own actual security scope, pre-fix file allocation, selected fixes, exact results, read-only verdict and pre-deployment next actions. |
+| `infra/Dockerfile.frontend` | Pin the verified official Node24.22.1 Bookworm-slim index and assert the exact build/runtime version. |
+| `infra/README.md` | Align current runtime/release evidence and remaining Python artifact requirement with no-database Scheduler plan-only status. |
+| `infra/release-object-evidence.json` | Record actual fresh Linux no-database images/checks for the current source. |
+| `package-lock.json` | Match the root Node engine floor without changing any package version or integrity. |
+| `package.json` | Raise only the root Node engine floor to24.22.1 within24.x; preserve dependencies and scripts. |
+
+Validation is recorded in the owning ticket: fake/injected no-SQL tests, relevant regressions and current release fingerprint. Freeze raw hashes/Git blob IDs after this plan; stage explicit literal paths, scan actual staged/committed bytes for known local private-value variants/private-key patterns, check whitespace/parent/path coverage, then require a clean worktree/index. Store actual commit identities in ignored `.runtime/sbs-038-checkpoint-result.json`; do not edit a tracked file afterward just to embed its own hash. Existing runtime/private env/state remain outside Git.

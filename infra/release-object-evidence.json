@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "verifiedAt": "2026-10-26T10:57:03.150Z",
+  "verifiedAt": "2026-10-26T11:27:23.666Z",
   "profile": "local-isolated-linux-objects-fake",
   "source": {
-    "sha256": "e957cea3310dab33136e2128dff9e9336eb464fc83a09e096449c0d66c6be953",
+    "sha256": "89fb2bc0ad669a78caab3f5c46b7a9e4a56a2c77028e624b87a2d3bfdf1a87c5",
     "files": {
       ".dockerignore": "cd3c5dc547e86af76b70a638e7d53339f5891c7e932b49d97eec6c66506caf4c",
       "apps/backend/alembic.ini": "e7955a0ffb9c32a9c5067d7885ee9197328f17a4a12fb4a5bb556c2b85763aa2",
@@ -201,23 +201,23 @@
       "assets/tokenizers/manifest.json": "f8da51833964b46909584594ebe9049a32d4a0bb9b4fe00b12b83c093b4c4529",
       "assets/tokenizers/o200k_base.tiktoken": "446a9538cb6c348e3516120d7c08b09f57c36495e2acfffe59a5bf8b0cfb1a2d",
       "infra/Dockerfile.backend": "9936d684e1adcb4cefe3921e9057fe4cfb0b1ac0d05b01fac93fe9b321bf1945",
-      "infra/Dockerfile.frontend": "aeb06848cf75ab6c9a6eda77935b39dc807c25b7e2897025502fcb75b6002097",
-      "package-lock.json": "a6ac3af058cef730b9369916e39dd96c740f7cfa46b8f1519128421d5a10fc5a",
-      "package.json": "b03b4369e7ad03beecd1252637562204cd571467795c71f95b45e1ecb4afe8b5",
+      "infra/Dockerfile.frontend": "56f7387e797e98b50d2df5c4b65ae3d8d9769b943490773a9b0391d202bf5595",
+      "package-lock.json": "e51202de9ecc798a22c6ea4221fa08444d57421e9007d02cfdb049d7df00c2ee",
+      "package.json": "23918105eced2116564e66d2a6561abc36850674bf6597b4559158cbd1f15d28",
       "scripts/pdf-assets.mjs": "98767cccab7673e7e7037c486a03b7bd4b4786db5e0145f5fb75684af2d8c3e6"
     }
   },
   "images": {
     "frontend": {
-      "tag": "choreograph-frontend:choreograph-release-2ab2f3b7-7dd8-4982-8085-f1f5b923bf5e",
-      "id": "sha256:cc05a9b93cfa59ef74248a1c196846b0ef4daa3978e69e54234e8b1cc396cfef",
+      "tag": "choreograph-frontend:choreograph-release-50036e73-30fd-4735-ab91-ff351a87bbe8",
+      "id": "sha256:a35afcc84049e5a1275ce318a709c401826f9b1bd77cb58028473a89a422a43d",
       "os": "linux",
       "architecture": "amd64",
       "user": "node"
     },
     "backend": {
-      "tag": "choreograph-api:choreograph-release-2ab2f3b7-7dd8-4982-8085-f1f5b923bf5e",
-      "id": "sha256:37df362e3aed6dd2d37067f911aa1c34f193f6a45e383ecd235b79a098058846",
+      "tag": "choreograph-api:choreograph-release-50036e73-30fd-4735-ab91-ff351a87bbe8",
+      "id": "sha256:57997a0142ae95d460e4ff5df07df1accf3bae917e334fc1961c59c987fed898",
       "os": "linux",
       "architecture": "amd64",
       "user": "10001:10001"

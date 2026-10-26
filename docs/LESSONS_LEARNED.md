@@ -1,5 +1,7 @@
 # Lessons learned for Choreograph
 
+**Final AFK audits,26 October2026:** quality is committed at `e60092f`; [SBS-038](tickets/SBS-038-final-security.md) confirms two medium runtime findings. Node deployment/CI/engine pins are updated to24.22.1;199 no-SQL security checks,165 Windows Node checks,164 patched-Linux Node checks (one Windows-only skip), types/lint/compatibility and fresh object Linux acceptance pass. **Python3.11.18+ official container publication/pinning/rebuild is a remaining pre-deployment blocker**: the current official3.11 Bookworm alias is still3.11.17. Do not deploy the old Python runtime. No app behavior/secret/provider/transport change is selected; the owned local app remains fake with no database. Scheduler-only removal of Tasks remains plan-only under SBS-036. Owner paid/native/visual/security review remains separate from provisional AFK acceptance.
+
 **Planned deployment simplification,26 October2026:** the owner selects a future single Scheduler-driven private worker for the no-database path, removing Cloud Tasks after implementation/validation. Current runtime still uses Tasks; this change is **documentation only**. Do not provision a new queue or disable current dispatch before the planned refactor is implemented. The current blueprint/SBS-036 controls this planned change; database-free storage and existing behavior remain.
 
 **Selected deployment,26 October2026: NO DATABASE (`DATABASE_ENABLED=false`).** Use encrypted private GCS objects, three scale-to-zero Cloud Run services, Cloud Tasks and authenticated minute Scheduler maintenance. No Cloud SQL, hosted PostgreSQL/pgvector, SQL migrations, database secret or always-running WorkerPool is required. PostgreSQL remains an optional `true` implementation; dated SQL-first designs and test receipts are historical. Database-specific lessons below apply only to optional SQL compatibility, not a hosting prerequisite.
@@ -292,3 +294,10 @@ This checklist does not create an enterprise compliance programme or require irr
 - [Portfolio demo build playbook derived from ScreenPilot](C:/Users/minat/Work/Retailor/docs/references/PORTFOLIO_DEMO_BUILD_PLAYBOOK.md).
 
 Their scope/method sections were inspected as reusable context. They remain in their source repositories, with historical product overrides clearly distinguished. No credentials, private logs or raw user inputs were copied. The final new packet carries this one merged lessons file, not a duplicate library of old references.
+
+
+## SBS-038 — Runtime pins need separate primary security review
+
+Package-lock/PyPI scanning does not cover Node/CPython binaries copied under `/usr/local`, and dpkg inventory does not cover every wheel-bundled native library. Compare actual image runtimes to official security releases separately. Public ecosystem/OS advisory dumps can be downloaded and matched locally without uploading repository metadata; retain dataset hashes/times and mapping/reachability limits. Do not call every distro tracker row an app exploit or a missing urgency a clean result.
+
+A newly released security version can precede its official container artifact. Never invent a digest or hide that gap with an unreviewed source build/crypto patch. Record a concrete pre-deployment blocker, then verify/pin/rebuild the published same-series image. Same-day fake application checks do not close a missing runtime trust fix.
