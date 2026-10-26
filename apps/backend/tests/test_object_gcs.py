@@ -1,6 +1,8 @@
 """No Google account/network: exercise the exact conditional GCS request contract."""
 import base64
 import copy
+import io
+import json
 from urllib.parse import unquote
 
 import pytest
@@ -12,9 +14,15 @@ POLICY={'iamConfiguration':{'publicAccessPrevention':'enforced','uniformBucketLe
 
 
 class Reply:
-    def __init__(self,status=200,data=None,content=b''):
-        self.status_code=status;self.data=data;self.content=content
-    def json(self):return self.data
+    def __init__(self,status=200,data=None,content=b'',headers=None):
+        self.status_code=status;self.headers=headers or {};self.closed=False
+        body=json.dumps(data).encode() if data is not None else content
+        class Raw(io.BytesIO):
+            def read1(self,amount,**_kwargs):return super().read1(amount)
+        self.raw=Raw(body)
+    def close(self):self.closed=True;self.raw.close()
+    @property
+    def content(self):raise AssertionError('Eager response materialization is forbidden')
 
 
 class Storage:
@@ -101,3 +109,62 @@ def test_concurrent_file_reads_and_replacements_never_lose_a_cas_update(tmp_path
         pytest.fail('conditional update did not settle')
     with ThreadPoolExecutor(max_workers=8) as pool:list(pool.map(increment,range(40)))
     assert store.read('counter')[0]==b'40'
+
+
+@pytest.mark.parametrize('headers',[{'content-length':'65537'},{'content-encoding':'gzip'},{'content-length':'private-error'}])
+def test_oversized_or_encoded_responses_are_closed_before_reading(headers):
+    session=Storage();store=GCSObjects('test-private-bucket',session=session)
+    reply=Reply(data={'sensitive':'not public'},headers=headers)
+    reply.raw.read1=lambda *_a,**_kw:pytest.fail('Body must not be read')
+    session.get=lambda *_a,**_kw:reply
+    with pytest.raises(DomainError,match='STORAGE_UNAVAILABLE') as caught:store.read('state/v1')
+    assert reply.closed and 'sensitive' not in str(caught.value)
+
+
+def test_chunked_media_is_bounded_before_materializing_and_late_reads_are_closed(monkeypatch):
+    session=Storage();store=GCSObjects('test-private-bucket',session=session)
+    monkeypatch.setattr('choreograph.object_store.MAX_BYTES',128)
+    metadata=Reply(data={'generation':'1','size':'100'});body=Reply(content=b'x'*129)
+    replies=iter([metadata,body]);session.get=lambda *_a,**_kw:next(replies)
+    with pytest.raises(DomainError,match='STORAGE_UNAVAILABLE'):store.read('state/v1')
+    assert body.closed
+    reply=Reply(content=b'{}');session.get=lambda *_a,**_kw:reply
+    times=iter([0,0,16]);monkeypatch.setattr('choreograph.object_store.time.monotonic',lambda:next(times))
+    with pytest.raises(DomainError,match='STORAGE_UNAVAILABLE'):store.read('state/v1')
+    assert reply.closed
+
+
+def test_lost_upload_ack_never_replays_the_write_and_committed_state_is_recoverable():
+    session=Storage();store=GCSObjects('test-private-bucket',session=session)
+    engine=ObjectEngine(store,base64.urlsafe_b64encode(bytes(32)).decode())
+    post=session.post
+    def lost(*args,**kwargs):
+        post(*args,**kwargs);raise TimeoutError('sensitive upstream detail')
+    session.post=lost
+    with pytest.raises(DomainError,match='STORAGE_UNAVAILABLE') as caught:engine.save({'example':[]},'0')
+    assert 'sensitive' not in str(caught.value)
+    assert len([call for call in session.calls if call[0]=='POST'])==1
+    assert engine.load()[0]['example']==[]
+
+
+def test_requests_raw_read1_path_handles_real_streamed_json_without_eager_content():
+    import threading
+    from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+
+    import requests
+    class Handler(BaseHTTPRequestHandler):
+        def do_GET(self):
+            body=json.dumps(POLICY).encode();self.send_response(200)
+            self.send_header('Content-Length',str(len(body)));self.end_headers();self.wfile.write(body)
+        def log_message(self,*_args):pass
+    server=ThreadingHTTPServer(('127.0.0.1',0),Handler)
+    thread=threading.Thread(target=server.serve_forever,daemon=True);thread.start()
+    class LocalSession:
+        def __init__(self):self.client=requests.Session();self.client.trust_env=False
+        def get(self,url,**kwargs):
+            assert url.startswith('https://storage.googleapis.com/')
+            return self.client.get('http://127.0.0.1:'+str(server.server_port),**kwargs)
+        def close(self):self.client.close()
+    try:
+        store=GCSObjects('test-private-bucket',session=LocalSession());store.close()
+    finally:server.shutdown();server.server_close();thread.join(timeout=2)

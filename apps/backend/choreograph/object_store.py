@@ -14,7 +14,7 @@ import os
 import re
 import tempfile
 import time
-from contextlib import contextmanager
+from contextlib import contextmanager, suppress
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from uuid import UUID, uuid4
@@ -24,6 +24,7 @@ from cryptography.fernet import Fernet, InvalidToken
 from .errors import DomainError
 
 MAX_BYTES = 32 * 1024 * 1024
+JSON_BYTES = 65_536
 
 
 def _busy():
@@ -133,9 +134,9 @@ class GCSObjects:
             session.trust_env=False
         self.session = session
         try:
-            response=session.get(f'https://storage.googleapis.com/storage/v1/b/{bucket}',timeout=10,
-                params={'fields':'iamConfiguration,versioning,softDeletePolicy,retentionPolicy'},allow_redirects=False)
-            policy=response.json() if response.status_code==200 else {}
+            status,body=self._request('get',f'https://storage.googleapis.com/storage/v1/b/{bucket}',
+                params={'fields':'iamConfiguration,versioning,softDeletePolicy,retentionPolicy'})
+            policy=self._json(body) if status==200 else {}
             iam=policy.get('iamConfiguration',{})
             if (iam.get('publicAccessPrevention')!='enforced' or
                     iam.get('uniformBucketLevelAccess',{}).get('enabled') is not True or
@@ -146,32 +147,77 @@ class GCSObjects:
             self.session.close()
             raise
 
+    def _request(self,method,url,*,limit=JSON_BYTES,headers=None,**kwargs):
+        """Bound raw bytes before JSON/decryption; retain finite socket reads.
+
+        read1 returns after one underlying read, unlike an eager .content or
+        fill-sized iter_content call. Check elapsed time before/after each read;
+        this is not an independently preemptive socket deadline.
+        """
+        deadline=time.monotonic()+15;response=None
+        try:
+            response=getattr(self.session,method)(url,headers={**(headers or {}),'Accept-Encoding':'identity'},
+                stream=True,timeout=(3,5),allow_redirects=False,**kwargs)
+            encoding=response.headers.get('content-encoding','identity').strip().lower()
+            length=response.headers.get('content-length')
+            if encoding not in {'','identity'} or length is not None and (
+                    not length.isascii() or not length.isdecimal() or len(length)>10 or int(length)>limit):
+                raise ValueError('STORAGE_RESPONSE_LIMIT')
+            data=bytearray()
+            while True:
+                if time.monotonic()>=deadline:raise ValueError('STORAGE_RESPONSE_DEADLINE')
+                chunk=response.raw.read1(min(65_536,limit-len(data)+1),decode_content=False)
+                if time.monotonic()>=deadline or len(data)+len(chunk)>limit:raise ValueError('STORAGE_RESPONSE_LIMIT')
+                if not chunk:break
+                data.extend(chunk)
+            return response.status_code,bytes(data)
+        except Exception:  # noqa: BLE001 - transport bodies/headers/credentials never escape this private boundary.
+            raise DomainError('STORAGE_UNAVAILABLE','Private storage is unavailable. Please try again shortly.',503) from None
+        finally:
+            if response is not None:
+                with suppress(Exception):response.close()
+
+    @staticmethod
+    def _json(body):
+        try:
+            value=json.loads(body)
+            if not isinstance(value,dict):raise ValueError('STORAGE_RESPONSE_FORMAT')
+            return value
+        except (ValueError,UnicodeError):
+            raise DomainError('STORAGE_UNAVAILABLE','Private storage returned an invalid response.',503) from None
+
+    @staticmethod
+    def _number(value,minimum=0):
+        text=str(value)
+        if not text.isascii() or not text.isdecimal() or len(text)>20 or int(text)<minimum:
+            raise DomainError('STORAGE_UNAVAILABLE','Private storage returned invalid metadata.',503)
+        return str(int(text))
+
     def read(self, name):
         from urllib.parse import quote
         path = f'https://storage.googleapis.com/storage/v1/b/{self.bucket}/o/{quote(_key(name), safe="")}'
-        metadata = self.session.get(path, timeout=10, allow_redirects=False)
-        if metadata.status_code == 404: return None, '0'
-        if metadata.status_code != 200: raise DomainError('STORAGE_UNAVAILABLE', 'Please try again shortly.', 503)
-        info = metadata.json(); generation = str(int(info['generation']))
-        if int(info['size']) > MAX_BYTES: raise ValueError('STORAGE_SIZE_INVALID')
-        response = self.session.get(path, params={'alt': 'media', 'generation': generation}, timeout=10,
-                                    allow_redirects=False)
-        if response.status_code != 200 or len(response.content) > MAX_BYTES:
+        status,body=self._request('get',path)
+        if status == 404: return None, '0'
+        if status != 200: raise DomainError('STORAGE_UNAVAILABLE', 'Please try again shortly.', 503)
+        info = self._json(body); generation = self._number(info.get('generation'),1)
+        if int(self._number(info.get('size'))) > MAX_BYTES: raise ValueError('STORAGE_SIZE_INVALID')
+        status,body=self._request('get',path,params={'alt': 'media', 'generation': generation},limit=MAX_BYTES)
+        if status != 200:
             raise DomainError('STORAGE_UNAVAILABLE', 'Please try again shortly.', 503)
-        return response.content, generation
+        return body, generation
 
     def replace(self, name, data, generation):
         if len(data) > MAX_BYTES: raise ValueError('STORAGE_SIZE_INVALID')
         for attempt in range(4):
-            response = self.session.post(f'https://storage.googleapis.com/upload/storage/v1/b/{self.bucket}/o',
+            status,body=self._request('post',f'https://storage.googleapis.com/upload/storage/v1/b/{self.bucket}/o',
                 params={'uploadType': 'media', 'name': _key(name), 'ifGenerationMatch': str(int(generation))},
-                data=data, headers={'Content-Type': 'application/octet-stream'}, timeout=10, allow_redirects=False)
-            if response.status_code not in {429, 503}: break
+                data=data, headers={'Content-Type': 'application/octet-stream'})
+            if status not in {429, 503}: break
             if attempt < 3: time.sleep(.4 * 2**attempt)
-        if response.status_code in {409, 412, 429}: raise _busy()
-        if response.status_code not in {200, 201}:
+        if status in {409, 412, 429}: raise _busy()
+        if status not in {200, 201}:
             raise DomainError('STORAGE_UNAVAILABLE', 'Please try again shortly.', 503)
-        return str(int(response.json()['generation']))
+        return self._number(self._json(body).get('generation'),1)
 
     def close(self):
         self.session.close()
