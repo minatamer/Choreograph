@@ -1,5 +1,7 @@
 # SBS-013 — Complete visitor HubSpot composition and account setup
 
+> **Deployment supersession,26 October2026:** the selected deployment is **no database** (`DATABASE_ENABLED=false`), using private GCS objects, Cloud Tasks and authenticated minute Scheduler maintenance. SQL/pgvector/migration/WorkerPool requirements in this dated packet are historical or optional true-mode evidence. They do not authorize or require database provisioning. See [the current setup inventory](../../infra/README.md#verified-cloud-inventory-and-remaining-setup-26-october2026).
+
 ## Owner correction: public real-or-skip HubSpot flow,23 October2026
 
 The owner rejected the public simulated-account approval step. The two visitor paths are now **Continue with HubSpot** and **Continue without HubSpot**. CRMControls no longer renders a challenge, simulated consent, fake callback action or fake-connected presentation. It accepts an authorization URL only from a non-simulated OAuth response and immediately navigates there. Only a configured HubSpot provider can enable the connection action or display connected/setup controls. Existing destination selection, explicit fictional-record export consent, cleanup/uninstall controls and provider/app/session fences remain. Those are real account/data approvals, not the removed simulated-account step.

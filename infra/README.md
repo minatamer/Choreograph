@@ -1,22 +1,147 @@
-# Release operations — deployment preparation
+# Release operations — NO-DATABASE deployment preparation
+
+**Canonical data and secret access complete,26 October2026:** [SBS-035](../docs/tickets/SBS-035-canonical-promotion.md) promotes only the six repo-matching fictional guides and23 existing1536-dimensional passages, encrypted under deployment key version1. Fresh GCS readback matches the filtered snapshot; anonymous pack access returns401. Per-secret runtime roles are configured for frontend/API/worker. No local private records, new provider calls or application deployment. Actual receipts: [canonical data](canonical-promotion.json), [secret access](runtime-secret-access.json).
+
+**Private storage foundation configured,26 October2026:** [SBS-034](../docs/tickets/SBS-034-private-storage-foundation.md) records the actual `europe-west1` bucket and API/worker identities, exact-bucket IAM, anonymous401 and zero user-managed keys. [The nonsecret resource receipt](object-foundation.json) owns actual names/version metadata. All six secrets now have enabled version1. The bucket was empty at the SBS-034 checkpoint; SBS-035 subsequently initialized canonical data and secret roles, as recorded above. No application service is deployed.
+
+**Pre-deployment local gate,26 October2026:** [SBS-033](../docs/tickets/SBS-033-predeployment-audit.md) records358 no-SQL backend tests,165 Node tests, types/lint/contracts, integrity checks and a fresh non-root Linux object receipt. The default offline renderer now selects the private object path; SQL/WorkerPool requires explicit selection. GCS bounded transport and CI lint findings are repaired. Actual hosted IAM/load/recovery, live pack/grants, native account and public rollout acceptance remain unperformed.
 
 **Local implementation verified26 October2026:** the owner now confirms no-database mode is working as intended locally.511 backend tests,160 Node tests, types/Ruff/contracts and Linux HTTP/process acceptance established the storage implementation. The owner's actual local state was copied read-only into encrypted object storage, the app restarted with `DATABASE_ENABLED=false`, PostgreSQL stopped/preserved, and23 further object-only checks passed with PostgreSQL off. [SBS-031](../docs/tickets/SBS-031-optional-database.md) owns the exact evidence, runtime identities, file-level commit plan and manual checklist. SBS-032's subsequent UI changes pass165 Node/types and responsive checks; earlier Linux receipts predate those UI edits. Hosted GCS/Tasks/Scheduler/IAM and separately scoped native-account acceptance remain separate; the examples below are unapplied.
 
-**Selected default,25 October2026 — SBS-031:** the owner replaces paid PostgreSQL hosting with `DATABASE_ENABLED=false`. Use [the object-mode service example](cloud-run.object.example.yaml) and [private storage policy example](object-storage.example.json) for the next reviewed deployment. Existing Cloud SQL/WorkerPool files and pricing below describe the optional `true` path and historical research; they are not instructions to provision paid infrastructure for the selected default. No deployment is authorized today.
+**Selected default,25 October2026 — SBS-031:** the owner replaces paid PostgreSQL hosting with `DATABASE_ENABLED=false`. Use [the object-mode service example](cloud-run.object.example.yaml) and [private storage policy example](object-storage.example.json) for the next reviewed deployment. Existing Cloud SQL/WorkerPool files and pricing below describe the optional `true` path and historical research; they are not instructions to provision paid infrastructure for the selected default. The owner subsequently authorized SBS-034 private storage and deployed-app IAM setup; that foundation is now configured. Service deployment and other cloud provisioning remain outside this completed slice.
 
-The false path has three scale-to-zero Cloud Run services (frontend, IAM-private API and IAM-private worker), one IAM-private GCS bucket, Cloud Tasks and a minute OIDC Scheduler request to `/internal/maintenance`. It needs no Cloud SQL, VM, pgvector service, always-running worker pool or database URL secret at runtime. Browser storage remains only the existing preferences/recovery hints; authoritative bookings, consent, encrypted OAuth tokens, retry work and counters stay server-side. Containers never use a volatile local-file fallback. Actual cloud resources/IAM are still unprovisioned.
+The false path has three scale-to-zero Cloud Run services (frontend, IAM-private API and IAM-private worker), one IAM-private GCS bucket, Cloud Tasks and a minute OIDC Scheduler request to `/internal/maintenance`. It needs no Cloud SQL, VM, pgvector service, always-running worker pool or database URL secret at runtime. Browser storage remains only the existing preferences/recovery hints; authoritative bookings, consent, encrypted OAuth tokens, retry work and counters stay server-side. Containers never use a volatile local-file fallback. SBS-034 has created the private bucket, API/worker identities and bucket grants. Cloud Run/Tasks/Scheduler/registry are not provisioned or deployed by that slice; their runtime bindings remain separate.
 
-The server checks bucket public-access prevention/uniform IAM and rejects versioning, soft-delete retention or a retention lock. Give only the API/worker identities exact-bucket `storage.buckets.get`, `storage.objects.get/create/delete`; no public grants, downloadable credentials or signed browser access to private state. Keep the state shard out of automatic lifecycle deletion: application cleanup must retain work and credentials until CRM cleanup completes or honestly needs attention. The six canonical packs contain only fictional public guides and prepared vectors. The state shard is intentionally bounded for a low-traffic portfolio demo; GCS same-object write limits require a hosted contention/latency check before publication.
+The server checks bucket public-access prevention/uniform IAM and rejects versioning, soft-delete retention or a retention lock. Give only the API/worker identities exact-bucket `storage.buckets.get`, `storage.objects.get/create/delete`; no public grants, downloadable credentials or signed browser access to private state. Keep the state shard out of automatic lifecycle deletion: application cleanup must retain work and credentials until CRM cleanup completes or honestly needs attention. Canonical packs contain only fictional public guide versions and their prepared vectors. The state shard is intentionally bounded for a low-traffic portfolio demo; GCS same-object write limits require a hosted contention/latency check before publication.
 
 The API and worker need queue-scoped create/get/fullView permission and actAs only on the task delivery identity. Scheduler uses a separate maintenance identity with worker-only Run Invoker; the code also verifies issuer/audience/email before reading command bodies. Use the default worker run.app hostname for private same-project service calls. Protect API invocation with frontend-only IAM and the existing bridge/CSRF/session boundary. The services remain request-billed with minimum instances0; no Scheduler/Tasks/IAM behavior is claimed from local injected tests.
 
-Keep cloud secret resource names identical to the env names: `CHOREOGRAPH_BRIDGE_SECRET`, `CHOREOGRAPH_TOKEN_KEY`, and, when enabling real providers, `OPENAI_API_KEY`, `TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY`, `CHOREOGRAPH_HUBSPOT_CLIENT_SECRET`. Pin numeric secret versions. `DATABASE_ENABLED=false`, `FAKE_MODE` and `PAID_DEMO_ENABLED` are nonsecret controls; fixed models/app IDs/rates remain in code. Do not recreate or delete the existing empty SQL secrets; they are simply unnecessary for false-mode runtime. Prepare/verify the real canonical vector pack explicitly before live sessions; do not re-embed every visit or use fake answers on a live failure.
+Keep cloud secret resource names identical to the env names: `CHOREOGRAPH_BRIDGE_SECRET`, `CHOREOGRAPH_TOKEN_KEY`, and, when enabling real providers, `OPENAI_API_KEY`, `TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY`, `CHOREOGRAPH_HUBSPOT_CLIENT_SECRET`. Pin numeric secret versions. `DATABASE_ENABLED=false`, `FAKE_MODE` and `PAID_DEMO_ENABLED` are nonsecret controls; fixed models/app IDs/rates remain in code. Following the owner’s explicit26 October cleanup request, the two unused SQL Secret Manager resources were verified empty, deleted and verified absent. Do not recreate them for false-mode deployment. Promote the existing verified live canonical vectors into a fresh hosted store once; do not re-embed every visit or use fake answers on a live failure.
 
 A local cutover with existing activity requires stopping owned writers and running the explicit read-only-source `choreograph.storage_transfer --local-postgres-to-objects` command before restarting false. It carries ready vectors, sessions, bookings, cleanup identities, account registry and cumulative counters into the encrypted store and preserves PostgreSQL. Storage modes are not continuously mirrored; do not restart stale SQL workers after object-mode activity without a reviewed reverse transfer. Hosted promotion starts with a fresh private bucket/canonical pack and an explicit fresh hosted grant; it must not silently copy local guest tokens or reset an existing grant's counters.
 
 Official constraints: [GCS consistency and single-object atomicity](https://docs.cloud.google.com/storage/docs/consistency), [generation preconditions](https://docs.cloud.google.com/storage/docs/request-preconditions), [same-object write quota](https://docs.cloud.google.com/storage/quotas), [public-access prevention](https://docs.cloud.google.com/storage/docs/public-access-prevention), [soft-delete retention](https://docs.cloud.google.com/storage/docs/soft-delete). Future deployment must verify bucket policy, readiness, restart/concurrency behavior and cleanup after closing the browser. Local/injected checks do not establish hosted acceptance.
 
+
+## Verified cloud inventory and remaining setup —26 October2026
+
+**Deployment is NO DATABASE (`DATABASE_ENABLED=false`).** This list is setup before deployment; post-provision acceptance scenarios are intentionally kept out of it. Authenticated gcloud reads explicitly targeted `choreograph-512713`; the global CLI project remains the sibling ScreenPilot project and was not changed.
+
+| Already present / completed | Verified state |
+| --- | --- |
+| Project and billing | Active project `choreograph-512713` /729503363583; billing enabled. |
+| Secret Manager names and versions | All six required names exist with automatic replication and enabled version **1**, as confirmed after the owner populated them. No secret value was accessed or validated. The two obsolete SQL resources were deleted earlier. |
+| Hosting budget alerts | Existing project USD10 and Cloud Run USD5 monthly alerts,50/80/100% thresholds. Notification-only; no enforced spend cap observed in those budgets. |
+| AI usage-limit implementation | Already implemented: global/workspace request, token, vector and cost admission with durable accounting. Do not list implementation of limits as unfinished. The checked-in finite hosted AI allowance expired24 October; hosted CRM authority is unset. The owner’s unlimited local manual setting does not apply to containers. |
+| Original RAG documents | Five PDFs and one Markdown FAQ in `assets/knowledge`, hash-checked and explicitly copied into the backend image. No database is needed to serve them. |
+| Prepared live RAG search data | Six repo-hash-matching fictional originals and23 prepared `text-embedding-3-small` passages,1536 dimensions, now promoted into the private hosted store under deployment key version1 and verified by fresh encrypted readback. No new embedding/provider call. |
+| Private storage foundation | `gs://choreograph-512713-private-state` in `europe-west1`; private/uniform/no-history policy checked. API/worker have four exact-bucket permissions. Canonical data is now initialized in two encrypted objects; anonymous pack access401. No frontend bucket grant, user-managed key or project-wide runtime role. |
+| Runtime secret IAM | Frontend bridge only; API six resources; worker bridge/token/HubSpot. Individual Secret Accessor bindings and enabled version1 metadata verified. Full map: `runtime-secret-access.json`. Service references remain unapplied until deployment configuration. |
+| Local release gate |358 no-SQL backend checks,165 Node checks, types/lint/contracts and current non-root Linux object receipt. |
+
+For storage, the selected deployment uses **one private GCS bucket**, containing immutable canonical source/search packs and encrypted authoritative application state (bookings, consent, OAuth credentials, counters and durable cleanup/outbox work). Original source PDFs/FAQ remain bundled in the backend image. This is not a documents-only bucket and it does not add a database.
+
+An **index** here means the already-prepared passages and numerical search vectors that let the assistant find relevant parts of those documents. It is not another set of documents, a database service or a visitor upload requirement. The originals ship in the image; the existing canonical search data has now been promoted once into the fresh hosted private store and encrypted with deployment key version1. No need to recreate the index or re-embed the six guides per visitor. SBS-035 subsequently completed canonical-only hosted promotion; the local whole-store transfer tool must never be used to copy guest tokens, accounts, counters or CRM outbox work into hosting.
+
+<a id="required-secret-names-owner-enters-the-values"></a>
+
+### Required secret names — owner enters the values
+
+The owner has populated all six resources in [Choreograph Secret Manager](https://console.cloud.google.com/security/secret-manager?project=choreograph-512713). Enabled version **1** is verified by metadata only; use numeric version1 in the reviewed service configuration. No need to add another version unless intentionally rotating. Keep future values private and enter only the value, without `NAME=`, surrounding quotes or a trailing newline.
+
+| Existing name — enabled version1 | Consumer / value |
+| --- | --- |
+| `CHOREOGRAPH_BRIDGE_SECRET` | Fresh deployment random value, at least32 characters; matching frontend/API/worker version. |
+| `CHOREOGRAPH_TOKEN_KEY` | Fresh URL-safe base64 encoding of32 random bytes,44 characters including final padding; API/worker. Encrypts private state and credentials; retain the key through cleanup/rollback. |
+| `OPENAI_API_KEY` | Intended provider-project key; API and only an explicitly approved real preparation command. No frontend key. |
+| `TURNSTILE_SITE_KEY` | Public widget identifier under its existing name; API exposes the public configuration. |
+| `TURNSTILE_SECRET_KEY` | Server-only Siteverify key; API. |
+| `CHOREOGRAPH_HUBSPOT_CLIENT_SECRET` | Existing Choreograph OAuth app secret; API/worker when CRM is enabled. |
+
+The old resources `CHOREOGRAPH_DATABASE_URL` and `CHOREOGRAPH_DB_PASSWORD` were **deleted on26 October2026 at the owner’s explicit request**, after verifying both had zero versions. Readback confirms only the six required names above remain. **Do not recreate or bind database secrets for this deployment.** No database secret, migration secret or downloadable service-account key is needed.
+
+If generating the two fresh deployment values yourself, run privately and paste the output directly into the corresponding Secret Manager version:
+
+```powershell
+# CHOREOGRAPH_BRIDGE_SECRET
+./.venv/Scripts/python.exe -c "import secrets; print(secrets.token_urlsafe(32))"
+# CHOREOGRAPH_TOKEN_KEY (keep the final = padding)
+./.venv/Scripts/python.exe -c "import base64,secrets; print(base64.urlsafe_b64encode(secrets.token_bytes(32)).decode())"
+```
+
+### Current private bucket and application identity
+
+Bucket: `gs://choreograph-512713-private-state`, regional Standard in `europe-west1`. Public-access prevention and uniform bucket IAM are enabled. Versioning, soft-delete retention, object retention and lifecycle rules are absent/disabled as required by the runtime. Existing project administration bindings are preserved; neither public principals nor GitHub/browser identities were added.
+
+| Runtime service | Attach this service account when deploying | Bucket role |
+| --- | --- | --- |
+| API | `choreograph-api@choreograph-512713.iam.gserviceaccount.com` | `projects/choreograph-512713/roles/choreographPrivateObjects` on this bucket only |
+| Worker | `choreograph-worker@choreograph-512713.iam.gserviceaccount.com` | Same bucket-only role |
+
+That custom role contains only `storage.buckets.get`, `storage.objects.get`, `storage.objects.create`, `storage.objects.delete`; it cannot list objects or change IAM/bucket policy. Backend `GCSObjects` already uses Google Application Default Credentials, supplied by the attached Cloud Run identity. No downloaded JSON key, URL signing, public object link or frontend bucket permission is needed. App source previews continue through authorized server routes.
+
+IAM API was enabled for this setup; no Cloud Run service is deployed. The bucket now contains one encrypted canonical pack and a fresh encrypted state pointer with only its embedding profile. Fresh readback verifies all six sources/23 passages and no private tables; anonymous pack access is denied401. Repo originals still ship in the backend image. [Foundation receipt](object-foundation.json) and [subsequent canonical promotion](canonical-promotion.json).
+
+### Runtime secret access — configured
+
+All six secret resources have enabled version1. Individual resource-scoped Secret Accessor grants are verified:
+
+| Identity | Secret resources available |
+| --- | --- |
+| `choreograph-frontend` | `CHOREOGRAPH_BRIDGE_SECRET` only |
+| `choreograph-api` | Bridge secret, token key, OpenAI key, Turnstile site/secret keys, HubSpot client secret |
+| `choreograph-worker` | Bridge secret, token key, HubSpot client secret only |
+
+Attach these identities to their reviewed services and pin secret env references to numeric version1 when deploying. The worker keeps AI mode fake/off because it performs CRM/cleanup, not inference; CRM activation is independent and still policy-gated. Do not inject provider keys into fake QA or put them in frontend/build arguments. No project-wide accessor grants, downloaded keys or frontend bucket access. [Actual nonsecret bindings](runtime-secret-access.json).
+
+### Canonical promotion — complete
+
+The private bucket now contains exactly two encrypted objects: `canonical/1b880f84c20e4c7642b38beb55bf58bcd20e92601c904b2880b104bfe3a42815` (219064bytes) and `state/v1` (460bytes). The pack holds six repo-verified fictional sources and23 existing live vectors; state holds only the compatible embedding profile and canonical pointer. No private guest/application activity or spending grant/ledger was imported. A fresh engine downloaded/decrypted both, validating source/profile/dimensions and the full filtered snapshot. No new embeddings or model calls. [Actual promotion receipt](canonical-promotion.json).
+
+Operator tooling lives at `scripts/promote-canonical.py`: default is a local-only dry-run; `--apply --key-version 1` reads only the pinned cloud encryption key into memory and initializes a fresh destination with conditional writes. It rejects used/private destinations, supports exact canonical-only read-only replay, and reconciles an unknown write acknowledgement by reading actual state rather than blindly repeating. It re-parses repo sources before admitting existing vectors. Do not use this to replace an active store or renew grants. The original whole-store local SQL cutover command is never a hosted promotion tool. Preserve key version1 for this state/pack; rotation requires reviewed stopped-writer re-encryption.
+
+### Remaining pre-deployment setup
+
+1. **Finish no-database hosting configuration:** use `europe-west1`, the existing bucket and three runtime identities, configured secret role map and numeric version1 references. Configure registry/images, delivery/maintenance identities, queue, Scheduler and private service invocation. Cloud Run/Tasks/Scheduler/Artifact Registry APIs were not enabled by these storage slices. No SQL/pgvector/migrations/WorkerPool.
+2. **Finalize hosted provider activation and public URLs:** activate the existing AI/CRM controls under a reviewed release policy, final origin, allowed Turnstile hostname and exact HubSpot callback. The old AI test allowance remains expired; local manual authority is not exported.
+3. **Finish operational configuration:** dependency/container scan, OAuth-safe platform request-log exclusions, error/cleanup alerts and compatible image/key/pack rollback instructions. Existing projectUSD10/RunUSD5 alerts remain notification-only. This setup-only list excludes the later rollout test matrix at the owner’s request.
+
+The owner authorized the completed storage/data/secret-access preparation slices; no application service, GitHub access, database, paid provider call, image publication or Git commit was part of them. Earlier empty-bucket/zero-version statements in historical checkpoints are superseded; do not recreate current resources.
+
+## Current object-mode pre-deployment commands —26 October2026
+
+Run local gates from the repository root without launching PostgreSQL:
+
+```powershell
+node --test scripts/*.test.mjs
+node "C:/Program Files/nodejs/node_modules/npm/bin/npm-cli.js" run typecheck -w apps/frontend
+.venv/Scripts/python.exe -m ruff check --config apps/backend/pyproject.toml apps/backend scripts
+.venv/Scripts/python.exe -m pip check
+node scripts/generate-contracts.mjs
+node scripts/release-smoke.mjs --objects-only
+node scripts/release-fingerprint.mjs --check --objects-only
+```
+
+The objects-only smoke creates no database, publishes no host ports and removes only its labeled resources. Its separate `infra/release-object-evidence.json` covers production frontend pages/assets/security headers and separate-process local encrypted-object booking/RAG/sync/cleanup. It does not establish real GCS/IAM/Tasks delivery. The optional dual-mode `release-smoke.mjs` command without this flag deliberately uses disposable PostgreSQL; do not use that command when PostgreSQL must remain off. The full backend suite likewise contains SQL tests; SBS-033 records the exact guarded no-SQL selection used for this audit.
+
+From `apps/backend`, render the selected deployment **offline**, using the repository virtualenv Python (`../../.venv/Scripts/python.exe` on this Windows host, or `../../.venv/bin/python` on Linux):
+
+```text
+python -m choreograph.cloud_plan
+python -m choreograph.cloud_plan --storage objects --config ../../.runtime/OBJECT-INPUTS.json --output ../../.runtime/FRESH-OBJECT-PLAN
+```
+
+Use the virtualenv interpreter in place of `python`. Inputs contain resource names, distinct service identities, a QA group, immutable image digests and numeric secret versions; never credential values. The `REPLACE_*_SERVICE_ORIGIN` values are the hostname text **before** `.run.app`, without scheme/path; templates append that suffix. Inspect discovered stable URLs and rerender before application activation. The renderer rejects missing/extra fields and legacy SQL inputs under the object default. `--storage postgres` deliberately selects the retained SQL/WorkerPool route; it is not a fallback.
+
+Object output contains three restricted services/private health-only bootstrap definitions, a fake-only six-guide preparation job, private bucket policy, exact-resource IAM additions/custom roles, fixed-target queue, minute OIDC Scheduler target and a review-only plan. Merge IAM additions into current policies with their etags and preserve service-agent grants. Preparation requires bucket/IAM and pinned secrets first; application traffic requires source readiness first; maintenance activates last. No generated command or REST request was executed during the audit. The explicit `--execute-preflight` option performs seven bounded presence/readability reads only and does not establish effective IAM, public readiness or resource approval.
+
+The hosted store is now initialized canonical-only under deployment key version1. Preserve it and the pinned key rather than recreating them; no whole-store promotion is needed. Never promote the whole local store: it contains guest/account/counter/outbox state. SBS-035 has promoted the existing real canonical pack matching the configured1536-dimensional profile and original hashes. Reuse that pack; new bounded preparation requires separate authority. The generated preparation job is fake QA, not authorization for live embedding. Historical AI authority is expired and hosted CRM authority is blank; the local manual exemption is not exported.
+
+Use the [verified inventory and setup-only list above](#verified-cloud-inventory-and-remaining-setup-26-october2026) for the current owner handoff. The broader rollout test matrix remains an audit record in SBS-033. Preserve compatible state/key/pack versions, retain keys through authorized cleanup and keep OAuth query parameters out of retained platform request logs. Budget alerts notify; they are not hard cutoffs.
+
 ## Deployment checkpoint —25 October2026
+
+**Historical SQL-first planning only.** The statements, proposed database costs and SQL provisioning sequence in this checkpoint predate the no-database choice. They are retained for optional `DATABASE_ENABLED=true` research and must not be executed for the selected deployment. Use the verified26 October inventory above for current resource/secret status.
 
 **25 October later UI follow-up:** SBS-030 changes production confirmation/reset code after the Linux smoke cited below. Its current checks are scoped Node/components/types and HTTP compilation; a new Linux release receipt is still needed before deployment. The earlier source fingerprint is a historical tested image pair, not the latest worktree.
 
@@ -108,37 +233,7 @@ Official [OpenAI response pricing](https://developers.openai.com/api/docs/models
 
 ### Empty secrets: what the owner should enter
 
-Open [Choreograph Secret Manager](https://console.cloud.google.com/security/secret-manager?project=choreograph-512713), select each existing resource and choose **New version**. Enter **only the value**, without `NAME=`, surrounding quotes or a trailing newline. Do not paste values into chat. Values are runtime configuration, not Docker build arguments. Pin each resulting numeric version in the reviewed release configuration; never deploy `latest`. [Secret versions](https://docs.cloud.google.com/secret-manager/docs/add-secret-version) contain the bytes; a resource without versions is intentionally not usable yet.
-
-**Exact-name check:** all eight resources were compared with the key names in the actual backend/frontend `.env.local` files, without displaying their values. They already exist, so no duplicate or differently named secret was created. The four non-secret keys (`FAKE_MODE`, `PAID_DEMO_ENABLED`, `CHOREOGRAPH_ORIGIN`, `CHOREOGRAPH_API_URL`) remain ordinary deployment settings.
-
-**What can be filled now:** copy the existing matching value from your own backend `.env.local` for `OPENAI_API_KEY`, `TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY` and `CHOREOGRAPH_HUBSPOT_CLIENT_SECRET`, if you intend to reuse those provider credentials. Cloudflare still needs the final deployed hostname authorized. Use fresh deployment values for bridge/encryption/database credentials. Leave `CHOREOGRAPH_DATABASE_URL` empty until the cloud database and secure transport are configured; the local URL will not work in Cloud Run.
-
-| Exact existing resource name | Value / consumer |
-| --- | --- |
-| `CHOREOGRAPH_DATABASE_URL` | **Cloud** database URL using the restricted application login and chosen secure private transport. API, task worker and dispatcher only. Wait for SQL provisioning; never use localhost/the development DB here. |
-| `CHOREOGRAPH_DB_PASSWORD` | Choose a fresh strong cloud database bootstrap/admin password (the generator below is suitable), then set it on the actual SQL administrator when provisioning. This name currently serves local Compose, **not** the hosted application; keep the cloud resource administrator-only. Storing its value alone does not create a database login. The restricted application login/URL is separate. |
-| `CHOREOGRAPH_BRIDGE_SECRET` | Generate a fresh deployment-only random value, at least32 characters, with the first command below. Same value/version in frontend, API and current worker settings. |
-| `CHOREOGRAPH_TOKEN_KEY` | Generate fresh deployment-only URL-safe base64 encoding of exactly32 random bytes (44 characters including padding) with the second command below. API/worker only; protects stored visitor OAuth tokens. Preserve old key/version through rollback; rotation needs a token migration/reconnection policy. |
-| `OPENAI_API_KEY` | Backend key for the intended funded provider project, API and explicitly approved real preparation job only. Do not bind it to fake QA, frontend or dispatcher. Adding it does not renew expired hosted allowances. |
-| `TURNSTILE_SITE_KEY` | Public site identifier, stored under the same requested env name for consistency. API exposes the needed public configuration; this is not a confidential password. |
-| `TURNSTILE_SECRET_KEY` | Server-side Siteverify key, API only. Configure the actual deployed hostname with Cloudflare; local success does not prove hosted verification. |
-| `CHOREOGRAPH_HUBSPOT_CLIENT_SECRET` | Confidential Choreograph OAuth app secret, API/task worker only when hosted CRM is enabled under reviewed finite policy. Visitors never enter this credential. |
-
-Run these **yourself in a private terminal at the repository root**; their output is the value to paste into Secret Manager. Generate a separate first-command value for the bridge and database password. The second command is specifically for `CHOREOGRAPH_TOKEN_KEY`; retain its final `=` padding. These commands have not been run to generate or collect your deployment values.
-
-```powershell
-# CHOREOGRAPH_BRIDGE_SECRET, or a separate fresh CHOREOGRAPH_DB_PASSWORD:
-./.venv/Scripts/python.exe -c "import secrets; print(secrets.token_urlsafe(32))"
-# CHOREOGRAPH_TOKEN_KEY:
-./.venv/Scripts/python.exe -c "import base64,secrets; print(base64.urlsafe_b64encode(secrets.token_bytes(32)).decode())"
-```
-
-Shell/JSON syntax quotes are different from the secret's bytes: paste only the generated value, without wrapping quotes. Keep an existing encryption key/version if this is a rotation of a deployed database with stored tokens; the fresh-key instruction applies to this new empty deployment.
-
-No secret is needed for `FAKE_MODE`, `PAID_DEMO_ENABLED`, origins/URLs, public OAuth client ID, model names/rates or Tasks transport settings. Those remain explicit non-secret deployment values/code-owned policy. Cloud SQL's migration login requires a **different** protected database-URL resource (proposed `CHOREOGRAPH_DATABASE_URL_MIGRATION`, not created here), injected into that job under the existing **`CHOREOGRAPH_DATABASE_URL` env name**. Separate resources prevent ordinary app identities from reading administrative credentials. The runtime env key does not change.
-
-The frontend gets only its API URL, Google-auth mode/audience, canonical origin and bridge secret. It gets no SQL password, OpenAI key, token encryption key or OAuth client secret. Use resource-scoped `roles/secretmanager.secretAccessor` for the actual consumers, not a project-wide grant to every runtime. No downloaded service-account JSON keys are needed: [Cloud Run uses its assigned identity](https://docs.cloud.google.com/run/docs/securing/service-identity) to read the pinned [secret references](https://docs.cloud.google.com/run/docs/configuring/services/secrets).
+**Superseded SQL-first inventory.** The current six-name table and private value-entry instructions are [above](#required-secret-names-owner-enters-the-values). All six names now have enabled version1. The two historical SQL names were subsequently deleted at the owner’s explicit request and must not be recreated for no-database deployment. Fresh bridge/encryption keys protect private object state, not a cloud database. Resource-scoped Secret Accessor belongs only to actual consumers; runtime IAM binding is still part of the unprovisioned hosting plan.
 
 ### Proposed private connection path
 
@@ -231,7 +326,7 @@ CLI can handle those cloud resources, restricted IAM, empty-secret inventory, im
 
 The remaining sections contain existing local release tools and older dated provider setup/evidence. Use this checkpoint for current cloud readiness; their historical examples are not a deployed receipt.
 
-This directory owns packaging and operational recovery. Product decisions and phase/evidence remain in [the blueprint](../docs/CHOREOGRAPH.md) and SBS-010/012–015. Examples and the offline renderer prepare reviewable configuration/commands; they contain no credentials and execute no provisioning/deployment/IAM writes. AI defaults remain fake; public CRM is disabled until real visitor HubSpot OAuth is configured. Fake CRM is reserved for isolated tests. Explicit live AI and independent visitor CRM code paths are implemented and tested with injected transports. Hosted examples remain restricted fake QA candidates until separately funded real/hosted acceptance. Hosting fakes and the continuously running WorkerPool still cost money.
+This directory owns packaging and operational recovery. Product decisions and phase/evidence remain in [the blueprint](../docs/CHOREOGRAPH.md) and SBS-010/012–015. Examples and the offline renderer prepare reviewable configuration/commands; they contain no credentials and execute no provisioning/deployment/IAM writes. AI defaults remain fake; public CRM is disabled until real visitor HubSpot OAuth is configured. Fake CRM is reserved for isolated tests. Explicit live AI and independent visitor CRM code paths are implemented and tested with injected transports. Hosted examples remain restricted fake QA candidates until separately funded real/hosted acceptance. Hosted fake QA still costs money; a continuously running WorkerPool applies only to the optional SQL topology.
 
 ## Implemented readiness and acceptance tools
 
@@ -257,7 +352,7 @@ The CRM lane requires the selected visitor's already connected/ready account, ch
 
 ## Offline cloud rendering and bootstrap
 
-`python -m choreograph.cloud_plan` prints required non-secret substitution names and makes no calls. Supply their exact string-valued JSON dictionary with `--config FILE --output ../../.runtime/NEW-DIRECTORY`. The renderer refuses missing/extra inputs, mutable image references, `latest` secret versions, shared service identities, invalid names and existing/output paths outside `.runtime`. Values are resource names, project/region/number, QA group, digest hashes and numeric secret versions; **never secret bytes**. Outputs include separate service/job YAML, queue JSON, v2 WorkerPool JSON, scoped IAM additions and `plan.json` with concrete argument arrays and REST requests. `--execute-preflight` performs only seven bounded gcloud describe reads; it never echoes descriptions/credentials or changes resources. It proves readability/presence only.
+For the optional historical SQL path, `python -m choreograph.cloud_plan --storage postgres` prints its required non-secret substitution names and makes no calls. The default now selects objects; use the current object instructions above for the chosen deployment. Supply their exact string-valued JSON dictionary with `--config FILE --output ../../.runtime/NEW-DIRECTORY`. The renderer refuses missing/extra inputs, mutable image references, `latest` secret versions, shared service identities, invalid names and existing/output paths outside `.runtime`. Values are resource names, project/region/number, QA group, digest hashes and numeric secret versions; **never secret bytes**. Outputs include separate service/job YAML, queue JSON, v2 WorkerPool JSON, scoped IAM additions and `plan.json` with concrete argument arrays and REST requests. `--execute-preflight` performs only seven bounded gcloud describe reads; it never echoes descriptions/credentials or changes resources. It proves readability/presence only.
 
 After an owner approves project/billing/region/costs and provisioning: prepare managed Cloud SQL PostgreSQL17 with the selected backups/restore policy and restricted SQL roles, registry images, separate service identities and numeric secrets. Merge IAM additions against freshly read policies/etags; never replace unrelated bindings. Bootstrap the three **private** stable service names with generated health-only backend definitions. They require no app secrets/provider clients and return `application_ready=false`; they expose no guest/task handlers. Discover the actual service URLs with generated describe commands, verify/rerender the supplied origins, then apply/execute schema and fake sample jobs, queue/IAM, full service settings and WorkerPool last. WorkerPool v2 JSON is a REST body; do not feed it to gcloud's v1 YAML replacement command. Generated commands require separate authorization and were not run.
 
@@ -280,17 +375,19 @@ Run from the repository root using Docker in Linux-container mode. These command
 ```text
 docker build --platform linux/amd64 --file infra/Dockerfile.backend --tag choreograph-api:local .
 docker build --platform linux/amd64 --file infra/Dockerfile.frontend --tag choreograph-frontend:local .
-node scripts/release-smoke.mjs
-node scripts/release-fingerprint.mjs --check
+node scripts/release-smoke.mjs --objects-only
+node scripts/release-fingerprint.mjs --check --objects-only
 ```
 
 The backend image uses Python 3.11.17; frontend build/runtime use Node 24.19.0. A clean frontend build prepares the PDF.js worker/fonts/cmaps/wasm and sample PDF and includes the local Google Sans Flex font. No local `.env.local` is a build input. Keep provider credentials out of build arguments, image layers and output.
 
-The owned smoke script builds from current inputs, uses an isolated disposable PostgreSQL container/network, publishes no host ports and does not operate the persistent development volume. A successful default run writes `infra/release-evidence.json` with source/input hashes, actual image IDs, checks and limitations; failures do not refresh that receipt. `release-fingerprint.mjs --check` rejects missing or stale recorded build inputs. Re-run smoke after affected source/lock/Dockerfile changes; a prior image build is not proof for new inputs. `--no-receipt` suppresses writing an evidence file, as used in CI; its actual output is the evidence for that run. The script must finish successfully before a Linux smoke claim is recorded.
+The selected `--objects-only` smoke builds current inputs on an isolated internal Docker network with no host ports or database. Success writes `infra/release-object-evidence.json`; `release-fingerprint.mjs --check --objects-only` rejects stale inputs. `--no-receipt` suppresses receipt writes in CI. The unqualified smoke deliberately starts disposable PostgreSQL for optional dual-mode regression testing only; it is not the no-database release command. The owner’s persistent development volume and services are untouched.
 
 The container entry point is `python -m choreograph.release ROLE`. Roles read explicitly supplied container environment, never the host checkout's ignored file. `api` and `worker` run one Uvicorn process on `0.0.0.0:$PORT` (default 8080), after a bounded `SELECT 1` connection check. Their `/health` and frontend `/healthz` contain no guest data; a successful probe is not a provider, schema-completeness or end-to-end acceptance check. `migrate` upgrades to head; `prepare-knowledge` prepares the canonical fictional sample pack with fake embeddings once before guests; `maintenance` performs one bounded SQL-only expiry/purge/recovery tick; `runner` repeats local direct delivery for a controlled local container. `dispatcher` is the unattended deployed publication role, `dispatch-once` performs one bounded publication/maintenance cycle, and `dispatch-status` reads private content-free heartbeat/work counts without constructing a Google client. Do not assume a request-driven Cloud Run service keeps an in-process runner alive.
 
 ## Cloud configuration review
+
+**Optional SQL path only.** This section describes `DATABASE_ENABLED=true`; the selected no-database deployment uses the object configuration and current instructions above. Do not provision SQL, run Alembic or start a WorkerPool for the selected deployment.
 
 [cloud-run.example.yaml](cloud-run.example.yaml) contains separate frontend, private API, private worker, schema Job, sample-preparation Job and one-shot maintenance Job documents. Replace every `REPLACE_*` field in a reviewed copy after authorization. Image references must use the actually built registry digest; secret references must use explicit numeric versions, never `latest`. Select the region, Cloud SQL instance/availability/backups, authorized SQL roles, connection path and current costs together before provisioning. CPU/memory/concurrency values are finite provisional QA inputs, not performance or cost evidence.
 
@@ -320,6 +417,8 @@ Inspect fixed diagnostic codes, counts and opaque references. Do not log environ
 
 ## Schema release and rollback
 
+**Optional SQL path only.** This section describes `DATABASE_ENABLED=true`; the selected no-database deployment uses the object configuration and current instructions above. Do not provision SQL, run Alembic or start a WorkerPool for the selected deployment.
+
 Apply migrations as an explicit release operation under the separate schema identity, after verifying a restorable backup and target database/extension versions. For a new database, run fake `prepare-knowledge` after migrations and verify all six ready source slots and their stored vectors before admitting guests. The optional sample-preparation Job is a finite execution vehicle for that required preparation; it shares the schema-release identity and needs no guest encryption keys. Unchanged sample versions are preserved by the preparation code; guest requests never prepare/re-embed the corpus. A funded real embedding profile needs its own compatible dimensions, preparation authorization and evaluation; do not switch this command to paid mode. Do not apply DDL or sample ingestion automatically in every API startup. The container command syntax is:
 
 ```text
@@ -342,6 +441,8 @@ These support the prepared formats and permission model, not a deployed result: 
 
 
 ## Native unattended dispatcher — prepared, not deployed
+
+**Optional SQL path only.** This section describes `DATABASE_ENABLED=true`; the selected no-database deployment uses the object configuration and current instructions above. Do not provision SQL, run Alembic or start a WorkerPool for the selected deployment.
 
 [worker-pool.example.json](worker-pool.example.json) is a Cloud Run v2 WorkerPool resource proposal: manual count1,1vCPU/512MiB, the same pinned backend image, a Cloud SQL volume, a numeric database-secret version and health-only startup/liveness probes. It deliberately contains no bridge, token-key, OpenAI or HubSpot secret. Its fixed metadata-server access-token flow uses the assigned user-managed SA; it never reads GOOGLE_APPLICATION_CREDENTIALS or an alternate metadata host. The pool has no application/maintenance HTTP route. Health probes return only empty200/503; their availability is not proof that CRM delivery succeeded.
 

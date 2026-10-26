@@ -1,5 +1,7 @@
 # SBS-000A — Adopt the approved compact Figma
 
+> **Deployment supersession,26 October2026:** the selected deployment is **no database** (`DATABASE_ENABLED=false`), using private GCS objects, Cloud Tasks and authenticated minute Scheduler maintenance. SQL/pgvector/migration/WorkerPool requirements in this dated packet are historical or optional true-mode evidence. They do not authorize or require database provisioning. See [the current setup inventory](../../infra/README.md#verified-cloud-inventory-and-remaining-setup-26-october2026).
+
 Status: **Adopted: design approved; editing/privacy unverified**  
 Owning phase: **Design milestone**  
 Depends on: **None**  

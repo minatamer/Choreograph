@@ -1,5 +1,7 @@
 # SBS-027 — Renewed STRIDE/general/dependency security review
 
+> **Deployment supersession,26 October2026:** the selected deployment is **no database** (`DATABASE_ENABLED=false`), using private GCS objects, Cloud Tasks and authenticated minute Scheduler maintenance. SQL/pgvector/migration/WorkerPool requirements in this dated packet are historical or optional true-mode evidence. They do not authorize or require database provisioning. See [the current setup inventory](../../infra/README.md#verified-cloud-inventory-and-remaining-setup-26-october2026).
+
 Status: Audit complete locally —24 October2026. No new substantial actionable local security finding confirmed; explicit provisional AFK no-fixes decision recorded after artifact review, phase11 skipped accordingly. Human security acceptance remains outstanding.
 
 The owner directly requests the full build-workflow security audit in AFK, fake/injected test providers, meaningful local remedies through execute/validate and local staging/commits. This follows the ten-commit existing-work checkpoint, the committed SBS-026 quality plan and its supplemental actual CI-loader repair. Entire worktree/index clean at `96cf2b50145e30fd11225b6930b084d5acb1f4e6`,14:38:14UTC. The canonical build block owns prompts and provisional AFK decisions. Preserve the owner's separate running real-mode/manual HubSpot review; no restart, secret edit, new spend, provider/account operation, remote scanner metadata export, cloud operation or push is authorized here.

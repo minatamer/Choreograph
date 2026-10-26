@@ -1,5 +1,7 @@
 # Choreograph security review
 
+**Selected deployment,26 October2026: NO DATABASE (`DATABASE_ENABLED=false`).** Use encrypted private GCS objects, three scale-to-zero Cloud Run services, Cloud Tasks and authenticated minute Scheduler maintenance. No Cloud SQL, hosted PostgreSQL/pgvector, SQL migrations, database secret or always-running WorkerPool is required. PostgreSQL remains an optional `true` implementation; dated SQL-first designs and test receipts are historical. Current setup evidence: [SBS-033](../tickets/SBS-033-predeployment-audit.md).
+
 ## Current full review — SBS-027 ·24 October2026
 
 **Outcome: no new substantial actionable local security finding confirmed.** Critical/high:0; medium:0; low:0 newly proposed findings. These are findings from this bounded review, not a count of all possible vulnerabilities. The six earlier remedies remain regression-covered; their original reports and dated dispositions below are history. Do not invent a security change just to populate a remediation ticket. Provisional AFK review remains distinct from personal owner acceptance.
@@ -235,3 +237,10 @@ The owner specifically authorized one local real test capped atUS$1 and30 minute
 **Turnstile boundary:** actual official Siteverify success must match configured hostname, action and canonical command UUID before workspace/reset, paid chat or document replacement effects. Response admission is8,192 bytes/six-second monotonic checks with finite individual socket timeouts, identity encoding, no redirects/retries or IP forwarding. Configuration exposes only the public site key. Proof tokens, secrets and raw provider bodies are not logged or persisted. The frontend owns fresh operation widgets and cancellation/late-callback fences; silent success was observed against real Cloudflare. Actual human interaction/error presentation remains unverified in a real challenge; injected lifecycle/error coverage and source review do not claim CAPTCHA completion.
 
 **Bounded live disposition:**33 completed provider requests, zero unknown/active attempts andUS$0.480574 conservatively reserved; the original allowance expired at11:18:37 UTC. Standard switches remain in real mode, but expiry blocks new paid calls. No grant renewal, real HubSpot/cloud action, sibling mutation or Git write occurred. No actionable issue was found in the final scoped implementation review; broader real evaluation, public perimeter/capacity, human review and hosted acceptance remain separate.
+
+
+## No-database pre-deployment follow-up —26 October2026 / SBS-033
+
+The current local audit found and repaired a private GCS transport admission gap: upstream bodies were fully materialized before size checks. Bounded identity-encoded raw reads now precede parsing/decryption, with fixed failures, finite socket/elapsed guards and response closure. Focused regressions cover encoded/oversized/chunked/late responses, real requests/urllib3 loopback reads and lost write acknowledgements without blind replay. This is a scoped follow-up, not a new comprehensive security certification.
+
+The full audit/dispositions,358 no-SQL backend/165 Node checks, fresh non-root Linux object receipt, current-tree/history known-value checks and selected current primary-advisory comparisons live in [SBS-033](../tickets/SBS-033-predeployment-audit.md). Real GCS/IAM/Tasks/Scheduler negative/load tests, provider/account limits and a current full image/transitive/distro scan remain release gates. No scanner metadata, account data or secret value was exported, and no real provider call or deployment occurred.

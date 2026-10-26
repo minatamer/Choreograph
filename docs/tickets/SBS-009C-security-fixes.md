@@ -1,5 +1,7 @@
 # SBS-009C — Apply selected security remedies
 
+> **Deployment supersession,26 October2026:** the selected deployment is **no database** (`DATABASE_ENABLED=false`), using private GCS objects, Cloud Tasks and authenticated minute Scheduler maintenance. SQL/pgvector/migration/WorkerPool requirements in this dated packet are historical or optional true-mode evidence. They do not authorize or require database provisioning. See [the current setup inventory](../../infra/README.md#verified-cloud-inventory-and-remaining-setup-26-october2026).
+
 ## Continuation11 disposition
 
 The fresh SBS-012–015 review confirmed no new substantial local finding. Under the recorded provisional AFK no-fixes disposition, phase11 requires no additional code change. Earlier SEC-001–006 remedies remain and227 backend/15 Node regressions pass. Actual owner/security/provider/hosted acceptance remains open; no Git write or external scanner/account action was performed.

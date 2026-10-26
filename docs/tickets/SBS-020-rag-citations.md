@@ -1,5 +1,7 @@
 # SBS-020 — Paper citations, expanding source dialogs and inline booking history
 
+> **Deployment supersession,26 October2026:** the selected deployment is **no database** (`DATABASE_ENABLED=false`), using private GCS objects, Cloud Tasks and authenticated minute Scheduler maintenance. SQL/pgvector/migration/WorkerPool requirements in this dated packet are historical or optional true-mode evidence. They do not authorize or require database provisioning. See [the current setup inventory](../../infra/README.md#verified-cloud-inventory-and-remaining-setup-26-october2026).
+
 Status: Complete local — owner continuation,24 October2026. Owner visual and real-provider/hosted acceptance remain separate.
 
 The owner wants fake-mode questions to demonstrate actual retrieval from Juniper's six documents with the same polished paper previews used elsewhere. Clicking a citation should expand into the existing centered dialog, with normal yellow highlights over the actual supporting text. The same presentation must consume live-provider citation bindings. Review/booking/Business invitation cards must remain in conversation history rather than following every later reply.

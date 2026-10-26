@@ -1,5 +1,7 @@
 # SBS-016 — Explain Juniper and make the workspace conversational
 
+> **Deployment supersession,26 October2026:** the selected deployment is **no database** (`DATABASE_ENABLED=false`), using private GCS objects, Cloud Tasks and authenticated minute Scheduler maintenance. SQL/pgvector/migration/WorkerPool requirements in this dated packet are historical or optional true-mode evidence. They do not authorize or require database provisioning. See [the current setup inventory](../../infra/README.md#verified-cloud-inventory-and-remaining-setup-26-october2026).
+
 Status: **Complete local; owner runnable review and external acceptance remain**
 
 **25 October2026 actual skip failure and in-card recovery:** the owner reported repeated “Please try again in a moment” on Continue without HubSpot. Current ownership/listener checks show one frontend/API/runner stack, not duplicate app instances. Safe route-only logs and unauthenticated diagnostics reproduce the actual browser boundary: writes from127.0.0.1 return403 `ORIGIN_REQUIRED` without a message, while the configured localhost host passes that boundary and returns the expected401 without a guest. Earlier injected skip/handler checks did not cover this address mismatch after OAuth activation.

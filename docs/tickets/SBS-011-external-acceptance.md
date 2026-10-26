@@ -1,5 +1,7 @@
 # SBS-011 — Prepare bounded live and hosted acceptance
 
+> **Deployment supersession,26 October2026:** the selected deployment is **no database** (`DATABASE_ENABLED=false`), using private GCS objects, Cloud Tasks and authenticated minute Scheduler maintenance. SQL/pgvector/migration/WorkerPool requirements in this dated packet are historical or optional true-mode evidence. They do not authorize or require database provisioning. See [the current setup inventory](../../infra/README.md#verified-cloud-inventory-and-remaining-setup-26-october2026).
+
 ## Exact owner inputs remaining after coding completion
 
 All coding tickets through SBS-015 and refreshed local performance/visual/quality/security/release gates are complete. This packet is the remaining **real-operation acceptance**, not an unfinished implementation ticket. Do not paste secrets into chat; enter them only in this repo's ignored server-side environment or later authorized Secret Manager versions.

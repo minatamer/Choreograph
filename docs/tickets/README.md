@@ -1,5 +1,7 @@
 # Choreograph execution queue
 
+**Selected deployment,26 October2026: NO DATABASE (`DATABASE_ENABLED=false`).** Use encrypted private GCS objects, three scale-to-zero Cloud Run services, Cloud Tasks and authenticated minute Scheduler maintenance. No Cloud SQL, hosted PostgreSQL/pgvector, SQL migrations, database secret or always-running WorkerPool is required. PostgreSQL remains an optional `true` implementation; dated SQL-first designs and test receipts are historical. Current setup evidence: [SBS-033](SBS-033-predeployment-audit.md).
+
 The owner approved the revised Figma and authorized the full build with AFK mode on on 22 October 2026. [The main blueprint](../CHOREOGRAPH.md) contains the canonical build phase/AFK ledger. These standalone packets replace the earlier dependency outline. Product/ticket/security/runnable-visual reviews while AFK are provisional agent decisions; Figma approval is a separate direct human decision.
 
 Read the full selected ticket and precision references. Execute one eligible ticket, validate read-only, independently confirm/fix findings and revalidate before continuing. The first local ticket is SBS-000; SBS-000A adopts completed design evidence. During phase 07 do SBS-005A before SBS-005. Quality/security packets run in their named later phases. SBS-010 release files are refreshed after subsequent fixes; SBS-011 prepares a bounded plan but real actions remain externally gated.
@@ -10,6 +12,9 @@ Fresh local ports: frontend **45860**, API **45861**, PostgreSQL **45862**. Sele
 
 | Ticket | Outcome | Owning phase | Dependencies | Status |
 | --- | --- | --- | --- | --- |
+| [SBS-035](SBS-035-canonical-promotion.md) | Promote only prepared canonical RAG data and bind runtime secrets | Owner26 October2026 continuation | SBS-034 | Complete; six hosted sources/23 live passages, scoped secret roles,13 isolated promotion tests; no app deployment/provider calls |
+| [SBS-034](SBS-034-private-storage-foundation.md) | Configure private no-database bucket and deployed-app identities | Owner26 October2026 cloud setup | SBS-031/033 | Complete foundation; europe-west1 bucket, exact API/worker bucket role, anonymous401, six version1 secrets; no application deployment/data promotion |
+| [SBS-033](SBS-033-predeployment-audit.md) | Audit the selected no-database deployment, repair local gaps and identify remaining launch checks | Owner26 October2026 pre-deployment request | SBS-031/032 | Complete local;358 no-SQL backend/165 Node/Linux checks; renderer/transport/CI fixes; hosted gates remain; no Git writes |
 | [SBS-032](SBS-032-tour-welcome.md) | Default tour on both entry paths and a friendly guide-discovery welcome after exit | Owner26 October2026 correction | SBS-016/017/031 | Complete local;165 Node/types and six injected responsive browser scenarios; owner real-account review remains |
 | [SBS-031](SBS-031-optional-database.md) | Optional PostgreSQL, private object persistence and dual-mode validation | Owner25 October2026 continuation | Current booking/RAG/CRM/dispatch implementation | Complete local; owner confirms no-database works as intended26 October2026;511 backend/160 Node/Linux plus23 PostgreSQL-off checks; separately scoped native/hosted acceptance remains |
 | [SBS-000](SBS-000-baseline.md) | Verify the supported baseline and owned lifecycle | 07-build | None | Complete local |

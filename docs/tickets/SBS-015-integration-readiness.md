@@ -1,5 +1,7 @@
 # SBS-015 — Finish executable readiness and bounded acceptance tooling
 
+> **Deployment supersession,26 October2026:** the selected deployment is **no database** (`DATABASE_ENABLED=false`), using private GCS objects, Cloud Tasks and authenticated minute Scheduler maintenance. SQL/pgvector/migration/WorkerPool requirements in this dated packet are historical or optional true-mode evidence. They do not authorize or require database provisioning. See [the current setup inventory](../../infra/README.md#verified-cloud-inventory-and-remaining-setup-26-october2026).
+
 Status: **Complete local; continuation gates and final release refresh completed**
 Owning phase: **07-build continuation; final release refresh at12**  
 Depends on: SBS-012/013/014.

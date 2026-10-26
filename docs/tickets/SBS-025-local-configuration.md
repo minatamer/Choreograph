@@ -1,5 +1,7 @@
 # SBS-025 — Small private environment and one OAuth Connect flow
 
+> **Deployment supersession,26 October2026:** the selected deployment is **no database** (`DATABASE_ENABLED=false`), using private GCS objects, Cloud Tasks and authenticated minute Scheduler maintenance. SQL/pgvector/migration/WorkerPool requirements in this dated packet are historical or optional true-mode evidence. They do not authorize or require database provisioning. See [the current setup inventory](../../infra/README.md#verified-cloud-inventory-and-remaining-setup-26-october2026).
+
 Status: Complete local; final read-only review has no actionable findings —24 October2026
 
 **25 October2026 unquoted-env correction:** the owner removed wrapping quotes and requests they never return. Setup now writes all values unquoted, preserves literal values and rejects comment/expansion syntax, line breaks, significant surrounding whitespace or any failed dotenv round-trip before writing either file. It never silently adds quotes or escapes a secret. Presence/value-safe inspection confirms all11 actual backend assignments parse literally and Python/Node agree; the three frontend values also agree between loaders. Local OAuth activation renders both files unquoted and changes only their shared origin to `http://localhost:45860`, checking every other parsed value unchanged in memory. No secret value or fingerprint is printed or stored. The broader current HubSpot manual policy/activation belongs to SBS-024; preceding quoted-secret rendering receipts below are historical.

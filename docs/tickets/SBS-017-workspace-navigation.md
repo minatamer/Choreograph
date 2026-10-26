@@ -1,5 +1,7 @@
 # SBS-017 — Refine discovery and give each workspace its own navigation
 
+> **Deployment supersession,26 October2026:** the selected deployment is **no database** (`DATABASE_ENABLED=false`), using private GCS objects, Cloud Tasks and authenticated minute Scheduler maintenance. SQL/pgvector/migration/WorkerPool requirements in this dated packet are historical or optional true-mode evidence. They do not authorize or require database provisioning. See [the current setup inventory](../../infra/README.md#verified-cloud-inventory-and-remaining-setup-26-october2026).
+
 Status: Complete locally — execute/validate loop and fake-mode browser checks complete; owner visual review remains
 
 Owner request: latest landing/intro/filter/customer/business navigation feedback, with an execute/validate loop and fake-mode testing. This is one cohesive presentation/navigation ticket after the completed SBS-016 checkpoint. The later explicit owner request authorizes the local53-file/20-commit checkpoint in COMMIT_PLAN.md; earlier no-Git statements below describe implementation-time scope.

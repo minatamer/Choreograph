@@ -1,5 +1,7 @@
 # Lessons learned for Choreograph
 
+**Selected deployment,26 October2026: NO DATABASE (`DATABASE_ENABLED=false`).** Use encrypted private GCS objects, three scale-to-zero Cloud Run services, Cloud Tasks and authenticated minute Scheduler maintenance. No Cloud SQL, hosted PostgreSQL/pgvector, SQL migrations, database secret or always-running WorkerPool is required. PostgreSQL remains an optional `true` implementation; dated SQL-first designs and test receipts are historical. Database-specific lessons below apply only to optional SQL compatibility, not a hosting prerequisite.
+
 Merged guidance · prepared 21 October 2026; project alignment updated 22 October 2026 · Prepared from the Retailor-derived lessons used in Roomedy and fresh evidence from Roomedy itself.
 
 ## How this document was assembled
@@ -18,7 +20,7 @@ The source lessons attribute earlier chat evidence; this preparation did not reo
 
 Choose a recognizable input, useful transformation and explorable result. In this product the story is request → clarification → quote → review → reservation → CRM outcome. A polished list of dashboards and integrations without that path is not a successful demo.
 
-Keep the portfolio demo, a client's commercial MVP and a full SaaS distinct. One working CRM connection and a correct scheduling invariant are more useful than five decorative integration logos. Extra accounts, queues and storage should have a job; here PostgreSQL and durable delivery are justified by the selected story.
+Keep the portfolio demo, a client's commercial MVP and a full SaaS distinct. One working CRM connection and a correct scheduling invariant are more useful than five decorative integration logos. Extra accounts, queues and storage should have a job; here durable server authority and delivery are justified; encrypted object storage implements that authority without a hosted database.
 
 ### I-02 — Give each piece of copy or chrome a visitor task
 

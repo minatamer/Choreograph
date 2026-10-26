@@ -1,5 +1,7 @@
 # Ticket-prefixed local commit plan
 
+**Selected deployment,26 October2026: NO DATABASE (`DATABASE_ENABLED=false`).** Use encrypted private GCS objects, three scale-to-zero Cloud Run services, Cloud Tasks and authenticated minute Scheduler maintenance. No Cloud SQL, hosted PostgreSQL/pgvector, SQL migrations, database secret or always-running WorkerPool is required. PostgreSQL remains an optional `true` implementation; dated SQL-first designs and test receipts are historical. Current setup evidence: [SBS-033](SBS-033-predeployment-audit.md).
+
 The owner directly requested: “file level commit plan, stage andcommit everything with ticket prefixes”. This authorizes local staging/commits of the complete Choreograph build. No push, deployment, paid/provider/account action is included. Product/visual/security AFK reviews remain provisional; Git permission does not approve those results.
 
 Before this operation Git contained only initial commit5601be0 and the short README; the completed app/design/docs were untracked. These commits group the final verified snapshot by owning responsibility. They do not reconstruct historical intermediate implementations. The SBS-015 application group consolidates the interdependent final SBS-001–009/012–015 code, migrations, assets and regressions so its shared contracts/providers are recorded together. Earlier ticket evidence remains in each packet.
@@ -964,3 +966,102 @@ The owner explicitly confirms that the no-database path is working as intended l
 The settled app evidence is165 Node tests and frontend TypeScript, six initial injected browser scenarios,19 all-step Skip scenarios plus three replay skips, and two focused refresh/keyboard-focus checks after the last scoped style correction. Existing511-backend/160-Node/Linux and23 PostgreSQL-off storage receipts remain dated SBS-031 evidence, without claiming a fresh Linux receipt for later UI edits. Documentation-only owner confirmation needs no new paid test or suite repetition.
 
 Before each commit, verify exact path coverage, an unchanged baseline/parent, planned filtered Git blob IDs, staged whitespace and absence of known app-private values. Keep app-local env files, `.runtime`, private storage, logs, screenshots and fixtures ignored. Stage explicit paths only. Save resulting commit IDs and final clean-tree evidence in ignored `.runtime/sbs032-checkpoint-result.json` instead of editing tracked receipts after committing.
+
+
+## Owner pre-deployment and cloud-preparation checkpoint —26 October2026
+The owner explicitly requests a file-level plan for all current unstaged work, followed by local staging and commits. Baseline: `83cfe83676a80748e431728f75abb176f498edfd` on existing `main`; index verified empty. The allocation below covers exactly **67 files in four ticket-prefixed commits**. No push, cloud action, secret access, provider call, deployment, database startup, app restart or new implementation is part of this Git checkpoint.
+SBS-034 and SBS-035 evidence stays together because their foundation/follow-up receipts and tickets refer to one another. Shared authority/runbook documents are committed last as the final combined handoff. Dated no-Git/no-cloud-write statements describe their original slices; this new direct instruction authorizes the current local Git writes only.
+
+### Commit 1: SBS-033: bound GCS response reads before parsing
+Bound raw GCS responses before JSON/decryption and preserve conditional-write acknowledgement safety. **2 files.**
+| Exact file | Allocation |
+| --- | --- |
+| `apps/backend/choreograph/object_store.py` | Bound identity-encoded raw transport before parsing/decryption; close responses and retain safe conditional writes. |
+| `apps/backend/tests/test_object_gcs.py` | Cover oversized/encoded/chunked/late responses, real loopback transport and lost acknowledgements. |
+
+### Commit 2: SBS-033: add no-database cloud planning and Linux release checks
+Keep the object path as the selected offline cloud/release default; retain explicitly optional SQL compatibility and actual current Linux evidence. **14 files.**
+| Exact file | Allocation |
+| --- | --- |
+| `.github/workflows/ci.yml` | Run the objects-only release smoke and label SQL as a compatibility fixture. |
+| `apps/backend/choreograph/cloud_plan.py` | Default to object topology with private bootstrap, exact IAM and scheduled maintenance. |
+| `apps/backend/tests/test_cloud_plan.py` | Validate object output and explicitly selected optional SQL output offline. |
+| `infra/cloud-run.example.yaml` | Label retained SQL topology optional and outside the selected deployment. |
+| `infra/cloud-run.object.example.yaml` | State the selected no-database service topology explicitly. |
+| `infra/cloud-tasks.example.json` | Describe authoritative private state and scheduled recovery without requiring SQL/WorkerPool. |
+| `infra/iam.example.json` | Label retained SQL IAM optional. |
+| `infra/iam.object.example.json` | Prepare exact-resource roles and identity bindings for object/Tasks/Scheduler topology. |
+| `infra/object-storage.example.json` | Use the reviewed region substitution/private policy and point to actual foundation/promotion receipts. |
+| `infra/release-object-evidence.json` | Preserve actual source-fresh non-root Linux object/frontend smoke evidence. |
+| `infra/scheduler.object.example.json` | Prepare exact-worker-origin minute OIDC maintenance configuration. |
+| `scripts/object-linux-smoke.py` | Document the intentional import bootstrap while retaining the full remaining lint policy. |
+| `scripts/release-fingerprint.mjs` | Check the separate object receipt without changing source-hash semantics. |
+| `scripts/release-smoke.mjs` | Add explicit no-database smoke, production frontend probes and a separate evidence receipt. |
+
+### Commit 3: SBS-035: prepare canonical RAG data and runtime cloud access
+Keep the interlinked SBS-034 foundation and SBS-035 canonical/secret follow-up together with strict operator tooling, tests and nonsecret actual resource receipts. **7 files.**
+| Exact file | Allocation |
+| --- | --- |
+| `apps/backend/tests/test_canonical_promotion.py` | Exercise canonical privacy/identity admission, encrypted copy/replay, used-store refusal and unknown-ack recovery. |
+| `docs/tickets/SBS-034-private-storage-foundation.md` | Record scoped bucket/runtime-IAM authorization, actual foundation evidence and later follow-up. |
+| `docs/tickets/SBS-035-canonical-promotion.md` | Record canonical-only promotion, runtime secret map, actual readback and thirteen isolated tests. |
+| `infra/canonical-promotion.json` | Record only actual canonical hashes/counts/object generations and scoped promotion limitations. |
+| `infra/object-foundation.json` | Record nonsecret bucket/runtime role metadata and pointers to subsequent setup. |
+| `infra/runtime-secret-access.json` | Record individual secret-resource grants and numeric version metadata, without payloads. |
+| `scripts/promote-canonical.py` | Provide strict dry-run/apply canonical-only promotion with in-memory cloud encryption key and fresh readback. |
+
+### Commit 4: SBS-033: reconcile no-database deployment guidance and audit evidence
+Make the current no-database architecture, completed cloud setup and remaining setup list consistent while preserving dated SQL evidence. **44 files.**
+| Exact file | Allocation |
+| --- | --- |
+| `AGENTS.md` | Reconcile current owner authorizations, no-database engineering/test rules and completed cloud preparation. |
+| `README.md` | State current no-database setup, completed canonical/secret preparation and selected release commands. |
+| `docs/CHOREOGRAPH.md` | Update active architecture/RAG/storage/maintenance/cost/verification guidance and preserve optional SQL history. |
+| `docs/CHOREOGRAPH_OVERVIEW.html` | Update the architecture overview and scripted conflict explanation for no-database authority. |
+| `docs/LESSONS_LEARNED.md` | Apply the current no-database decision to inherited storage lessons. |
+| `docs/security/SECURITY_OVERVIEW.html` | Distinguish current object deployment from historical SQL security evidence. |
+| `docs/security/SECURITY_REVIEW.md` | Record scoped GCS admission repair and current evidence boundaries. |
+| `docs/tickets/COMMIT_PLAN.md` | Preserve this exact67-file/four-commit owner-authorized checkpoint plan and Git safeguards. |
+| `docs/tickets/README.md` | Register SBS-033/034/035 outcomes and preserve current no-database authority. |
+| `docs/tickets/SBS-000-baseline.md` | Mark the dated SQL-first packet historical/optional under the selected no-database deployment; preserve original results and owner quotes. |
+| `docs/tickets/SBS-000A-figma.md` | Mark the dated SQL-first packet historical/optional under the selected no-database deployment; preserve original results and owner quotes. |
+| `docs/tickets/SBS-001-foundation.md` | Mark the dated SQL-first packet historical/optional under the selected no-database deployment; preserve original results and owner quotes. |
+| `docs/tickets/SBS-002-database.md` | Mark the dated SQL-first packet historical/optional under the selected no-database deployment; preserve original results and owner quotes. |
+| `docs/tickets/SBS-003-request-calendar.md` | Mark the dated SQL-first packet historical/optional under the selected no-database deployment; preserve original results and owner quotes. |
+| `docs/tickets/SBS-004-booking.md` | Mark the dated SQL-first packet historical/optional under the selected no-database deployment; preserve original results and owner quotes. |
+| `docs/tickets/SBS-005-assistant.md` | Mark the dated SQL-first packet historical/optional under the selected no-database deployment; preserve original results and owner quotes. |
+| `docs/tickets/SBS-005A-knowledge.md` | Mark the dated SQL-first packet historical/optional under the selected no-database deployment; preserve original results and owner quotes. |
+| `docs/tickets/SBS-006-crm.md` | Mark the dated SQL-first packet historical/optional under the selected no-database deployment; preserve original results and owner quotes. |
+| `docs/tickets/SBS-007-durable-work.md` | Mark the dated SQL-first packet historical/optional under the selected no-database deployment; preserve original results and owner quotes. |
+| `docs/tickets/SBS-008-responsive-flow.md` | Mark the dated SQL-first packet historical/optional under the selected no-database deployment; preserve original results and owner quotes. |
+| `docs/tickets/SBS-009A-quality.md` | Mark the dated SQL-first packet historical/optional under the selected no-database deployment; preserve original results and owner quotes. |
+| `docs/tickets/SBS-009B-security-review.md` | Mark the dated SQL-first packet historical/optional under the selected no-database deployment; preserve original results and owner quotes. |
+| `docs/tickets/SBS-009C-security-fixes.md` | Mark the dated SQL-first packet historical/optional under the selected no-database deployment; preserve original results and owner quotes. |
+| `docs/tickets/SBS-010-release.md` | Mark the dated SQL-first packet historical/optional under the selected no-database deployment; preserve original results and owner quotes. |
+| `docs/tickets/SBS-011-external-acceptance.md` | Mark the dated SQL-first packet historical/optional under the selected no-database deployment; preserve original results and owner quotes. |
+| `docs/tickets/SBS-012-live-ai.md` | Mark the dated SQL-first packet historical/optional under the selected no-database deployment; preserve original results and owner quotes. |
+| `docs/tickets/SBS-013-live-crm.md` | Mark the dated SQL-first packet historical/optional under the selected no-database deployment; preserve original results and owner quotes. |
+| `docs/tickets/SBS-014-cloud-dispatch.md` | Mark the dated SQL-first packet historical/optional under the selected no-database deployment; preserve original results and owner quotes. |
+| `docs/tickets/SBS-015-integration-readiness.md` | Mark the dated SQL-first packet historical/optional under the selected no-database deployment; preserve original results and owner quotes. |
+| `docs/tickets/SBS-016-guided-workspace.md` | Mark the dated SQL-first packet historical/optional under the selected no-database deployment; preserve original results and owner quotes. |
+| `docs/tickets/SBS-017-workspace-navigation.md` | Mark the dated SQL-first packet historical/optional under the selected no-database deployment; preserve original results and owner quotes. |
+| `docs/tickets/SBS-018-business-overview.md` | Mark the dated SQL-first packet historical/optional under the selected no-database deployment; preserve original results and owner quotes. |
+| `docs/tickets/SBS-019-customer-booking.md` | Mark the dated SQL-first packet historical/optional under the selected no-database deployment; preserve original results and owner quotes. |
+| `docs/tickets/SBS-020-rag-citations.md` | Mark the dated SQL-first packet historical/optional under the selected no-database deployment; preserve original results and owner quotes. |
+| `docs/tickets/SBS-021-live-ai-audit.md` | Mark the dated SQL-first packet historical/optional under the selected no-database deployment; preserve original results and owner quotes. |
+| `docs/tickets/SBS-022-turnstile-live-controls.md` | Mark the dated SQL-first packet historical/optional under the selected no-database deployment; preserve original results and owner quotes. |
+| `docs/tickets/SBS-023-assistant-quality.md` | Mark the dated SQL-first packet historical/optional under the selected no-database deployment; preserve original results and owner quotes. |
+| `docs/tickets/SBS-024-hubspot-free-readiness.md` | Mark the dated SQL-first packet historical/optional under the selected no-database deployment; preserve original results and owner quotes. |
+| `docs/tickets/SBS-025-local-configuration.md` | Mark the dated SQL-first packet historical/optional under the selected no-database deployment; preserve original results and owner quotes. |
+| `docs/tickets/SBS-027-security-review.md` | Mark the dated SQL-first packet historical/optional under the selected no-database deployment; preserve original results and owner quotes. |
+| `docs/tickets/SBS-028-owner-manual-ai.md` | Mark the dated SQL-first packet historical/optional under the selected no-database deployment; preserve original results and owner quotes. |
+| `docs/tickets/SBS-029-deployment-readiness.md` | Mark the dated SQL-first packet historical/optional under the selected no-database deployment; preserve original results and owner quotes. |
+| `docs/tickets/SBS-033-predeployment-audit.md` | Own audit findings, validation, cloud inventory, database-secret removal and subsequent setup pointers. |
+| `infra/README.md` | Own verified cloud inventory, completed canonical/secret access, numeric pins and remaining pre-deployment setup only. |
+
+### Settled checks and exact-staging safeguards
+- SBS-033:358 no-SQL backend and165 Node tests, types, configured lint, dependency/contracts, integrity checks and actual non-root Linux production/object smoke. The source-fresh object receipt covers200 image inputs with SHA256 `fd2c4d159d77f8c6d2c8f36cfbbc59dcab39a0339726f7ae108c6b68c431d802`.
+- SBS-035:13 isolated canonical-promotion tests and full configured Ruff pass. The operator tool/tests are not image inputs; the same Linux receipt remains current. Actual GCS canonical readback/private denial and per-secret IAM evidence already exist; Git needs no new cloud/provider call.
+- Freeze raw file hashes and Git-filtered blob IDs after writing this plan. Require unchanged baseline/parent, exact allocation, unchanged reviewed bytes, empty initial index and staged whitespace checks. `.gitattributes` preserves tested bytes (`* -text`). Stage only the enumerated literal paths.
+- Scan final files and actual staged/committed blobs for raw/URL/base64/JSON variants of known app-local private values and private-key patterns, without displaying values. Reject env/runtime/cache/credential paths. No cloud secret payload is fetched for Git. Safe tracked receipts contain names/version numbers/counts/hashes only.
+- Verify every commit message, parent, exact file list and blob IDs; require an empty index after each. Save actual commit identities/final clean-tree evidence in ignored `.runtime/predeployment-checkpoint-result.json`, avoiding a post-commit tracked edit. Existing local services, private env/state and the stopped PostgreSQL volume remain intact.

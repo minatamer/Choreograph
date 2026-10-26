@@ -1,5 +1,7 @@
 # SBS-010 — Prepare local Linux release and cloud files
 
+> **Deployment supersession,26 October2026:** the selected deployment is **no database** (`DATABASE_ENABLED=false`), using private GCS objects, Cloud Tasks and authenticated minute Scheduler maintenance. SQL/pgvector/migration/WorkerPool requirements in this dated packet are historical or optional true-mode evidence. They do not authorize or require database provisioning. See [the current setup inventory](../../infra/README.md#verified-cloud-inventory-and-remaining-setup-26-october2026).
+
 ## Current continuation receipt — SBS-012–015 / final phase12
 
 Final source `c803fbcd8d491d794dc3504bd08d0da056f5521363fcdd8e1fdaa73f7c7251b4` has107 image inputs. Actual non-root Linux/amd64 builds and owned isolated smoke pass: empty migration0010 round-trip, explicit fake sample preparation, schema/profile/six-source readiness, health-only bootstrap without secrets,24 HTTP requests/180 assertions, genuine skip/no outbox, private worker rejection, SQL maintenance and owned-resource removal. `release-fingerprint --check` matches. Frontend image `sha256:1bdd91e937cd7098271a1c2e93eefbf9925dda3cbd3b2bcfd118b9ffda103ddd`; backend `sha256:9f51268707052e7e91e63ed3ab693a24379a43e87490c1c576db60cf48e48fb5`. Exact timestamp/input hashes are in `infra/release-evidence.json`; older receipts below are historical.

@@ -1,5 +1,7 @@
 # SBS-008 — Verify the complete responsive demo
 
+> **Deployment supersession,26 October2026:** the selected deployment is **no database** (`DATABASE_ENABLED=false`), using private GCS objects, Cloud Tasks and authenticated minute Scheduler maintenance. SQL/pgvector/migration/WorkerPool requirements in this dated packet are historical or optional true-mode evidence. They do not authorize or require database provisioning. See [the current setup inventory](../../infra/README.md#verified-cloud-inventory-and-remaining-setup-26-october2026).
+
 ## Owner hero entrance correction —25 October2026
 
 The owner reports a small initial stutter in the otherwise approved headline fade. Actual100-sample reload inspection reproduced the near-visible85%-opacity/16px-down frame staying unchanged from267–545ms, with first observed progress at598ms; heading dimensions stayed stable in that pass. The original Motion entrance could expose that initial state before client playback was ready. A CSS-only version still exposed early startup holds in subsequent local development runs.

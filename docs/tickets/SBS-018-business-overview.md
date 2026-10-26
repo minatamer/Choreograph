@@ -1,5 +1,7 @@
 # SBS-018 — Make the Business overview useful and unify card surfaces
 
+> **Deployment supersession,26 October2026:** the selected deployment is **no database** (`DATABASE_ENABLED=false`), using private GCS objects, Cloud Tasks and authenticated minute Scheduler maintenance. SQL/pgvector/migration/WorkerPool requirements in this dated packet are historical or optional true-mode evidence. They do not authorize or require database provisioning. See [the current setup inventory](../../infra/README.md#verified-cloud-inventory-and-remaining-setup-26-october2026).
+
 Status: Complete locally — implementation, fake-mode checks and read-only validation complete; owner visual review remains
 
 The owner finds Overview too plain after sections moved into separate pages. The follow-up explicitly asks Guides and HubSpot card backgrounds to match the calendar. Continue the existing fake-mode execute/read-only-validate workflow; all SBS-017 changes are related, unstaged and preserved. The later explicit owner request authorizes the local53-file/20-commit checkpoint in COMMIT_PLAN.md; earlier no-Git statements below describe implementation-time scope.

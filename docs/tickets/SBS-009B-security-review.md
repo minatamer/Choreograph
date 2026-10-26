@@ -1,5 +1,7 @@
 # SBS-009B — Audit security and present findings
 
+> **Deployment supersession,26 October2026:** the selected deployment is **no database** (`DATABASE_ENABLED=false`), using private GCS objects, Cloud Tasks and authenticated minute Scheduler maintenance. SQL/pgvector/migration/WorkerPool requirements in this dated packet are historical or optional true-mode evidence. They do not authorize or require database provisioning. See [the current setup inventory](../../infra/README.md#verified-cloud-inventory-and-remaining-setup-26-october2026).
+
 ## Continuation review disposition
 
 The SBS-012–015 read-only continuation audit at source `c803fbcd8d491d794dc3504bd08d0da056f5521363fcdd8e1fdaa73f7c7251b4` is complete. Current detailed STRIDE/general/dependency evidence is at the top of `docs/security/SECURITY_REVIEW.md`; the updated PM HTML was rendered at1440/390 with no overflow or page errors and inspected. No new substantial actionable local finding was confirmed; no application fix or scanner export occurred during review. The canonical AFK disposition selects no new fixes, retains the earlier six remedies and explicitly defers actual account/provider/cloud/human acceptance. This is not personal owner security acceptance or a comprehensive vulnerability-free attestation.

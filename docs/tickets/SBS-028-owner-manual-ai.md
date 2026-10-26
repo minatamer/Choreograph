@@ -1,5 +1,7 @@
 # SBS-028 — Local owner manual AI without an acceptance allowance
 
+> **Deployment supersession,26 October2026:** the selected deployment is **no database** (`DATABASE_ENABLED=false`), using private GCS objects, Cloud Tasks and authenticated minute Scheduler maintenance. SQL/pgvector/migration/WorkerPool requirements in this dated packet are historical or optional true-mode evidence. They do not authorize or require database provisioning. See [the current setup inventory](../../infra/README.md#verified-cloud-inventory-and-remaining-setup-26-october2026).
+
 Status: Complete local; owner manual and native HubSpot acceptance remain —25 October2026
 
 The owner directly clarified that duration/usage allowances were for agent-run tests. They will test real AI manually and request no duration or usage cap for that local session. Keep `FAKE_MODE=false` / `PAID_DEMO_ENABLED=true`, all existing credentials, existing source vectors and historical SBS-022/023 grants unchanged. This authorization covers enabling the owner's local manual use and starting the app, not agent-generated paid requests, HubSpot registration/API acceptance, deployment or Git writes.

@@ -1,5 +1,7 @@
 # SBS-021 — Real AI readiness audit and conversational command foundation
 
+> **Deployment supersession,26 October2026:** the selected deployment is **no database** (`DATABASE_ENABLED=false`), using private GCS objects, Cloud Tasks and authenticated minute Scheduler maintenance. SQL/pgvector/migration/WorkerPool requirements in this dated packet are historical or optional true-mode evidence. They do not authorize or require database provisioning. See [the current setup inventory](../../infra/README.md#verified-cloud-inventory-and-remaining-setup-26-october2026).
+
 Status: Complete locally — bounded real website evidence recorded in SBS-022;24 October2026
 
 Audit and repair the actual OpenAI/RAG/chat/booking path. The original audit used fake/injected providers; the owner's later explicit real-test authorization, switches and finite allowance are owned by [SBS-022](SBS-022-turnstile-live-controls.md). That continuation supersedes the original fake-only stop for this one local test. Earlier unstaged SBS-019/020 and landing changes are preserved. No sibling, Figma or Git writes occurred.
