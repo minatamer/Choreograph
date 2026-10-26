@@ -17,6 +17,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     env:
+      # Optional SQL compatibility fixture only; deployment uses DATABASE_ENABLED=false.
       DATABASE_ENABLED: "true"
       FAKE_MODE: "true"
       PAID_DEMO_ENABLED: "false"
@@ -155,5 +156,7 @@ jobs:
       - name: Smoke-test isolated Linux release containers
         # The owned script rebuilds from current inputs (normally cached), uses
         # disposable PostgreSQL/network resources, and publishes no host ports.
-        run: node scripts/release-smoke.mjs --no-receipt
+        run: |
+          node scripts/release-smoke.mjs --objects-only --no-receipt
+          node scripts/release-smoke.mjs --no-receipt
 

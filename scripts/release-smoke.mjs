@@ -27,6 +27,7 @@ const frontendNames = ['CHOREOGRAPH_ORIGIN','CHOREOGRAPH_BRIDGE_SECRET','CHOREOG
 const ids = [];
 let network, stage = 'fingerprint';
 const checks = {};
+const objectsOnly=process.argv.includes('--objects-only');
 function docker(args, {input, timeout = 120000, allowFailure = false} = {}) {
   const r = spawnSync('docker', args, {cwd: root, env, windowsHide: true, encoding: 'utf8', input, timeout, maxBuffer: 8 * 1024 * 1024});
   if (r.error || r.status !== 0) {
@@ -73,6 +74,7 @@ try {
   }
   stage = 'create-network';
   network = docker(['network','create','--internal','--label',label,owner]);
+  if(!objectsOnly){
   stage = 'postgres';
   const pg = create('postgres',pgImage,[],['--network-alias','postgres','--tmpfs','/var/lib/postgresql/data:rw,noexec,nosuid,size=512m',...envArgs(['POSTGRES_DB','POSTGRES_USER','POSTGRES_PASSWORD'])]);
   docker(['start',pg]);
@@ -115,6 +117,15 @@ try {
   stage = 'maintenance';
   job('maintenance','maintenance');
   checks.oneShotMaintenance = true;
+  }
+  if(objectsOnly){
+    stage='object-frontend-http';
+    const frontend=create('frontend',images.frontend.id,[],['--network-alias','frontend','--read-only','--tmpfs','/tmp:rw,noexec,nosuid,size=128m',...envArgs(frontendNames)]);
+    docker(['start',frontend]);
+    await ready(frontend,['node','-e',"fetch('http://127.0.0.1:8080/healthz').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"]);
+    checks.frontendHTTP=JSON.parse(docker(['exec',frontend,'node','--input-type=module','-e',
+      "const paths=['/healthz','/','/demo','/demo/workspace','/vendor/pdfjs/pdf.worker.min.mjs','/fonts/OFL.txt'];for(const path of paths){const r=await fetch('http://127.0.0.1:8080'+path);if(r.status!==200||r.headers.get('x-content-type-options')!=='nosniff'||r.headers.get('x-frame-options')!=='DENY')throw Error('FRONTEND_HTTP_FAILED');await r.arrayBuffer();}console.log(JSON.stringify({requests:paths.length,productionPagesAndAssets:true,securityHeaders:true}));"]));
+  }
   stage = 'object-storage-process-smoke';
   const objectCheck = create('object-smoke',images.backend.id,['python','-'],
     ['--interactive','--read-only','--tmpfs','/tmp:rw,noexec,nosuid,size=128m']);
@@ -126,8 +137,8 @@ try {
   checks.nonRootLinuxImages = true;
   stage = 'freshness';
   if ((await sourceFingerprint(root)).sha256 !== source.sha256) throw new Error('SOURCE_CHANGED_DURING_ACCEPTANCE');
-  evidence = {schemaVersion:1,verifiedAt:new Date().toISOString(),profile:'local-isolated-linux-fake',source,images,checks,
-    limitations:['No hosted CI run, deployment, Cloud SQL, Cloud Tasks delivery, IAM, live provider or owner acceptance verified.','Empty disposable schema roundtrip does not establish safety for downgrading populated data.']};
+  evidence = {schemaVersion:1,verifiedAt:new Date().toISOString(),profile:objectsOnly?'local-isolated-linux-objects-fake':'local-isolated-linux-fake',source,images,checks,
+    limitations:['No hosted CI run, deployment, Cloud SQL, Cloud Tasks delivery, IAM, live provider or owner acceptance verified.',objectsOnly?'Objects-only smoke excludes SQL and does not validate hosted GCS/IAM/queue behavior.':'Empty disposable schema roundtrip does not establish safety for downgrading populated data.']};
 } catch (error) {
   failure = {stage,code:error.message};
 } finally {
@@ -150,6 +161,6 @@ try {
 }
 if(failure){console.error(JSON.stringify({passed:false,...failure}));process.exitCode=1;}
 else {
-  if(!process.argv.includes('--no-receipt'))writeFileSync(path.join(root,'infra/release-evidence.json'),JSON.stringify(evidence,null,2)+'\n');
+  if(!process.argv.includes('--no-receipt'))writeFileSync(path.join(root,objectsOnly?'infra/release-object-evidence.json':'infra/release-evidence.json'),JSON.stringify(evidence,null,2)+'\n');
   console.log(JSON.stringify({passed:true,profile:evidence.profile,sourceSha256:evidence.source.sha256,checks:evidence.checks,images:evidence.images}));
 }

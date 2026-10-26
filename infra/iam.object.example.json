@@ -1,0 +1,151 @@
+{
+  "status": "UNCONFIGURED_REVIEW_ONLY",
+  "notes": [
+    "Selected deployment is no database (DATABASE_ENABLED=false): private GCS, Tasks and Scheduler, with no SQL roles.",
+    "Merge additions into fresh policies with etags; never replace unrelated bindings.",
+    "Restricted fake-provider QA only. Public frontend/provider secrets need a separately reviewed rollout.",
+    "Keep Cloud Tasks and Scheduler service-agent roles; verify token creation with actual hosted negative tests."
+  ],
+  "resourcePolicyAdditions": [
+    {
+      "resource": "projects/REPLACE_PROJECT_ID/locations/REPLACE_REGION/services/REPLACE_FRONTEND_SERVICE_NAME",
+      "bindings": [
+        {
+          "role": "roles/run.invoker",
+          "members": [
+            "group:REPLACE_QA_TESTERS_GROUP"
+          ]
+        }
+      ]
+    },
+    {
+      "resource": "projects/REPLACE_PROJECT_ID/locations/REPLACE_REGION/services/REPLACE_API_SERVICE_NAME",
+      "bindings": [
+        {
+          "role": "roles/run.invoker",
+          "members": [
+            "serviceAccount:REPLACE_FRONTEND_SA@REPLACE_PROJECT_ID.iam.gserviceaccount.com"
+          ]
+        }
+      ]
+    },
+    {
+      "resource": "projects/REPLACE_PROJECT_ID/locations/REPLACE_REGION/services/REPLACE_WORKER_SERVICE_NAME",
+      "bindings": [
+        {
+          "role": "roles/run.invoker",
+          "members": [
+            "serviceAccount:REPLACE_TASK_DELIVERY_SA@REPLACE_PROJECT_ID.iam.gserviceaccount.com",
+            "serviceAccount:REPLACE_MAINTENANCE_SA@REPLACE_PROJECT_ID.iam.gserviceaccount.com"
+          ]
+        }
+      ]
+    },
+    {
+      "resource": "projects/_/buckets/choreograph-512713-private-state",
+      "bindings": [
+        {
+          "role": "projects/REPLACE_PROJECT_ID/roles/choreographPrivateObjects",
+          "members": [
+            "serviceAccount:REPLACE_API_SA@REPLACE_PROJECT_ID.iam.gserviceaccount.com",
+            "serviceAccount:REPLACE_WORKER_SA@REPLACE_PROJECT_ID.iam.gserviceaccount.com"
+          ]
+        }
+      ]
+    },
+    {
+      "resource": "projects/REPLACE_PROJECT_ID/locations/REPLACE_REGION/queues/REPLACE_QUEUE_NAME",
+      "bindings": [
+        {
+          "role": "projects/REPLACE_PROJECT_ID/roles/choreographTaskPublisher",
+          "members": [
+            "serviceAccount:REPLACE_API_SA@REPLACE_PROJECT_ID.iam.gserviceaccount.com",
+            "serviceAccount:REPLACE_WORKER_SA@REPLACE_PROJECT_ID.iam.gserviceaccount.com"
+          ]
+        }
+      ]
+    },
+    {
+      "resource": "projects/REPLACE_PROJECT_ID/serviceAccounts/REPLACE_TASK_DELIVERY_SA@REPLACE_PROJECT_ID.iam.gserviceaccount.com",
+      "bindings": [
+        {
+          "role": "roles/iam.serviceAccountUser",
+          "members": [
+            "serviceAccount:REPLACE_API_SA@REPLACE_PROJECT_ID.iam.gserviceaccount.com",
+            "serviceAccount:REPLACE_WORKER_SA@REPLACE_PROJECT_ID.iam.gserviceaccount.com"
+          ]
+        }
+      ]
+    },
+    {
+      "resource": "projects/REPLACE_PROJECT_ID/secrets/CHOREOGRAPH_BRIDGE_SECRET",
+      "bindings": [
+        {
+          "role": "roles/secretmanager.secretAccessor",
+          "members": [
+            "serviceAccount:REPLACE_FRONTEND_SA@REPLACE_PROJECT_ID.iam.gserviceaccount.com",
+            "serviceAccount:REPLACE_API_SA@REPLACE_PROJECT_ID.iam.gserviceaccount.com",
+            "serviceAccount:REPLACE_WORKER_SA@REPLACE_PROJECT_ID.iam.gserviceaccount.com"
+          ]
+        }
+      ]
+    },
+    {
+      "resource": "projects/REPLACE_PROJECT_ID/secrets/CHOREOGRAPH_TOKEN_KEY",
+      "bindings": [
+        {
+          "role": "roles/secretmanager.secretAccessor",
+          "members": [
+            "serviceAccount:REPLACE_API_SA@REPLACE_PROJECT_ID.iam.gserviceaccount.com",
+            "serviceAccount:REPLACE_WORKER_SA@REPLACE_PROJECT_ID.iam.gserviceaccount.com"
+          ]
+        }
+      ]
+    },
+    {
+      "resource": "projects/REPLACE_PROJECT_ID",
+      "bindings": [
+        {
+          "role": "roles/cloudtasks.serviceAgent",
+          "members": [
+            "serviceAccount:service-REPLACE_PROJECT_NUMBER@gcp-sa-cloudtasks.iam.gserviceaccount.com"
+          ]
+        }
+      ]
+    },
+    {
+      "resource": "projects/REPLACE_PROJECT_ID",
+      "bindings": [
+        {
+          "role": "roles/cloudscheduler.serviceAgent",
+          "members": [
+            "serviceAccount:service-REPLACE_PROJECT_NUMBER@gcp-sa-cloudscheduler.iam.gserviceaccount.com"
+          ]
+        }
+      ]
+    }
+  ],
+  "customRoleProposals": [
+    {
+      "name": "projects/REPLACE_PROJECT_ID/roles/choreographPrivateObjects",
+      "title": "Choreograph private objects",
+      "includedPermissions": [
+        "storage.buckets.get",
+        "storage.objects.get",
+        "storage.objects.create",
+        "storage.objects.delete"
+      ],
+      "stage": "GA"
+    },
+    {
+      "name": "projects/REPLACE_PROJECT_ID/roles/choreographTaskPublisher",
+      "title": "Choreograph task publisher",
+      "includedPermissions": [
+        "cloudtasks.tasks.create",
+        "cloudtasks.tasks.get",
+        "cloudtasks.tasks.fullView"
+      ],
+      "stage": "GA"
+    }
+  ]
+}

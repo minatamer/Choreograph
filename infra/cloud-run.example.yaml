@@ -1,3 +1,5 @@
+# OPTIONAL DATABASE_ENABLED=true SQL topology only; not the selected no-database deployment.
+# Selected deployment: cloud-run.object.example.yaml, private GCS, Tasks and Scheduler.
 # UNCONFIGURED REVIEW EXAMPLES ONLY. No resource has been provisioned/deployed.
 # Replace every REPLACE_* identifier after owner authorization and cost review.
 # This fake-provider hosted QA profile is not ready for public real-provider use.

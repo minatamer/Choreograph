@@ -157,10 +157,10 @@ export async function sourceFingerprint(root = repoRoot) {
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   try {
     const args = process.argv.slice(2);
-    if (args.length > 1 || (args.length && args[0] !== "--check")) throw new Error("Usage: release-fingerprint.mjs [--check]");
+    if (args.some(arg=>!["--check","--objects-only"].includes(arg)) || new Set(args).size!==args.length) throw new Error("Usage: release-fingerprint.mjs [--check] [--objects-only]");
     const current = await sourceFingerprint();
-    if (args[0] === "--check") {
-      const evidence = JSON.parse(await readFile(join(repoRoot, "infra/release-evidence.json"), "utf8"));
+    if (args.includes("--check")) {
+      const evidence = JSON.parse(await readFile(join(repoRoot, args.includes("--objects-only")?"infra/release-object-evidence.json":"infra/release-evidence.json"), "utf8"));
       const recordedFiles = evidence.source?.files;
       if (evidence.schemaVersion !== 1 || evidence.source?.sha256 !== current.sha256 ||
           !recordedFiles || typeof recordedFiles !== "object" || Array.isArray(recordedFiles) ||
@@ -169,7 +169,7 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
         throw new Error("Release source evidence is missing or stale; rerun release verification");
       }
     }
-    console.log(`Release source ${current.sha256} (${Object.keys(current.files).length} files)${args[0] ? " verified" : ""}`);
+    console.log(`Release source ${current.sha256} (${Object.keys(current.files).length} files)${args.includes("--check") ? " verified" : ""}`);
   } catch (error) {
     console.error(error.message);
     process.exitCode = 1;

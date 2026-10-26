@@ -15,18 +15,21 @@ from pathlib import Path
 from .readiness import ROOT
 
 TEMPLATES=('cloud-run.example.yaml','iam.example.json','worker-pool.example.json')
+OBJECT_TEMPLATES=('cloud-run.object.example.yaml','iam.object.example.json','scheduler.object.example.json')
 DERIVED={'REPLACE_THROWAWAY_SETTINGS_ONLY_32_PLUS_CHARACTERS':'settings-only-'+'x'*40,
          'REPLACE_THROWAWAY_SETTINGS_ONLY_BASE64URL_32_BYTES':base64.urlsafe_b64encode(bytes(32)).decode()}
 
 
-def required_fields():
-    source='\n'.join((ROOT/'infra'/name).read_text() for name in TEMPLATES)
+def required_fields(storage='objects'):
+    if storage not in {'objects','postgres'}:raise ValueError('CLOUD_STORAGE_MODE_INVALID')
+    source='\n'.join((ROOT/'infra'/name).read_text() for name in (OBJECT_TEMPLATES if storage=='objects' else TEMPLATES))
+    if storage=='objects':source+=' REPLACE_PREPARE_KNOWLEDGE_JOB_NAME'
     source+=json.dumps(json.loads((ROOT/'infra/cloud-tasks.example.json').read_text())['queue'])
     return sorted(set(re.findall(r'REPLACE_[A-Z0-9_]+',source))-DERIVED.keys())
 
 
-def validate(values):
-    required=required_fields()
+def validate(values,storage='objects'):
+    required=required_fields(storage)
     if set(values)!=set(required):raise ValueError('CLOUD_INPUT_FIELDS_INVALID')
     for key,value in values.items():
         if not isinstance(value,str) or not 1<=len(value)<=180 or 'REPLACE_' in value:raise ValueError('CLOUD_INPUT_INVALID')
@@ -53,9 +56,10 @@ def substitute(source,values):
     return re.sub(r'REPLACE_[A-Z0-9_]+',lambda match:values[match[0]],source)
 
 
-def render(values):
+def render(values,storage='objects'):
+    if storage=='objects':return render_objects(values)
     import yaml
-    replacements=validate(values)
+    replacements=validate(values,storage)
     rendered={}
     for name in TEMPLATES:
         rendered[name.replace('.example','')]=substitute((ROOT/'infra'/name).read_text(),replacements)
@@ -101,14 +105,72 @@ def render(values):
         'scope':'restricted fake-provider cloud QA; real AI/visitor OAuth activation is a separate reviewed configuration change'}
 
 
-def preflight(values,*,runner=subprocess.run):
+def render_objects(values):
+    """The selected private-object QA topology; no SQL or continuous worker."""
+    import yaml
+
+    from .runtime_config import OBJECT_BUCKET
+    replacements=validate(values,'objects')
+    source=substitute((ROOT/'infra/cloud-run.object.example.yaml').read_text(),replacements)
+    resources=list(yaml.safe_load_all(source));rendered={};commands=[]
+    project=values['REPLACE_PROJECT_ID'];region=values['REPLACE_REGION'];common=['--project',project,'--region',region]
+    for resource in resources:
+        name=resource['metadata']['name'];rendered[name+'.yaml']=yaml.safe_dump(resource,sort_keys=False)
+        initial=copy.deepcopy(resource);container=initial['spec']['template']['spec']['containers'][0]
+        container['image']=resources[1]['spec']['template']['spec']['containers'][0]['image']
+        container['command']=['python','-m','choreograph.release'];container['args']=['bootstrap'];container['env']=[]
+        container['startupProbe']['httpGet']['path']='/health'
+        initial['metadata']['annotations']['run.googleapis.com/description']='Private bootstrap only; application_ready=false'
+        rendered['bootstrap-'+name+'.yaml']=yaml.safe_dump(initial,sort_keys=False)
+        commands.append({'stage':'bootstrap','argv':['gcloud','run','services','replace','bootstrap-'+name+'.yaml',*common]})
+    commands.extend({'stage':'discover-or-verify-urls','argv':['gcloud','run','services','describe',row['metadata']['name'],*common,'--format=value(status.url)']} for row in resources)
+    rendered['iam.json']=substitute((ROOT/'infra/iam.object.example.json').read_text(),replacements)
+    scheduler=json.loads(substitute((ROOT/'infra/scheduler.object.example.json').read_text(),replacements))
+    rendered['scheduler.json']=json.dumps(scheduler,indent=2)
+    bucket=copy.deepcopy(json.loads((ROOT/'infra/object-storage.example.json').read_text())['bucket'])
+    if bucket['name']!=OBJECT_BUCKET:raise ValueError('OBJECT_BUCKET_IDENTITY_MISMATCH')
+    bucket['location']=region;rendered['bucket.json']=json.dumps(bucket,indent=2)
+    queue=json.loads(substitute(json.dumps(json.loads((ROOT/'infra/cloud-tasks.example.json').read_text())['queue']),replacements))
+    rendered['queue.json']=json.dumps(queue,indent=2)
+    # An explicit fake-only preparation job establishes all six sources before
+    # traffic. A live pack needs separately authorized preparation/promotion.
+    api_spec=resources[1]['spec']['template']['spec'];prepare=copy.deepcopy(api_spec['containers'][0])
+    prepare['args']=['prepare-knowledge'];prepare.pop('ports',None);prepare.pop('startupProbe',None)
+    prepare['env']=[row for row in prepare['env'] if row['name'] in {'DATABASE_ENABLED','FAKE_MODE','PAID_DEMO_ENABLED','CHOREOGRAPH_ORIGIN','CHOREOGRAPH_BRIDGE_SECRET','CHOREOGRAPH_TOKEN_KEY'}]
+    job_name=values['REPLACE_PREPARE_KNOWLEDGE_JOB_NAME']
+    job={'apiVersion':'run.googleapis.com/v1','kind':'Job','metadata':{'name':job_name,'namespace':values['REPLACE_PROJECT_NUMBER']},
+        'spec':{'template':{'spec':{'taskCount':1,'parallelism':1,'template':{'spec':{'serviceAccountName':api_spec['serviceAccountName'],
+            'maxRetries':0,'timeoutSeconds':300,'containers':[prepare]}}}}}}
+    rendered[job_name+'.yaml']=yaml.safe_dump(job,sort_keys=False)
+    commands.extend([{'stage':'apply-fake-preparation-job','argv':['gcloud','run','jobs','replace',job_name+'.yaml',*common]},
+                     {'stage':'prepare-fake-sources-after-storage-iam','argv':['gcloud','run','jobs','execute',job_name,*common,'--wait']}])
+    commands.extend({'stage':'apply-after-storage-iam-and-corpus-readiness','argv':['gcloud','run','services','replace',row['metadata']['name']+'.yaml',*common]} for row in resources)
+    rest=[{'stage':'private-bucket-create','method':'POST','url':f'https://storage.googleapis.com/storage/v1/b?project={project}','body_file':'bucket.json'},
+          {'stage':'queue-create','method':'POST','url':f'https://cloudtasks.googleapis.com/v2/projects/{project}/locations/{region}/queues','body_file':'queue.json'},
+          {'stage':'maintenance-create-last','method':'POST','url':f'https://cloudscheduler.googleapis.com/v1/projects/{project}/locations/{region}/jobs','body_file':'scheduler.json'}]
+    return rendered,{'mode':'offline-review-plan','storage':'objects','cloud_changes':0,'provider_calls':0,'commands':commands,'rest_requests':rest,
+        'prerequisites':['owner-approved project/region/cost scope and pushed immutable images',
+            'fresh private bucket with enforced public-access prevention, uniform IAM and no retained object history',
+            'merge exact-resource IAM additions with fresh etags; create custom roles and preserve service-agent permissions',
+            'numeric secret versions and distinct frontend/API/worker/task-delivery/maintenance identities',
+            'verify stable origins, prepare all six profile-matching sources and pass runtime readiness before traffic',
+            'verify hosted storage contention/memory, OIDC negative cases, queue loss and browser-closed cleanup',
+            'real AI/HubSpot need fresh finite hosted authority, provider secrets and hostname/callback setup'],
+        'scope':'restricted fake-provider object-storage QA only; unapplied and not a public/live deployment approval'}
+
+
+def preflight(values,*,storage='objects',runner=subprocess.run):
     """At most eight gcloud describe reads. No secret access or account login."""
-    validate(values);project=values['REPLACE_PROJECT_ID'];region=values['REPLACE_REGION']
-    commands=[['projects','describe',project],['sql','instances','describe',values['REPLACE_SQL_INSTANCE']],
-        ['tasks','queues','describe',values['REPLACE_QUEUE_NAME'],'--location',region]]
+    validate(values,storage);project=values['REPLACE_PROJECT_ID'];region=values['REPLACE_REGION']
+    commands=[['projects','describe',project],['tasks','queues','describe',values['REPLACE_QUEUE_NAME'],'--location',region]]
+    if storage=='postgres':commands.append(['sql','instances','describe',values['REPLACE_SQL_INSTANCE']])
+    else:
+        from .runtime_config import OBJECT_BUCKET
+        commands.append(['storage','buckets','describe','gs://'+OBJECT_BUCKET])
     commands.extend(['run','services','describe',values[key],'--region',region] for key in
         ('REPLACE_FRONTEND_SERVICE_NAME','REPLACE_API_SERVICE_NAME','REPLACE_WORKER_SERVICE_NAME'))
-    commands.append(['run','worker-pools','describe',values['REPLACE_DISPATCHER_POOL_NAME'],'--region',region])
+    commands.append(['run','worker-pools','describe',values['REPLACE_DISPATCHER_POOL_NAME'],'--region',region] if storage=='postgres' else
+                    ['scheduler','jobs','describe',values['REPLACE_MAINTENANCE_JOB_NAME'],'--location',region])
     checks=[]
     for args in commands:
         result=runner(['gcloud',*args,'--project',project,'--format=json','--quiet'],capture_output=True,text=True,timeout=15,check=False)
@@ -121,14 +183,15 @@ def preflight(values,*,runner=subprocess.run):
 
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--storage',choices=['objects','postgres'],default='objects')
     parser.add_argument('--config',type=Path);parser.add_argument('--output',type=Path)
     parser.add_argument('--execute-preflight',action='store_true')
     args=parser.parse_args()
     try:
         if args.config is None:
-            print(json.dumps({'mode':'dry-run','cloud_changes':0,'required_fields':required_fields()}));return
+            print(json.dumps({'mode':'dry-run','storage':args.storage,'cloud_changes':0,'required_fields':required_fields(args.storage)}));return
         if args.config.stat().st_size>16_384:raise ValueError('CLOUD_INPUT_INVALID')
-        values=json.loads(args.config.read_text());files,plan=render(values)
+        values=json.loads(args.config.read_text());files,plan=render(values,args.storage)
         if args.output:
             target=args.output.resolve();runtime=(ROOT/'.runtime').resolve()
             if runtime not in target.parents or target.exists():raise ValueError('FRESH_RUNTIME_OUTPUT_REQUIRED')
@@ -136,7 +199,7 @@ def main():
             for name,source in files.items():(target/name).write_text(source,encoding='utf-8',newline='\n')
             (target/'plan.json').write_text(json.dumps(plan,indent=2),encoding='utf-8',newline='\n')
             plan['rendered_files']={name:hashlib.sha256(source.encode()).hexdigest() for name,source in files.items()}
-        if args.execute_preflight:print(json.dumps(preflight(values)))
+        if args.execute_preflight:print(json.dumps(preflight(values,storage=args.storage)))
         else:print(json.dumps(plan))
     except Exception:  # noqa: BLE001 - no raw gcloud/configuration errors or environment payloads.
         print('{"mode":"cloud-plan","code":"CLOUD_PLAN_FAILED","cloud_changes":0}')

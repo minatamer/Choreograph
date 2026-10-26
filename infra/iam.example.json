@@ -2,6 +2,7 @@
   "status": "UNCONFIGURED_REVIEW_ONLY",
   "purpose": "Resource-scoped binding additions for review, not a setIamPolicy request or complete replacement policy.",
   "notes": [
+    "Optional DATABASE_ENABLED=true SQL/WorkerPool topology only. Selected no-database deployment uses iam.object.example.json.",
     "Replace every REPLACE_* identifier only after separate owner authorization. No IAM operation has run.",
     "No allUsers or allAuthenticatedUsers binding is included. The fake QA frontend is restricted to a named tester group; only the frontend may later become public after explicit publication approval.",
     "Keep Cloud Run invoker IAM checks enabled on every service. No frontend, API or task identity receives project Owner/Editor or a broad project Cloud Run Invoker grant.",

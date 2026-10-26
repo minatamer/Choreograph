@@ -3,7 +3,7 @@
   "project": "choreograph-512713",
   "bucket": {
     "name": "choreograph-512713-private-state",
-    "location": "us-central1",
+    "location": "REPLACE_REGION",
     "storageClass": "STANDARD",
     "iamConfiguration": {
       "publicAccessPrevention": "enforced",
@@ -30,6 +30,6 @@
     "The API and worker publish to the exact Cloud Tasks queue and may actAs only the delivery identity.",
     "Only the frontend invokes the API. Only task-delivery and maintenance identities invoke the worker.",
     "One minute-scheduled OIDC POST /internal/maintenance with body {\"sweep\":true}; no always-running WorkerPool.",
-    "No cloud operation has been performed. Validate IAM, source packs, rates and cleanup before publishing."
+    "SBS-034 created this bucket in europe-west1 with private policy and API/worker bucket-only IAM. This file remains a review template; actual nonsecret names/readback are in object-foundation.json. SBS-035 subsequently promoted canonical-only source/vector data; no application service was deployed."
   ]
 }

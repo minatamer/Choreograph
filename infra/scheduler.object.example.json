@@ -1,0 +1,23 @@
+{
+  "name": "projects/REPLACE_PROJECT_ID/locations/REPLACE_REGION/jobs/REPLACE_MAINTENANCE_JOB_NAME",
+  "schedule": "* * * * *",
+  "timeZone": "Etc/UTC",
+  "attemptDeadline": "60s",
+  "retryConfig": {
+    "retryCount": 2,
+    "minBackoffDuration": "10s",
+    "maxBackoffDuration": "60s"
+  },
+  "httpTarget": {
+    "uri": "https://REPLACE_WORKER_SERVICE_ORIGIN.run.app/internal/maintenance",
+    "httpMethod": "POST",
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "body": "eyJzd2VlcCI6dHJ1ZX0=",
+    "oidcToken": {
+      "serviceAccountEmail": "REPLACE_MAINTENANCE_SA@REPLACE_PROJECT_ID.iam.gserviceaccount.com",
+      "audience": "https://REPLACE_WORKER_SERVICE_ORIGIN.run.app"
+    }
+  }
+}

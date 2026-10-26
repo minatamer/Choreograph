@@ -1,4 +1,6 @@
 """Offline container/file-store acceptance. No listeners, SQL or real providers."""
+# Bootstrap the packaged backend path before importing the application.
+# ruff: noqa: E402
 import base64
 import json
 import secrets

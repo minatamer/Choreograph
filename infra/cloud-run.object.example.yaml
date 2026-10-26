@@ -1,3 +1,4 @@
+# SELECTED DEPLOYMENT: NO DATABASE (DATABASE_ENABLED=false); no SQL/pgvector/migrations/WorkerPool.
 # UNAPPLIED: selected object-storage QA path. Replace all placeholders; secrets use env names.
 apiVersion: serving.knative.dev/v1
 kind: Service
