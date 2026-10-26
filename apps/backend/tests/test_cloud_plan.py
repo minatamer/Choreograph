@@ -74,12 +74,14 @@ def test_default_object_plan_has_no_sql_or_worker_pool_and_exact_private_authori
     scheduler=json.loads(files['scheduler.json']);worker='https://fixture-worker-service-origin.run.app'
     assert scheduler['httpTarget']['uri']==worker+'/internal/maintenance'
     assert scheduler['httpTarget']['oidcToken']['audience']==worker
-    assert scheduler['httpTarget']['oidcToken']['serviceAccountEmail']!=values('objects')['REPLACE_TASK_DELIVERY_SA']+'@fixture-project.iam.gserviceaccount.com'
+    assert scheduler['httpTarget']['oidcToken']['serviceAccountEmail']==values('objects')['REPLACE_MAINTENANCE_SA']+'@fixture-project.iam.gserviceaccount.com'
+    assert scheduler['attemptDeadline']=='240s'
     assert json.loads(files['bucket.json'])['softDeletePolicy']['retentionDurationSeconds']=='0'
     policy=json.loads(files['iam.json'])
     assert all('allUsers' not in binding['members'] for row in policy['resourcePolicyAdditions'] for binding in row['bindings'])
-    queue=next(row for row in policy['resourcePolicyAdditions'] if '/queues/' in row['resource'])
-    assert len(queue['bindings'][0]['members'])==2
+    assert 'queue.json' not in files
+    assert all('cloudtasks' not in source.lower() for source in files.values())
+    assert all('TASK_DELIVERY' not in key and 'QUEUE' not in key for key in cloud_plan.required_fields())
     initial=yaml.safe_load(files['bootstrap-fixture-api-service-name.yaml'])
     assert initial['spec']['template']['spec']['containers'][0]['env']==[]
     job=yaml.safe_load(files['fixture-prepare-knowledge-job-name.yaml'])
@@ -91,9 +93,9 @@ def test_object_preflight_never_describes_sql_or_worker_pool():
     def runner(argv,**kwargs):
         calls.append(argv);return SimpleNamespace(returncode=0,stdout='private',stderr='private')
     result=cloud_plan.preflight(values('objects'),runner=runner)
-    assert result['reads']==7 and result['writes']==0
+    assert result['reads']==6 and result['writes']==0
     assert any('storage' in call for call in calls) and any('scheduler' in call for call in calls)
-    assert not any('sql' in call or 'worker-pools' in call for call in calls)
+    assert not any('sql' in call or 'worker-pools' in call or 'tasks' in call for call in calls)
 
 
 def test_object_plan_rejects_legacy_sql_fields_and_invalid_mode():

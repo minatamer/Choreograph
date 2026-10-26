@@ -313,7 +313,7 @@ class ObjectEngine:
     def dispose(self):
         self.objects.close()
 
-    def acquire(self, name, *, seconds=180):
+    def acquire(self, name, *, seconds=180, wait=True):
         name='leases/'+_key(name)
         deadline=time.monotonic()+4
         while True:
@@ -332,6 +332,7 @@ class ObjectEngine:
                     return name,owner
                 except DomainError as error:
                     if error.code!='WRITE_RETRY':raise
+            if not wait:return None
             if time.monotonic()>=deadline:raise _busy()
             time.sleep(.02)
 

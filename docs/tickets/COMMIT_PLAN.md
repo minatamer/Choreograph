@@ -1115,3 +1115,39 @@ Direct owner authority: document Scheduler-only future deployment without implem
 | `package.json` | Raise only the root Node engine floor to24.22.1 within24.x; preserve dependencies and scripts. |
 
 Validation is recorded in the owning ticket: fake/injected no-SQL tests, relevant regressions and current release fingerprint. Freeze raw hashes/Git blob IDs after this plan; stage explicit literal paths, scan actual staged/committed bytes for known local private-value variants/private-key patterns, check whitespace/parent/path coverage, then require a clean worktree/index. Store actual commit identities in ignored `.runtime/sbs-038-checkpoint-result.json`; do not edit a tracked file afterward just to embed its own hash. Existing runtime/private env/state remain outside Git.
+
+
+## SBS-036 AFK deployment-prerequisite checkpoint —26 October2026
+Latest direct owner authority: stage/commit current work, use gcloud, deploy the selected no-database app with paid access and verify it. Prior audits are already committed. This checkpoint implements the selected Scheduler-only prerequisite and records actual authorized API/private-registry/invoker/private-frontend preparation under SBS-039. Public paid deployment remains blocked by the official Python artifact, fresh finite provider policy and actual origin setup; no successful application deployment is claimed. AFK requires no questions. Baseline `787476e5043e6ea73e5642f4c49f86e383795a70`; index empty. This checkpoint commits only the reviewed current 26 files. No Git push, paid provider call or database/Tasks resource.
+### Commit: SBS-036: implement scheduled object worker and prepare deployment
+
+| Exact file | Allocation |
+| --- | --- |
+| `AGENTS.md` | Record latest deployment authority, implemented object Scheduler path, bounded safeguards and real external activation limits. |
+| `README.md` | Reconcile implemented Scheduler topology, validated local work and actual blocked cloud/paid deployment state. |
+| `apps/backend/choreograph/cloud_plan.py` | Remove queue fields/render/REST/preflight and delivery authority from objects mode; preserve optional SQL renderer. |
+| `apps/backend/choreograph/jobs.py` | Reuse shared job commands in a leased one-job scheduled sweep with a smaller outer deadline and honest late-ack retry. |
+| `apps/backend/choreograph/object_store.py` | Add bounded no-wait conditional lease acquisition for duplicate scheduled sweeps; preserve existing waiting callers. |
+| `apps/backend/choreograph/release.py` | Derive Scheduler-only object composition, omit object Tasks client/publication and validate identity before client allocation. |
+| `apps/backend/choreograph/task_delivery.py` | Reuse exact identity-before-body boundary for maintenance-only object worker; keep SQL task compatibility. |
+| `apps/backend/tests/test_cloud_plan.py` | Verify no Tasks authority/queue/input/REST/preflight in rendered objects mode with correct deadlines. |
+| `apps/backend/tests/test_scheduled_worker.py` | Exercise actual object Scheduler identity/body, concurrency, retry/restart/crash/late ack/expiry/lease and no-queue behavior. |
+| `docs/CHOREOGRAPH.md` | Update selected architecture and canonical AFK build/quality/security/handoff ledger with actual source/cloud evidence and blockers. |
+| `docs/CHOREOGRAPH_OVERVIEW.html` | Show the implemented local Scheduler-only no-database path and explicit pending public deployment. |
+| `docs/LESSONS_LEARNED.md` | Record bounded Scheduler/domain authority, module-local test clocks and finite Windows probe lifetime. |
+| `docs/security/SECURITY_OVERVIEW.html` | Replace future Scheduler-only description with actual local implementation and pending deployed acceptance. |
+| `docs/security/SECURITY_REVIEW.md` | Own the scoped new Scheduler/identity/lease/IAM review and actual evidence; retain prior Python artifact finding. |
+| `docs/tickets/COMMIT_PLAN.md` | This exact file-level staging allocation and private-byte safeguards. |
+| `docs/tickets/README.md` | Record SBS-036 local completion and SBS-039 partial cloud preparation/external activation conditions. |
+| `docs/tickets/SBS-036-scheduler-only-plan.md` | Own subsequent implementation authority, exact file allocation, actual results/failure dispositions and scoped validation. |
+| `docs/tickets/SBS-039-paid-deployment.md` | Own direct deployment authorization, cloud actions/private artifact, exact acceptance scope and honest unexecuted prerequisites. |
+| `infra/README.md` | Reconcile implemented no-Tasks object topology, actual cloud preparation and remaining Python/paid/origin release conditions. |
+| `infra/cloud-run.object.example.yaml` | Remove object Tasks env/identity; configure the fixed worker audience and180second request timeout. |
+| `infra/deployment-preparation.json` | Record actual APIs/private registry/invoker identity/private uploaded frontend and unapplied paid settings; no app deployment. |
+| `infra/iam.object.example.json` | Remove object queue/publisher/delivery/actAs/service-agent proposals; retain exact storage/secrets/private invoker authority. |
+| `infra/release-object-evidence.json` | Record actual fresh Linux no-database images/checks for the current source. |
+| `infra/scheduler.object.example.json` | Set the authenticated scheduled sweep attempt deadline to240seconds. |
+| `scripts/local.test.mjs` | Fix the reproduced finite Windows probe auto-exit/cleanup race without changing production launchers or ownership assertions. |
+| `scripts/object-linux-smoke.py` | Exercise separate-process authenticated scheduled sync/expiry and absent Tasks route with fake providers/no SQL. |
+
+Validation is recorded in the owning ticket: fake/injected no-SQL tests, relevant regressions and current release fingerprint. Freeze raw hashes/Git blob IDs after this plan; stage explicit literal paths, scan actual staged/committed bytes for known local private-value variants/private-key patterns, check whitespace/parent/path coverage, then require a clean worktree/index. Store actual commit identities in ignored `.runtime/sbs-036-checkpoint-result.json`; do not edit a tracked file afterward just to embed its own hash. Existing runtime/private env/state remain outside Git.

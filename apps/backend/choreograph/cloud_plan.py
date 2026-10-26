@@ -24,7 +24,7 @@ def required_fields(storage='objects'):
     if storage not in {'objects','postgres'}:raise ValueError('CLOUD_STORAGE_MODE_INVALID')
     source='\n'.join((ROOT/'infra'/name).read_text() for name in (OBJECT_TEMPLATES if storage=='objects' else TEMPLATES))
     if storage=='objects':source+=' REPLACE_PREPARE_KNOWLEDGE_JOB_NAME'
-    source+=json.dumps(json.loads((ROOT/'infra/cloud-tasks.example.json').read_text())['queue'])
+    if storage=='postgres':source+=json.dumps(json.loads((ROOT/'infra/cloud-tasks.example.json').read_text())['queue'])
     return sorted(set(re.findall(r'REPLACE_[A-Z0-9_]+',source))-DERIVED.keys())
 
 
@@ -130,8 +130,6 @@ def render_objects(values):
     bucket=copy.deepcopy(json.loads((ROOT/'infra/object-storage.example.json').read_text())['bucket'])
     if bucket['name']!=OBJECT_BUCKET:raise ValueError('OBJECT_BUCKET_IDENTITY_MISMATCH')
     bucket['location']=region;rendered['bucket.json']=json.dumps(bucket,indent=2)
-    queue=json.loads(substitute(json.dumps(json.loads((ROOT/'infra/cloud-tasks.example.json').read_text())['queue']),replacements))
-    rendered['queue.json']=json.dumps(queue,indent=2)
     # An explicit fake-only preparation job establishes all six sources before
     # traffic. A live pack needs separately authorized preparation/promotion.
     api_spec=resources[1]['spec']['template']['spec'];prepare=copy.deepcopy(api_spec['containers'][0])
@@ -146,15 +144,14 @@ def render_objects(values):
                      {'stage':'prepare-fake-sources-after-storage-iam','argv':['gcloud','run','jobs','execute',job_name,*common,'--wait']}])
     commands.extend({'stage':'apply-after-storage-iam-and-corpus-readiness','argv':['gcloud','run','services','replace',row['metadata']['name']+'.yaml',*common]} for row in resources)
     rest=[{'stage':'private-bucket-create','method':'POST','url':f'https://storage.googleapis.com/storage/v1/b?project={project}','body_file':'bucket.json'},
-          {'stage':'queue-create','method':'POST','url':f'https://cloudtasks.googleapis.com/v2/projects/{project}/locations/{region}/queues','body_file':'queue.json'},
           {'stage':'maintenance-create-last','method':'POST','url':f'https://cloudscheduler.googleapis.com/v1/projects/{project}/locations/{region}/jobs','body_file':'scheduler.json'}]
     return rendered,{'mode':'offline-review-plan','storage':'objects','cloud_changes':0,'provider_calls':0,'commands':commands,'rest_requests':rest,
         'prerequisites':['owner-approved project/region/cost scope and pushed immutable images',
             'fresh private bucket with enforced public-access prevention, uniform IAM and no retained object history',
             'merge exact-resource IAM additions with fresh etags; create custom roles and preserve service-agent permissions',
-            'numeric secret versions and distinct frontend/API/worker/task-delivery/maintenance identities',
+            'numeric secret versions and distinct frontend/API/worker/maintenance identities',
             'verify stable origins, prepare all six profile-matching sources and pass runtime readiness before traffic',
-            'verify hosted storage contention/memory, OIDC negative cases, queue loss and browser-closed cleanup',
+            'verify hosted storage contention/memory, OIDC negative cases, duplicate/crashed sweeps and browser-closed cleanup',
             'real AI/HubSpot need fresh finite hosted authority, provider secrets and hostname/callback setup'],
         'scope':'restricted fake-provider object-storage QA only; unapplied and not a public/live deployment approval'}
 
@@ -162,8 +159,8 @@ def render_objects(values):
 def preflight(values,*,storage='objects',runner=subprocess.run):
     """At most eight gcloud describe reads. No secret access or account login."""
     validate(values,storage);project=values['REPLACE_PROJECT_ID'];region=values['REPLACE_REGION']
-    commands=[['projects','describe',project],['tasks','queues','describe',values['REPLACE_QUEUE_NAME'],'--location',region]]
-    if storage=='postgres':commands.append(['sql','instances','describe',values['REPLACE_SQL_INSTANCE']])
+    commands=[['projects','describe',project]]
+    if storage=='postgres':commands.extend([['tasks','queues','describe',values['REPLACE_QUEUE_NAME'],'--location',region],['sql','instances','describe',values['REPLACE_SQL_INSTANCE']]])
     else:
         from .runtime_config import OBJECT_BUCKET
         commands.append(['storage','buckets','describe','gs://'+OBJECT_BUCKET])

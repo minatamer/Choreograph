@@ -1,5 +1,7 @@
 # Choreograph
 
+**Latest deployment continuation,26 October2026:** the owner now authorizes no-database deployment, paid activation, actual hosted verification and local commits. [SBS-036](tickets/SBS-036-scheduler-only-plan.md) implements and locally validates the selected **one Scheduler-driven private worker**, replacing Tasks for object containers; earlier plan-only/Tasks wording is historical.386 portable backend checks plus25 final focused Scheduler/renderer checks,165 Node checks, types/Ruff/pip compatibility and fresh Linux six-HTTP/13-object-scenario acceptance pass. [SBS-039](tickets/SBS-039-paid-deployment.md) owns actual cloud preparation and remaining release gates. Run/Artifact Registry/Scheduler APIs, private image repository and Scheduler identity are prepared; **the application is not deployed and paid traffic is not enabled**. Python3.11.18+ official image is still unavailable; hosted AI allowance is expired/CRM allowance unset, and actual provider hostname/callback still need verification. No database or Tasks resource, secret payload read or paid call. Local fake services/data/keys are preserved.
+
 **Final AFK audits,26 October2026:** quality is committed at `e60092f`; [SBS-038](tickets/SBS-038-final-security.md) confirms two medium runtime findings. Node deployment/CI/engine pins are updated to24.22.1;199 no-SQL security checks,165 Windows Node checks,164 patched-Linux Node checks (one Windows-only skip), types/lint/compatibility and fresh object Linux acceptance pass. **Python3.11.18+ official container publication/pinning/rebuild is a remaining pre-deployment blocker**: the current official3.11 Bookworm alias is still3.11.17. Do not deploy the old Python runtime. No app behavior/secret/provider/transport change is selected; the owned local app remains fake with no database. Scheduler-only removal of Tasks remains plan-only under SBS-036. Owner paid/native/visual/security review remains separate from provisional AFK acceptance.
 
 **Renewed quality complete locally,26 October2026:** [SBS-037](tickets/SBS-037-final-quality.md) repairs repeated canonical serialization and the fake-preparation command’s SQL-only session.374 no-SQL backend/165 Node checks, types/lint/contracts/dependency compatibility and fresh Linux object release pass. UI/business rules/provider budgets are unchanged; the owned API now reflects the owner’s existing fake setting. Quality was committed before the separate SBS-038 security audit. SBS-036 is documentation-only.
@@ -10,7 +12,7 @@
 
 **Cloud storage foundation configured,26 October2026:** [SBS-034](tickets/SBS-034-private-storage-foundation.md) creates the selected no-database private bucket in `europe-west1` and grants exact-bucket access to separate API/worker service identities. All six secrets have enabled version1 (metadata verified). Anonymous bucket metadata is denied401; no key files/GitHub access or SQL resources were created. The bucket was empty at that foundation checkpoint; SBS-035 subsequently promoted canonical data and configured secret IAM. Application deployment/service references remain separate.
 
-**Selected deployment,26 October2026: NO DATABASE (`DATABASE_ENABLED=false`).** Use encrypted private GCS objects, three scale-to-zero Cloud Run services, Cloud Tasks and authenticated minute Scheduler maintenance. No Cloud SQL, hosted PostgreSQL/pgvector, SQL migrations, database secret or always-running WorkerPool is required. PostgreSQL remains an optional `true` implementation; dated SQL-first designs and test receipts are historical. The verified cloud inventory and setup-only checklist are in [release operations](../infra/README.md#verified-cloud-inventory-and-remaining-setup-26-october2026). AI usage controls and the local live RAG index already exist.
+**Selected deployment,26 October2026: NO DATABASE (`DATABASE_ENABLED=false`).** Use encrypted private GCS objects, three scale-to-zero Cloud Run services and one authenticated minute Scheduler-driven private worker. Tasks remains optional SQL compatibility only. No Cloud SQL, hosted PostgreSQL/pgvector, SQL migrations, database secret or always-running WorkerPool is required. PostgreSQL remains an optional `true` implementation; dated SQL-first designs and test receipts are historical. The verified cloud inventory and setup-only checklist are in [release operations](../infra/README.md#verified-cloud-inventory-and-remaining-setup-26-october2026). AI usage controls and the local live RAG index already exist.
 
 **Pre-deployment audit,26 October2026:** [SBS-033](tickets/SBS-033-predeployment-audit.md) repairs the SQL-only release renderer, bounded GCS response admission and a CI lint failure, and adds a database-free Linux release gate.358 storage-independent/object backend checks,165 Node checks, types/lint/contracts and actual non-root Linux production frontend/object-process acceptance pass with PostgreSQL stopped. The separate object receipt is current; real bucket/IAM/queue/load, live pack promotion, fresh finite hosted grants, real-account/human and public rollout acceptance remain required. Docker was authorized for this audit; nothing deployed, pushed or committed.
 
@@ -181,7 +183,7 @@ These assumptions make the plan concrete while the owner is away. They can be re
 | HubSpot integration | Register/configure the selected OAuth app only when authorized; verify current scopes/free-account operations, unique identities, read-back/native URLs, retries, token protection and app-created-record cleanup. No app/account/token integration is connected yet. |
 | HubSpot connection capacity | Verify actual distinct-account counting, genuine uninstall, provider notifications and when capacity is released. Exact immediate slot reuse is unproven. The unavailable-capacity no-CRM route is already part of the product plan. |
 | Optional automatic uninstall | Choose and disclose any connection lifetime/verification window before enabling automatic account-wide uninstall. Manual Finish demo & disconnect is the planned baseline; guest expiry alone does not prove uninstall. |
-| Hosted maintenance | Select a reliable unattended outbox-recovery/expiry-cleanup trigger and verify its identity/retry behavior before deployed acceptance. Do not silently reintroduce Cloud Scheduler or rely on a scale-to-zero in-process timer. This does not block independent local development. |
+| Hosted maintenance | Select a reliable unattended outbox-recovery/expiry-cleanup trigger and verify its identity/retry behavior before deployed acceptance. The selected object path now uses one authenticated Scheduler-driven worker under SBS-036; never rely on a scale-to-zero in-process timer. This does not block independent local development. |
 | Deployment and visual acceptance | Select region/instance/connection path and recalculate costs before provisioning. Hosted IAM/migrations/Linux builds remain separate gates. The existing Figma file's privacy/location and owner design review remain unverified. The local-file browser policy has prevented rendered HTML acceptance. |
 
 These are explicit future decisions/checks, not permission to create accounts, enter credentials, spend, provision or start another phase. Preserve a failed live result as failed/pending/attention; do not fill an evidence gap with a simulated success.
@@ -581,7 +583,7 @@ Use deterministic ingestion/retrieval fixtures and isolated encrypted object sto
 | LlamaIndex Python framework | Bounded extraction, chunk/page provenance and authorized retrieval. The selected no-database path searches compatible ready vectors in memory; the PostgreSQL adapter is optional true mode. |
 | OpenAI API | Bounded interpretation, evidence-grounded conversation and chosen embedding model through server-only adapters. No browser credential. |
 | HubSpot API | Optional visitor-owned OAuth account, reviewed synthetic contact/deal summary and native record access; no API calls on the skipped path. Separate operator account for controlled acceptance only. |
-| Local runner / Cloud Tasks | Local processing in development; authenticated Cloud Tasks delivery on deployment. Atomic private-object outbox state is the recovery authority. |
+| Local runner / Scheduler worker | Local processing in development; one authenticated Scheduler-driven private worker for object deployment. Atomic private-object outbox state is the retry/recovery authority. |
 | Maintenance command | Same bounded recovery/expiry cleanup invoked by the local runner or the deployed minute OIDC Scheduler request to the private worker. No continuously allocated dispatcher. |
 | Cloud Run / Secret Manager / IAM | Deployment only: public frontend, private backend, least-privilege identities and server-only secrets. Local services use `.env.local` without these Google services. |
 
@@ -589,14 +591,14 @@ Repository shape: apps/frontend, apps/backend, generated browser contracts, docs
 
 ### 10.1 Real/fake providers and local/deployed execution
 
-**Current storage selection: no database in either provider mode.** Local frontend/API/runner use ignored app-local env files and encrypted atomic local state. Deployed frontend/private API/private worker use private GCS, Cloud Tasks, minute Scheduler maintenance and Secret Manager/IAM. Neither location needs PostgreSQL when `DATABASE_ENABLED=false`.
+**Current storage selection: no database in either provider mode.** Local frontend/API/runner use ignored app-local env files and encrypted atomic local state. Deployed frontend/private API/private worker use private GCS, one Scheduler-driven worker and Secret Manager/IAM. Neither location needs PostgreSQL when `DATABASE_ENABLED=false`.
 
 | Responsibility | Real providers | Fake/injected providers |
 | --- | --- | --- |
 | UI, session and business commands | Actual scoped commands, exact prices, explicit approval and atomic overlap/revision/idempotency protection. | The same commands and protection with isolated object state. |
 | RAG | Bundled originals plus compatible prepared live vectors; bounded authorized in-memory search and supported citations. No repeated sample ingestion per visitor. | Actual source extraction/provenance with deterministic fake vectors; this is not semantic-quality evidence. |
 | CRM | Independent real visitor OAuth, destination consent and reviewed export; skipped CRM makes no calls or outbox work. | Injected account/record results only; public simulated-account connections remain removed. |
-| Delivery and expiry | Local runner, or deployed Tasks/private worker plus minute authenticated maintenance. | Injected delivery/time locally; optional hosted fake QA still has real cloud resources and costs. |
+| Delivery and expiry | Local runner, or one deployed authenticated Scheduler-driven private worker. | Injected delivery/time locally; optional hosted fake QA still has real cloud resources and costs. |
 | Secrets and AI policy | Server-only local values or numeric Secret Manager versions. Usage controls already exist; local manual policy is not exported. Current checked-in hosted AI allowance is expired and hosted CRM authority is unset. | No live provider keys/calls; explicit isolated storage. |
 | Optional SQL compatibility | `DATABASE_ENABLED=true` explicitly selects existing PostgreSQL/pgvector, migrations and SQL constraints. | Separate SQL regression fixtures only; not the selected hosted topology. |
 
@@ -747,11 +749,11 @@ Primary sources checked 22 October 2026: [install limits](https://developers.hub
 
 ## 13. Durable work, retries and recovery
 
-**Future target, planned only:** [SBS-036](tickets/SBS-036-scheduler-only-plan.md) replaces Tasks with one authenticated Scheduler-driven private worker reusing durable GCS outbox claims/retries/cleanup. The current Tasks implementation and its invariants below remain active until that separate ticket is implemented and validated. No transport resource is provisioned by this plan.
+**Implemented locally,26 October2026:** [SBS-036](tickets/SBS-036-scheduler-only-plan.md) replaces Tasks in object containers with one authenticated Scheduler-driven private worker reusing durable GCS outbox claims/retries/cleanup. It admits at most one due job per sweep under a nonrenewing240second global lease and150second outer budget, retaining180second per-job token leases, five attempts and the3hour horizon. Existing SQL Tasks compatibility remains; no Tasks resource is selected for this deployment. Actual hosting remains blocked under SBS-039.
 
-For a connected destination with export consent, the transaction writes an outbox row with the booking event and immutable account/connection binding. A local runner processes due rows in development; on deployment, a dispatcher enqueues authenticated Cloud Tasks. The outbox preserves work if a process crashes between database commit and enqueue; a recovery command must find and dispatch those rows after restart. A task is a delivery mechanism, not the only record that work exists. Continue without CRM creates no CRM outbox row/task; document-processing and expiry jobs remain independent.
+For a connected destination with export consent, the transaction writes an outbox row with the booking event and immutable account/connection binding. A local runner processes due rows in development; on object deployment, the scheduled worker discovers due rows directly. The outbox preserves work if a process crashes immediately after atomic state commit; the next authenticated sweep finds eligible rows after restart. Scheduler supplies a wake-up; durable domain intent/claims own retries and completion. Continue without CRM creates no CRM outbox row/task; document-processing and expiry jobs remain independent.
 
-**Current local/cloud behavior,26 October2026:** the owned local runner performs bounded recovery and expiry cleanup. Deployment selects immediate post-commit publication plus an authenticated minute Cloud Scheduler maintenance request to the IAM-private worker. Cloud Tasks delivers accepted CRM work; no always-running WorkerPool or SQL connection is required.
+**Current local/cloud behavior,26 October2026:** the owned local runner performs bounded recovery and expiry cleanup. Object deployment selects one authenticated minute Scheduler request to the IAM-private worker. It runs bounded maintenance plus at most one existing domain delivery, without a publication thread or Tasks client. No always-running WorkerPool or SQL connection is required.
 
 The minute maintenance request discovers durable work that was never enqueued, recovers expired publication/worker leases and advances cleanup when no browser is open. It uses a distinct maintenance identity and exact worker-origin audience. The queue remains transport; authoritative outbox/retry/cleanup state stays in the conditional encrypted object shard.
 
@@ -761,7 +763,7 @@ Proposed initial policy: five transient delivery attempts with bounded exponenti
 
 A clearly labelled demonstration scenario may inject a temporary failure in this integration adapter for a single workspace and then allow a real retry. It must never be presented as evidence that HubSpot actually failed. Fake development does not call HubSpot or Google Cloud.
 
-Do not rely on an in-process FastAPI BackgroundTasks object for durable delivery. A server restart must not erase pending CRM work. Cloud Tasks is at-least-once delivery; database/outside-system idempotency and reconciliation remain application responsibilities.
+Do not rely on an in-process FastAPI BackgroundTasks object for durable delivery. A server restart must not erase pending CRM work. Scheduler is at-least-once; state/outside-system idempotency and unknown-outcome reconciliation remain application responsibilities. Optional SQL Tasks transport keeps its existing protections.
 
 ## 14. Guest isolation, retention and cleanup
 
@@ -779,7 +781,7 @@ Operational logs, database backups and HubSpot archival retention may outlive ac
 
 ## 15. Cost plan and spending boundaries
 
-**Current no-database cost basis,26 October2026:** three request-billed scale-to-zero Cloud Run services, private GCS storage/operations, Tasks, one minute Scheduler job, registry, secrets and logs. No Cloud SQL or always-running WorkerPool charge is selected. Existing project USD10 and Cloud Run USD5 monthly alerts were reverified; both notify rather than enforce a cap. The SQL figures and provisional allowance below are historical optional-path research, not the selected deployment estimate. Existing AI usage limits are implemented; selecting an active hosted allowance remains a separate release policy step, not a request to rebuild those controls.
+**Current no-database cost basis,26 October2026:** three request-billed scale-to-zero Cloud Run services, private GCS storage/operations, one minute Scheduler job, registry, secrets and logs. No Cloud SQL or always-running WorkerPool charge is selected. Existing project USD10 and Cloud Run USD5 monthly alerts were reverified; both notify rather than enforce a cap. The SQL figures and provisional allowance below are historical optional-path research, not the selected deployment estimate. Existing AI usage limits are implemented; selecting an active hosted allowance remains a separate release policy step, not a request to rebuild those controls.
 
 Pricing checked against primary sources on **21 October 2026**. These are service facts and planning arithmetic, not an actual provisioned quote.
 
@@ -793,7 +795,7 @@ Pricing checked against primary sources on **21 October 2026**. These are servic
 | LlamaIndex / retrieval | No separate hosted vector subscription. Existing prepared canonical vectors persist in private GCS and search in process memory. New query/answer or authorized replacement ingestion consumes provider usage; original samples are not re-embedded per visitor. Optional pgvector costs belong to true mode only. |
 | Domain and supporting cloud services | Domain registration/renewal, Artifact Registry, builds, Secret Manager, logs and outbound networking can add cost. Domain prices/availability are not fixed by this document. |
 
-The earlier **USD15–25/month SQL-first allowance** is historical and does not select the current object deployment budget. Obtain the chosen-region Cloud Run/GCS/Tasks/Scheduler/registry/logging estimate before provisioning; shared free allowances are not guaranteed per app. Existing monthly alerts notify rather than stop services.
+The earlier **USD15–25/month SQL-first allowance** is historical and does not select the current object deployment budget. Obtain the chosen-region Cloud Run/GCS/Scheduler/registry/logging estimate before provisioning; shared free allowances are not guaranteed per app. Existing monthly alerts notify rather than stop services.
 
 Use isolated encrypted object stores and fake/injected providers for no-database development checks, without cloud resources or live credentials. Keep bounded instances/concurrency, payloads, passages, retries and actual provider usage admission. Reuse already-prepared sample vectors. Optional SQL compatibility uses separate isolated database fixtures and never becomes a deployment prerequisite.
 
@@ -895,7 +897,7 @@ The customer workspace has one component set with six states: Start, OpenDraft, 
 | AI | Structured extraction, clarification, ordinary conversation, exact edits, unsupported request, injection, refusal, malformed/timeout and safe recovery. |
 | RAG / documents | Expected passage retrieval, supported answers and actual page/section citations; replacement/removal/failure recovery; cross-workspace scope; malicious documents; missing/conflicting evidence and unchanged deterministic quote authority. |
 | UI | Actual reviewed Customer booking and optional Business flow starting entirely from suggested prompts; question menu/follow-ups remain usable; paper citation and matching original PDF/FAQ highlights in the centered dialog; inline review/booking history; connected/skipped/capacity states; mobile/short laptop/keyboard and required loading/error/refresh/cancel states. |
-| Cloud | Exact source/image pins; frontend-to-private-API identity; Tasks/Scheduler OIDC; private object IAM/policy; secret/key/pack versions and finite instance/concurrency settings. No SQL access or migration gate for the selected deployment. |
+| Cloud | Exact source/image pins; frontend-to-private-API identity; Scheduler OIDC (Tasks only in optional SQL compatibility); private object IAM/policy; secret/key/pack versions and finite instance/concurrency settings. No SQL access or migration gate for the selected deployment. |
 
 Use fixtures, fake providers and isolated encrypted object stores for the selected no-database path. Keep a real isolated PostgreSQL instance only for optional SQL-specific invariants; SQLite is not a substitute for those constraints. Browser checks inspect actual rendered action flows. Run focused checks during iteration and cohesive gates after changes; do not rerun settled checks without a new concern.
 
@@ -924,7 +926,7 @@ Roomedy uses 4320/4321; Retailor 4310/4311; other siblings have their own docume
 | SBS-005 | Assistant extraction/conversation/proposals through the same commands, with offline compatibility fixtures. |
 | SBS-005A | Author and visually/textually verify the five original Juniper PDF guides and one Markdown FAQ, then implement the ready knowledge pack, LlamaIndex ingestion/retrieval in pgvector, source viewer, compact Documents replacement flow and missing-evidence handling. Preserve real page/section provenance; integrate the policy answer into the same enquiry→quote→booking slice and evaluate against 15–20 authored questions. |
 | SBS-006 | CRM choice/true skip/capacity fallback; visitor OAuth/account binding, protected tokens, reviewed synthetic exports and native read-back; distinct-account install registry, operator capacity visibility, genuine uninstall and cleanup/reconciliation behind fakes. Verify uninstall notifications, account-wide ownership, slot-release behavior and current platform/free-account prerequisites before bounded real acceptance. Operator credentials remain a separate controlled-test path. |
-| SBS-007 | Transactional outbox, local delivery runner/fake, deployed Cloud Tasks adapter and reset/expiry cleanup recovery, including document indexing and late-worker retirement. Settle and verify unattended hosted invocation before deployment acceptance; Cloud Scheduler is not selected. |
+| SBS-007 | Transactional outbox, local delivery runner/fake, deployed Cloud Tasks adapter and reset/expiry cleanup recovery, including document indexing and late-worker retirement. Settle and verify unattended hosted invocation before deployment acceptance; SBS-036 supersedes the earlier Tasks-only object deployment selection. |
 | SBS-008 | Cohesive responsive/motion/keyboard customer/business walkthrough and required error states. |
 | SBS-009 | Proportionate quality/security review, confirmed fixes and evidence; no speculative enterprise platform. |
 | SBS-010 | Exact Google Cloud cost/configuration/release preparation; provisioning/deployment only when separately authorized. |
@@ -1046,8 +1048,8 @@ The four-file packet passed static HTML structure/ID checks, local document/sour
 ## Build command progress
 
 Current phase: **local workflow finished**
-Next action: Commit the frozen SBS-038 local handoff and verify its ignored exact-blob/clean-tree receipt. Before deployment, resolve Python artifact, later implement/validate SBS-036 and complete remaining hosting inputs/owner acceptance. No paid/cloud action, SQL or push is authorized by this handoff.
-Active ticket: none
+Next action: Verify the authorized local checkpoint commit and clean tree. Continue public paid deployment only after the official Python artifact and fresh finite hosted policy are available, then configure actual provider origins and execute real hosted acceptance. No successful deployment is claimed.
+Active ticket: SBS-039
 Phase prompts: delegated during AFK
 Local commits approved: yes
 
@@ -1192,6 +1194,14 @@ Provisional owner reviews: 04-decisions, 05-tickets, 09-visual-review, 10b-secur
   Reason: Actual built runtimes miss official security releases. The fixed Node24.22.1 same-distribution image is verified. Python3.11.18 official tags are not published and the current alias is unchanged; a fabricated pin/custom crypto/source-build workaround would add risk and maintenance. Source-led and local bulk-advisory audit found no further material application remedy.
   Consequence / reversibility: Update only Node image/assertion, CI and engine metadata; rebuild fake no-database images and independently validate. Python security remains open until an official artifact is verified and rebuilt before deployment. This AFK selection is provisional and does not confer owner security acceptance or deployment approval.
   Owner review requested on return: yes. Evidence: docs/tickets/SBS-038-final-security.md#confirmed-findings-and-pre-fix-allocation, docs/security/SECURITY_REVIEW.md#current-full-review--sbs-038-26-october2026, .runtime/sbs038-advisories/receipts.json
+- **AFK-0035** (AFK-SESSION-001, 2026-10-26T11:48:46+00:00, 07-build): Implement selected SBS-036 as the prerequisite of the newly requested no-database deployment; prepare SBS-039 while respecting real external gates.
+  Reason: The owner now explicitly requests deployment/paid activation and Git commits. The selected cheaper topology was previously deferred only during the audits. Existing work is already clean/committed; no duplicate commit is needed.
+  Consequence / reversibility: New deployment scope supersedes prior audit-only prohibitions. Keep local fake app, no SQL/Tasks provisioning or private transfer, no fabricated security artifact/finite grant/provider consent. Python image publication remains a deployment blocker.
+  Owner review requested on return: yes. Evidence: human:current-thread/2026-10-26/deploy-with-paid-access, docs/tickets/SBS-039-paid-deployment.md
+- **AFK-0036** (AFK-SESSION-001, 2026-10-26T12:16:27+00:00, 10b-security-review): No new material local finding in the Scheduler/IAM delta; retain the previously selected Python security finding as externally blocked.
+  Reason: Identity-first bounded ingress, conditional duplicate suppression, per-job authority/retry/ambiguity/consent and minimal object IAM are regression-covered. Official patched Python tag still returns not-found; paid grants/origins are not configured, so no backend/public paid release occurred.
+  Consequence / reversibility: Preserve safe local implementation/cloud preparation, truthful blocked deployment state and staged privacy checks; do not invent a security image, finite allowance or acceptance.
+  Owner review requested on return: yes. Evidence: docs/tickets/SBS-036-scheduler-only-plan.md, docs/tickets/SBS-039-paid-deployment.md, infra/release-object-evidence.json, infra/deployment-preparation.json, docs/security/SECURITY_REVIEW.md
 
 - [x] 01-docs — Documentation (complete)
 - [x] 02-flow — Core flow (complete)
@@ -1214,7 +1224,7 @@ This checklist records local work. Human approvals and unresolved external check
   "schema_version": 3,
   "repo_root": "C:\\Users\\minat\\Work\\Choreograph",
   "main_document": "docs/CHOREOGRAPH.md",
-  "updated_at": "2026-10-26T11:31:55+00:00",
+  "updated_at": "2026-10-26T12:16:30+00:00",
   "context": {
     "PROJECT_NAME": {
       "value": "Choreograph",
@@ -1237,8 +1247,8 @@ This checklist records local work. Human approvals and unresolved external check
       "confidence": "confirmed"
     },
     "DEPLOYMENT_PLATFORM": {
-      "value": "No database: Cloud Run/private GCS/Cloud Tasks/Cloud Scheduler/Secret Manager; DATABASE_ENABLED=false; no deployment authorization",
-      "source": "docs/CHOREOGRAPH.md sections 10–15",
+      "value": "Owner-authorized no-database Cloud Run/private GCS/one Scheduler/Secret Manager deployment; Tasks only optional SQL. Private frontend artifact/cloud prerequisites prepared; app not deployed, paid not enabled due documented Python/finite-policy/origin conditions.",
+      "source": "docs/tickets/SBS-039-paid-deployment.md",
       "confidence": "confirmed"
     },
     "LOCAL_GIT_AUTHORIZATION": {
@@ -1799,6 +1809,37 @@ This checklist records local work. Human approvals and unresolved external check
           "docs/security/SECURITY_REVIEW.md#current-full-review--sbs-038-26-october2026",
           ".runtime/sbs038-advisories/receipts.json"
         ]
+      },
+      {
+        "id": "AFK-0035",
+        "session_id": "AFK-SESSION-001",
+        "recorded_at": "2026-10-26T11:48:46+00:00",
+        "phase": "07-build",
+        "choice": "Implement selected SBS-036 as the prerequisite of the newly requested no-database deployment; prepare SBS-039 while respecting real external gates.",
+        "rationale": "The owner now explicitly requests deployment/paid activation and Git commits. The selected cheaper topology was previously deferred only during the audits. Existing work is already clean/committed; no duplicate commit is needed.",
+        "consequence": "New deployment scope supersedes prior audit-only prohibitions. Keep local fake app, no SQL/Tasks provisioning or private transfer, no fabricated security artifact/finite grant/provider consent. Python image publication remains a deployment blocker.",
+        "review_needed": true,
+        "evidence": [
+          "human:current-thread/2026-10-26/deploy-with-paid-access",
+          "docs/tickets/SBS-039-paid-deployment.md"
+        ]
+      },
+      {
+        "id": "AFK-0036",
+        "session_id": "AFK-SESSION-001",
+        "recorded_at": "2026-10-26T12:16:27+00:00",
+        "phase": "10b-security-review",
+        "choice": "No new material local finding in the Scheduler/IAM delta; retain the previously selected Python security finding as externally blocked.",
+        "rationale": "Identity-first bounded ingress, conditional duplicate suppression, per-job authority/retry/ambiguity/consent and minimal object IAM are regression-covered. Official patched Python tag still returns not-found; paid grants/origins are not configured, so no backend/public paid release occurred.",
+        "consequence": "Preserve safe local implementation/cloud preparation, truthful blocked deployment state and staged privacy checks; do not invent a security image, finite allowance or acceptance.",
+        "review_needed": true,
+        "evidence": [
+          "docs/tickets/SBS-036-scheduler-only-plan.md",
+          "docs/tickets/SBS-039-paid-deployment.md",
+          "infra/release-object-evidence.json",
+          "infra/deployment-preparation.json",
+          "docs/security/SECURITY_REVIEW.md"
+        ]
       }
     ]
   },
@@ -1838,8 +1879,8 @@ This checklist records local work. Human approvals and unresolved external check
     "final_commit_subject": "SBS-011: Record build, security and external acceptance handoff",
     "final_commit_identity": "git log owns the final documentation commit hash; it cannot be embedded in its own content."
   },
-  "active_ticket": null,
-  "next_action": "Commit the frozen SBS-038 local handoff and verify its ignored exact-blob/clean-tree receipt. Before deployment, resolve Python artifact, later implement/validate SBS-036 and complete remaining hosting inputs/owner acceptance. No paid/cloud action, SQL or push is authorized by this handoff.",
+  "active_ticket": "SBS-039",
+  "next_action": "Verify the authorized local checkpoint commit and clean tree. Continue public paid deployment only after the official Python artifact and fresh finite hosted policy are available, then configure actual provider origins and execute real hosted acceptance. No successful deployment is claimed.",
   "phases": [
     {
       "id": "01-docs",
@@ -2126,39 +2167,39 @@ This checklist records local work. Human approvals and unresolved external check
       "gate": null,
       "status": "complete_local",
       "prompt": {
-        "text": "Continue Choreograph under active AFK and latest owner authorization do all coding needed like all possible coding needed. Execute new dependency-ordered SBS012,013,014,015 through execute/read-onlyvalidate/independent confirmation/fix/revalidate, one complete documented slice at a time. Preserve previous fake-local milestone/source01188ea208d46e60973f37b40579fdac90747528ae64e6765ff0e6eaf0d9523e/105backend11Node/Linux24HTTP180assertion evidence as history, approvedFigma/currentUI, exactdomaincommands, actualPG/vector isolation, manifest/source authority, strictCSRF/Origin/session/generation/revision, optionaltrueCRMskip and hiddenownedports45860/45861/45862. First SBS012 fully wires explicit paid-off realResponses+embeddings with immutable provider/model/dimension/chunker/tokenizer profiles, migration preservingfake/guestdata, committed finite global/perguest token/request/cost grant/attempt reservations, bounded SDK transports and no automaticretry/fakefallback. Split chat/documentwork into short authsnapshot, admitted external phase, locked fenced domainapply, so reset/expiry/edit/replacement rejects stale results and rollback/restart never erases paidreservations or repeatsambiguouscalls. Samplesprepareonlyexplicitly; gueststart/sourceviewneverembeds. Then SBS013 independentvisitorHubSpotcomposition and truthfulmixedmodeUI, persistedprovider/app fences, exactsupportedlocalhost/HTTPScallback, app-scoped distributioncapacity, realaccountpipeline/stage/propertysetup, durablefinitecalls, ownedcleanup/uninstall/nooperatorfallback. Then SBS014 actualTaskscreate/getreconciliation, deterministicpublicationepochs/leases/retired-destinationfences, boundedSQLmaintenance+enqueue dispatcher role in nativealwaysonWorkerPool using samebackendimage; no directCRMfrompool/noCloudScheduler/no selfscheduledfinitechain. Prepareleastprivilege/probes/heartbeat/recovery/configurationwithnofundedresources. SBS015 implements offline readiness/dryrun-firstboundedrealacceptance tools, concrete deployment configuration/bootstrap commands, mixedmode/errorresponsivechecks, migrations/contracts/types/CI/sourcefreshLinuxsmoke. Recordfileallocations beforeedits andactualfocused/settledtests usingrealisolatedPG/pgvectorandinjectedHTTP/SDK/providers; no inheritedlivecredentials. Doalllocallypossiblecoding;missingkeys are not an excuseforunimplementedsource. Donotclaimactualsemanticquality, HubSpotscopes/nativeaccountoperation/slotrelease, hostedIAM/SQL/Tasks/WorkerPool/CI/monitoring orhumanappacceptancefrommocks. Nomodel/dimension/rate/currencybudgetdefaultselectedwithoutcurrentverification; no paidcalls, account/credentialentry, cloudprovisioning/deployment/publication, outboundmessages, scanner metadataexport orGitwrites undergenericcodingapproval. Afterallfourcodingticketscomplete, rerunreopenedperformance/visual/quality/security/handoffworkflow, selectingonlyactualnewfindingsprovisionallybeforefixes, refreshreleaseproof andprepareconcretereviewableexternalactionsbeforerequiredapproval.",
-        "sha256": "727f6c8fb6b6c406e8804903685523d841808fed191e1a87446dd68dd978bd3c",
+        "text": "Execute Choreograph SBS-036 under the latest owner request to stage/commit current work, use existing gcloud and deploy the selected no-database paid app with actual post-deployment verification. Previous work is committed at787476e. Read current AGENTS/blueprint/lessons, SBS-036 design and SBS-039 authority/prerequisites. Implement only the selected object Scheduler-only prerequisite: private exact-OIDC maintenance ingress; global240second conditional lease,150second sweep and at most one due existing CRM job with existing job token/180second lease/five attempts/three-hour horizon; shared maintenance/retry/cleanup/unknown outcome/consent safety and smaller outer provider deadline. Remove Tasks route/client/publication/queue/IAM requirements from object composition/templates/renderer/preflight only; retain optional SQL transport and local runner. Add meaningful fake/object identity/concurrency/retry/crash/deadline/expiry tests and actual separate-process scheduled Linux acceptance; no source/booking/UI/schema/provider-budget behavior changes. Reuse existing private bucket, canonical data and per-secret identities. Record file allocation before source edits, execute/read-only validate/independently confirm/fix/revalidate, required no-SQL/types/lint/Node/Linux gates and exact local commit plan/secret-byte checks. Preserve local fake services/credentials/data. Current official Python3.11.18 image is still absent; never deploy the known-outdated backend or invent a digest/custom crypto. Hosted/agent paid ceilings need actual finite authority, real Turnstile hostname and HubSpot callback/visitor consent; do not fabricate those or solve CAPTCHA. Complete independent local/cloud-metadata/release preparation and document precise external blockers; no questions, unrelated account/cloud actions, PostgreSQL, new Tasks provisioning, scanner metadata export or Git push. Deploy/verify only once the concrete prerequisites are genuinely satisfied; do not claim partial/public success.",
+        "sha256": "0a087e1c98adffc333dfebcb9df0a27aa401a4bdae3ba8007fed17cbe569e3cc",
         "context_sources": [
+          "human:current-thread/2026-10-26/deploy-with-paid-access",
           "AGENTS.md",
-          "docs/CHOREOGRAPH.md",
-          "docs/tickets/README.md",
-          "docs/tickets/SBS-012-live-ai.md",
-          "docs/tickets/SBS-013-live-crm.md",
-          "docs/tickets/SBS-014-cloud-dispatch.md",
-          "docs/tickets/SBS-015-integration-readiness.md",
-          "docs/tickets/SBS-011-external-acceptance.md"
+          "docs/tickets/SBS-036-scheduler-only-plan.md",
+          "docs/tickets/SBS-039-paid-deployment.md",
+          "docs/tickets/SBS-038-final-security.md"
         ],
         "status": "afk",
         "approval": null,
         "afk_session": "AFK-SESSION-001"
       },
       "evidence": [
-        "docs/tickets/SBS-012-live-ai.md",
-        "docs/tickets/SBS-013-live-crm.md",
-        "docs/tickets/SBS-014-cloud-dispatch.md",
-        "docs/tickets/SBS-015-integration-readiness.md",
-        "infra/release-evidence.json"
+        "docs/tickets/SBS-036-scheduler-only-plan.md",
+        "docs/tickets/SBS-039-paid-deployment.md",
+        "infra/release-object-evidence.json",
+        "infra/deployment-preparation.json",
+        ".runtime/sbs036-backend.log",
+        ".runtime/sbs036-focused-settled.log",
+        ".runtime/sbs036-node-final.log",
+        ".runtime/sbs036-linux-settled.log"
       ],
       "blockers": [
         {
           "kind": "external",
-          "reason": "Real AI quality/usage acceptance needs an owner-entered key, current supported model/pricing selection, finite currency/time allowance and separate execution authorization.",
-          "reference": "docs/tickets/SBS-011-external-acceptance.md"
+          "reason": "SEC-038-02: official Python3.11.18+ image is still unpublished; verified pin/rebuild is required before backend deployment.",
+          "reference": "docs/tickets/SBS-039-paid-deployment.md"
         },
         {
           "kind": "external",
-          "reason": "Real HubSpot installation/permissions/native records/uninstall/notification/capacity-release need the owner's chosen app/account and specific consent; hosted CI/Cloud Run/SQL/Tasks/IAM/WorkerPool/backup verification needs funded cloud setup and deployment authorization. All source paths are implemented.",
-          "reference": "infra/README.md"
+          "reason": "Hosted AI grant expired24 October and hosted CRM allowance is unset. New specific finite hosted/agent authority, discovered origins/provider hostname/callback and actual live acceptance are unresolved; do not invent grants or account consent.",
+          "reference": "docs/tickets/SBS-039-paid-deployment.md"
         }
       ],
       "approval": null,
@@ -2179,6 +2220,30 @@ This checklist records local work. Human approvals and unresolved external check
               "design/figma/tokens.json",
               "design/figma/validation.json",
               "human:AFK build instruction"
+            ],
+            "status": "afk",
+            "approval": null,
+            "afk_session": "AFK-SESSION-001"
+          },
+          "prior_approval": null,
+          "prior_decision": null
+        },
+        {
+          "reopened_at": "2026-10-26T11:48:46+00:00",
+          "reason": "Latest owner authorizes deployment; implement the already-selected Scheduler-only prerequisite, validate its changed boundaries and retain external Python/finite-paid/provider-hostname gates. Prior audit evidence remains historical.",
+          "prior_status": "complete_local",
+          "prior_prompt": {
+            "text": "Continue Choreograph under active AFK and latest owner authorization do all coding needed like all possible coding needed. Execute new dependency-ordered SBS012,013,014,015 through execute/read-onlyvalidate/independent confirmation/fix/revalidate, one complete documented slice at a time. Preserve previous fake-local milestone/source01188ea208d46e60973f37b40579fdac90747528ae64e6765ff0e6eaf0d9523e/105backend11Node/Linux24HTTP180assertion evidence as history, approvedFigma/currentUI, exactdomaincommands, actualPG/vector isolation, manifest/source authority, strictCSRF/Origin/session/generation/revision, optionaltrueCRMskip and hiddenownedports45860/45861/45862. First SBS012 fully wires explicit paid-off realResponses+embeddings with immutable provider/model/dimension/chunker/tokenizer profiles, migration preservingfake/guestdata, committed finite global/perguest token/request/cost grant/attempt reservations, bounded SDK transports and no automaticretry/fakefallback. Split chat/documentwork into short authsnapshot, admitted external phase, locked fenced domainapply, so reset/expiry/edit/replacement rejects stale results and rollback/restart never erases paidreservations or repeatsambiguouscalls. Samplesprepareonlyexplicitly; gueststart/sourceviewneverembeds. Then SBS013 independentvisitorHubSpotcomposition and truthfulmixedmodeUI, persistedprovider/app fences, exactsupportedlocalhost/HTTPScallback, app-scoped distributioncapacity, realaccountpipeline/stage/propertysetup, durablefinitecalls, ownedcleanup/uninstall/nooperatorfallback. Then SBS014 actualTaskscreate/getreconciliation, deterministicpublicationepochs/leases/retired-destinationfences, boundedSQLmaintenance+enqueue dispatcher role in nativealwaysonWorkerPool using samebackendimage; no directCRMfrompool/noCloudScheduler/no selfscheduledfinitechain. Prepareleastprivilege/probes/heartbeat/recovery/configurationwithnofundedresources. SBS015 implements offline readiness/dryrun-firstboundedrealacceptance tools, concrete deployment configuration/bootstrap commands, mixedmode/errorresponsivechecks, migrations/contracts/types/CI/sourcefreshLinuxsmoke. Recordfileallocations beforeedits andactualfocused/settledtests usingrealisolatedPG/pgvectorandinjectedHTTP/SDK/providers; no inheritedlivecredentials. Doalllocallypossiblecoding;missingkeys are not an excuseforunimplementedsource. Donotclaimactualsemanticquality, HubSpotscopes/nativeaccountoperation/slotrelease, hostedIAM/SQL/Tasks/WorkerPool/CI/monitoring orhumanappacceptancefrommocks. Nomodel/dimension/rate/currencybudgetdefaultselectedwithoutcurrentverification; no paidcalls, account/credentialentry, cloudprovisioning/deployment/publication, outboundmessages, scanner metadataexport orGitwrites undergenericcodingapproval. Afterallfourcodingticketscomplete, rerunreopenedperformance/visual/quality/security/handoffworkflow, selectingonlyactualnewfindingsprovisionallybeforefixes, refreshreleaseproof andprepareconcretereviewableexternalactionsbeforerequiredapproval.",
+            "sha256": "727f6c8fb6b6c406e8804903685523d841808fed191e1a87446dd68dd978bd3c",
+            "context_sources": [
+              "AGENTS.md",
+              "docs/CHOREOGRAPH.md",
+              "docs/tickets/README.md",
+              "docs/tickets/SBS-012-live-ai.md",
+              "docs/tickets/SBS-013-live-crm.md",
+              "docs/tickets/SBS-014-cloud-dispatch.md",
+              "docs/tickets/SBS-015-integration-readiness.md",
+              "docs/tickets/SBS-011-external-acceptance.md"
             ],
             "status": "afk",
             "approval": null,
@@ -2326,26 +2391,26 @@ This checklist records local work. Human approvals and unresolved external check
       "gate": null,
       "status": "complete",
       "prompt": {
-        "text": "At clean Choreograph266c899, first fully document the owner's proposed simpler no-database deployment under SBS-036: one authenticated Scheduler-driven private worker, durable GCS outbox/domain retries and cleanup, with Cloud Tasks removal deferred until a later implementation. Inspect actual jobs/claim/lease/publication/runtime code and official cost semantics; preserve local runner, exact booking/CRM/consent/idempotency/timezone/source rules, finite grants, private logging and all current cloud resources. Do not implement or provision that refactor now. Reconcile current guidance so planned target and implemented runtime are distinct. Then execute SBS-037 renewed code quality, structure and efficiency audit across the actual frontend/backend/operator/release/test paths. Fully record scope and any confirmed finding/file allocation before source edits; avoid speculative cleanup, cosmetic churn and manufactured findings. Use execute/read-only validate/independent confirmation/fix/revalidation until no actionable scoped quality finding remains. All provider checks must be fake/injected, paid off, with isolated encrypted object stores and SQL connections trapped; the owner app flags already read DATABASE_ENABLED=false,FAKE_MODE=true,PAID_DEMO_ENABLED=false. Preserve running services, local state, diagnostics, motion and UI behavior. Run focused meaningful regressions, then appropriate settled no-SQL/Node/types/lint/contracts/Linux gates at a cohesive boundary; refresh image receipt only for changed image inputs. Prepare an exact file-level commit plan, scan actual staged bytes for private values, and make ticket-prefixed local quality/planning commits with a clean index/tree. Do not begin security until that quality commit boundary is verified. No questions during active AFK, no delegation, no database startup, live AI/HubSpot, cloud writes, secret payload reads, external scanner inventory export, deployment or push.",
-        "sha256": "4f3999918c5c6d6b17ad65d946adedce76c33221cf79cf7c3b3fcda7be7da8eb",
+        "text": "Perform a functionality-preserving read-only quality validation of the settled SBS-036 Scheduler-only implementation and SBS-039 cloud preparation, not another broad refactor. Inspect the exact combined Git diff and preallocated ticket: object release omits Tasks clients/routes/publication, reuses jobs under one conditional global lease and smaller existing provider deadline; renderer/IAM/templates omit queue authority and keep optional SQL; parser/config validation precedes provider construction. Review exact fake/object retry/crash/late-ack/expiry/concurrency/body/identity cases, finite Windows fixture lifetime repair and deterministic module-local clock injection. Confirm386 SQL-forbidden portable tests plus25 final focused/165 Node/type/Ruff/pip checks and actual six-HTTP/13-object-scenario Linux acceptance with current200-input hash51cc624cfad5f3694064dfec2a347e1b4e916f3c81ff9a3a241a114be7caacbd. Preserve UI, exact prices/source scope/consent/admission, optional SQL and local fake services/keys/data. Confirm cloud receipt has private verified frontend artifact, necessary APIs/repository/invoker identity only, no public app/Scheduler/paid/SQL/Tasks resources and no secret payload read/provider call. Reconcile docs/failed-run dispositions and report only actual actionable issues; no new broad tests or speculative formatting work. Any real defect is independently confirmed/fixed/revalidated. Python security artifact/finite policy/provider origins remain explicit external deployment conditions, not passed local tests.",
+        "sha256": "4338acf238113428444ff5a23b9e7e750bdde0752efd8e154f833e8a991b1d96",
         "context_sources": [
-          "human:current-thread/2026-10-26/scheduler-plan-and-final-afk-audits",
-          "AGENTS.md",
-          "docs/CHOREOGRAPH.md",
-          "docs/LESSONS_LEARNED.md",
-          "docs/tickets/SBS-026-pre-sharing-quality.md",
-          "docs/tickets/SBS-033-predeployment-audit.md",
-          "docs/tickets/SBS-035-canonical-promotion.md"
+          "docs/tickets/SBS-036-scheduler-only-plan.md",
+          "docs/tickets/SBS-039-paid-deployment.md",
+          "infra/release-object-evidence.json",
+          "infra/deployment-preparation.json",
+          "AGENTS.md"
         ],
         "status": "afk",
         "approval": null,
         "afk_session": "AFK-SESSION-001"
       },
       "evidence": [
-        "docs/tickets/SBS-037-final-quality.md",
-        "commit:e60092f933f6435a8b8c51de8bf4217734c00f65",
-        ".runtime/sbs-037-checkpoint-result.json",
-        "infra/release-object-evidence.json"
+        "docs/tickets/SBS-036-scheduler-only-plan.md",
+        "docs/tickets/SBS-039-paid-deployment.md",
+        "infra/release-object-evidence.json",
+        "infra/deployment-preparation.json",
+        ".runtime/sbs036-focused-settled.log",
+        ".runtime/sbs036-node-final.log"
       ],
       "blockers": [],
       "approval": null,
@@ -2437,6 +2502,29 @@ This checklist records local work. Human approvals and unresolved external check
           },
           "prior_approval": null,
           "prior_decision": null
+        },
+        {
+          "reopened_at": "2026-10-26T11:48:45+00:00",
+          "reason": "Latest owner authorizes deployment; implement the already-selected Scheduler-only prerequisite, validate its changed boundaries and retain external Python/finite-paid/provider-hostname gates. Prior audit evidence remains historical.",
+          "prior_status": "complete",
+          "prior_prompt": {
+            "text": "At clean Choreograph266c899, first fully document the owner's proposed simpler no-database deployment under SBS-036: one authenticated Scheduler-driven private worker, durable GCS outbox/domain retries and cleanup, with Cloud Tasks removal deferred until a later implementation. Inspect actual jobs/claim/lease/publication/runtime code and official cost semantics; preserve local runner, exact booking/CRM/consent/idempotency/timezone/source rules, finite grants, private logging and all current cloud resources. Do not implement or provision that refactor now. Reconcile current guidance so planned target and implemented runtime are distinct. Then execute SBS-037 renewed code quality, structure and efficiency audit across the actual frontend/backend/operator/release/test paths. Fully record scope and any confirmed finding/file allocation before source edits; avoid speculative cleanup, cosmetic churn and manufactured findings. Use execute/read-only validate/independent confirmation/fix/revalidation until no actionable scoped quality finding remains. All provider checks must be fake/injected, paid off, with isolated encrypted object stores and SQL connections trapped; the owner app flags already read DATABASE_ENABLED=false,FAKE_MODE=true,PAID_DEMO_ENABLED=false. Preserve running services, local state, diagnostics, motion and UI behavior. Run focused meaningful regressions, then appropriate settled no-SQL/Node/types/lint/contracts/Linux gates at a cohesive boundary; refresh image receipt only for changed image inputs. Prepare an exact file-level commit plan, scan actual staged bytes for private values, and make ticket-prefixed local quality/planning commits with a clean index/tree. Do not begin security until that quality commit boundary is verified. No questions during active AFK, no delegation, no database startup, live AI/HubSpot, cloud writes, secret payload reads, external scanner inventory export, deployment or push.",
+            "sha256": "4f3999918c5c6d6b17ad65d946adedce76c33221cf79cf7c3b3fcda7be7da8eb",
+            "context_sources": [
+              "human:current-thread/2026-10-26/scheduler-plan-and-final-afk-audits",
+              "AGENTS.md",
+              "docs/CHOREOGRAPH.md",
+              "docs/LESSONS_LEARNED.md",
+              "docs/tickets/SBS-026-pre-sharing-quality.md",
+              "docs/tickets/SBS-033-predeployment-audit.md",
+              "docs/tickets/SBS-035-canonical-promotion.md"
+            ],
+            "status": "afk",
+            "approval": null,
+            "afk_session": "AFK-SESSION-001"
+          },
+          "prior_approval": null,
+          "prior_decision": null
         }
       ]
     },
@@ -2446,25 +2534,26 @@ This checklist records local work. Human approvals and unresolved external check
       "gate": "security",
       "status": "provisional",
       "prompt": {
-        "text": "Perform Choreograph's renewed whole-repository material STRIDE/general/dependency security audit at clean quality commit e60092f933f6435a8b8c51de8bf4217734c00f65, after the complete committed SBS-037 audit. Read current AGENTS/blueprint and preserved prior security review, actual frontend bridge/session/verification/source/dialog/error paths, backend commands/object-GCS persistence/leases/admission/provider and CRM boundaries, local/operator/release/CI tooling, locks and actual current container package inventories. Review spoofing/CSRF/OAuth/account/session and generation/revision authorization; tampering/idempotency/concurrent booking and source isolation; repudiation/unknown acknowledgements/finite durable spending and retries; private data/tokens/secrets/logging; meaningful resource abuse/DoS, parser/network bounds, prompt-injection and SSRF; and IAM/operator/dependency supply-chain elevation. Inspect real implemented Tasks path; SBS-036 Scheduler-only architecture is planning only and must not be implemented during audit. Use fake/injected tests and isolated encrypted objects, with SQL trapped and paid off. The owner's API is now actually fake; preserve live/manual keys/accounts and all data. Download only public bulk advisory data/primary maintainer evidence and compare locally where possible; never send code, package inventories or private metadata to a remote scanner. Do not read cloud secret payloads or mutate Google resources. Report only confirmed substantial findings, with concrete trigger, realistic impact, precise owner/file and minimal functionality-preserving repair plan. Do not manufacture hardening nits or treat unperformed owner-paid/hosted acceptance as a code exploit. Finish detailed SECURITY_REVIEW and concise severity-ranked SECURITY_OVERVIEW HTML plus SBS-038 evidence. Record an AFK provisional selected-fixes/no-fixes disposition using actual current IDs, then execute justified local repairs under the owner's explicit standing authorization, meaningful failing-before/passing-after regressions and independent read-only validate/confirm/fix/revalidate. Preserve private diagnostics, exact rules, UI/motion, byte/work/deadline/retry limits and existing quality gains. Prepare a file-level local commit plan, inspect staged private bytes and commit the security result separately from quality; no questions, delegation, SQL startup, paid AI/HubSpot/provider calls, account actions, cloud writes, secret copying, deployment, push or external scanner inventory export. Report actual scope/coverage/limitations and owner-manual acceptance separately.",
-        "sha256": "9bb4b48b245534328a146a0fa94a6eb51b06f8c9e4230512d0be0fb7a7c9f01a",
+        "text": "Perform the scoped renewed material security review for changed SBS-036 Scheduler-only object worker and SBS-039 actual cloud preparation at current settled source51cc624cfad5f3694064dfec2a347e1b4e916f3c81ff9a3a241a114be7caacbd. Preserve dated full SBS-038 advisory audit and selected SEC-038-02 rather than claiming a fresh all-package scan. Review exact verified OIDC issuer/audience/email before bounded body/storage; no object Tasks/guest worker routes; duplicate/concurrent global240second CAS lease/no-wait behavior, per-job180second token/expiry,150second outer/90second provider deadline admission, bounded one job, five attempts/three-hour window and conservative late/unknown outcomes. Check shared account/destination/revision/generation/consent/uninstall/cleanup fences are reused, old release cannot clear new owner and stale finisher cannot commit. Review object renderer/preflight removes queue/publisher/actAs, private API/worker identity and secret roles remain narrow, explicit gcloud project/repository preparation and private frontend push used no secret payload, public access, database, Tasks, paid call or persistent temporary auth file. Use the actual386 portable/25 focused/165 Node/Linux receipt evidence; no paid/provider/scanner metadata export or broad unsupported security claims. Update detailed/PM reports with only confirmed new findings or none, retain Python artifact blocker and missing finite hosted policy/provider origins, then record provisional AFK disposition without questions.",
+        "sha256": "74edff2b46224cd9201e4b05ddeb2429ebda99bd8616ddba00a3f137bc6881d4",
         "context_sources": [
-          "human:current-thread/2026-10-26/scheduler-plan-and-final-afk-audits",
-          "AGENTS.md",
-          "docs/CHOREOGRAPH.md",
-          "docs/tickets/SBS-037-final-quality.md",
-          "docs/security/SECURITY_REVIEW.md",
+          "docs/tickets/SBS-036-scheduler-only-plan.md",
+          "docs/tickets/SBS-039-paid-deployment.md",
           "infra/release-object-evidence.json",
-          "docs/tickets/SBS-035-canonical-promotion.md"
+          "infra/deployment-preparation.json",
+          "docs/security/SECURITY_REVIEW.md",
+          "AGENTS.md"
         ],
         "status": "afk",
         "approval": null,
         "afk_session": "AFK-SESSION-001"
       },
       "evidence": [
-        "docs/tickets/SBS-038-final-security.md#confirmed-findings-and-pre-fix-allocation",
-        "docs/security/SECURITY_REVIEW.md#current-full-review--sbs-038-26-october2026",
-        ".runtime/sbs038-advisories/receipts.json"
+        "docs/tickets/SBS-036-scheduler-only-plan.md",
+        "docs/tickets/SBS-039-paid-deployment.md",
+        "infra/release-object-evidence.json",
+        "infra/deployment-preparation.json",
+        "docs/security/SECURITY_REVIEW.md"
       ],
       "blockers": [],
       "approval": null,
@@ -2599,16 +2688,46 @@ This checklist records local work. Human approvals and unresolved external check
             "recorded_at": "2026-10-26T11:23:59+00:00"
           },
           "decision": "selected-fixes"
+        },
+        {
+          "reopened_at": "2026-10-26T11:48:44+00:00",
+          "reason": "Latest owner authorizes deployment; implement the already-selected Scheduler-only prerequisite, validate its changed boundaries and retain external Python/finite-paid/provider-hostname gates. Prior audit evidence remains historical.",
+          "prior_status": "provisional",
+          "prior_prompt": {
+            "text": "Perform Choreograph's renewed whole-repository material STRIDE/general/dependency security audit at clean quality commit e60092f933f6435a8b8c51de8bf4217734c00f65, after the complete committed SBS-037 audit. Read current AGENTS/blueprint and preserved prior security review, actual frontend bridge/session/verification/source/dialog/error paths, backend commands/object-GCS persistence/leases/admission/provider and CRM boundaries, local/operator/release/CI tooling, locks and actual current container package inventories. Review spoofing/CSRF/OAuth/account/session and generation/revision authorization; tampering/idempotency/concurrent booking and source isolation; repudiation/unknown acknowledgements/finite durable spending and retries; private data/tokens/secrets/logging; meaningful resource abuse/DoS, parser/network bounds, prompt-injection and SSRF; and IAM/operator/dependency supply-chain elevation. Inspect real implemented Tasks path; SBS-036 Scheduler-only architecture is planning only and must not be implemented during audit. Use fake/injected tests and isolated encrypted objects, with SQL trapped and paid off. The owner's API is now actually fake; preserve live/manual keys/accounts and all data. Download only public bulk advisory data/primary maintainer evidence and compare locally where possible; never send code, package inventories or private metadata to a remote scanner. Do not read cloud secret payloads or mutate Google resources. Report only confirmed substantial findings, with concrete trigger, realistic impact, precise owner/file and minimal functionality-preserving repair plan. Do not manufacture hardening nits or treat unperformed owner-paid/hosted acceptance as a code exploit. Finish detailed SECURITY_REVIEW and concise severity-ranked SECURITY_OVERVIEW HTML plus SBS-038 evidence. Record an AFK provisional selected-fixes/no-fixes disposition using actual current IDs, then execute justified local repairs under the owner's explicit standing authorization, meaningful failing-before/passing-after regressions and independent read-only validate/confirm/fix/revalidate. Preserve private diagnostics, exact rules, UI/motion, byte/work/deadline/retry limits and existing quality gains. Prepare a file-level local commit plan, inspect staged private bytes and commit the security result separately from quality; no questions, delegation, SQL startup, paid AI/HubSpot/provider calls, account actions, cloud writes, secret copying, deployment, push or external scanner inventory export. Report actual scope/coverage/limitations and owner-manual acceptance separately.",
+            "sha256": "9bb4b48b245534328a146a0fa94a6eb51b06f8c9e4230512d0be0fb7a7c9f01a",
+            "context_sources": [
+              "human:current-thread/2026-10-26/scheduler-plan-and-final-afk-audits",
+              "AGENTS.md",
+              "docs/CHOREOGRAPH.md",
+              "docs/tickets/SBS-037-final-quality.md",
+              "docs/security/SECURITY_REVIEW.md",
+              "infra/release-object-evidence.json",
+              "docs/tickets/SBS-035-canonical-promotion.md"
+            ],
+            "status": "afk",
+            "approval": null,
+            "afk_session": "AFK-SESSION-001"
+          },
+          "prior_approval": null,
+          "prior_decision": "selected-fixes"
+        },
+        {
+          "afk_review": {
+            "session_id": "AFK-SESSION-001",
+            "decision_id": "AFK-0036",
+            "recorded_at": "2026-10-26T12:16:27+00:00"
+          },
+          "decision": "selected-fixes"
         }
       ],
       "selected_findings": [
-        "SEC-038-01",
         "SEC-038-02"
       ],
       "afk_review": {
         "session_id": "AFK-SESSION-001",
-        "decision_id": "AFK-0034",
-        "recorded_at": "2026-10-26T11:23:59+00:00"
+        "decision_id": "AFK-0036",
+        "recorded_at": "2026-10-26T12:16:27+00:00"
       }
     },
     {
@@ -2617,33 +2736,35 @@ This checklist records local work. Human approvals and unresolved external check
       "gate": null,
       "status": "complete_local",
       "prompt": {
-        "text": "Execute only SBS-038 confirmed SEC-038-01/02 under current explicit AFK authorization, without questions. Read current source/security findings and pre-fix file allocation. Update official Node build/runtime Bookworm-slim to verified24.22.1 immutable index55fb5f5a527ea2c5c4a95f963e48ef90aa38c7b346054fdc8ee9957a2b55d205, Docker assertion, CI Node version and root package/lock engine metadata only. Keep backend pin truthful: official Python3.11.18 slim-bookworm/slim-trixie/bookworm artifacts return not-found and the maintained Bookworm alias remains3.11.17. Document SEC-038-02 as an external pre-deployment blocker with exact future verify-pin-rebuild acceptance; do not create custom TLS validation, compiler build, distro switch or fictitious digest. Preserve every app/UI/domain/provider/storage/retry/consent/admission behavior and future Scheduler-only plan. Rebuild actual isolated fake encrypted-object Linux release with no SQL/provider/cloud calls, check Node version and same nonroot/container settings, run meaningful Node/security/type/fingerprint checks and compare final image packages locally. Validate read-only, confirm/reconcile real findings until no actionable local source fix remains; do not mark Python fixed or deploy-ready. Reconcile detailed/PM security reports, ticket/blueprint/AGENTS/README/runbook/lessons/queue, exact file-level commit plan, staged secret/whitespace/hash/parent checks, separate local security commit and clean-tree handoff. No paid calls, database startup, account/cloud mutation, scanner inventory export, push, deployment or delegation. Existing keys/private data and owner fake app stay intact. Owner paid/native/visual/security acceptance remains separate from provisional AFK decisions.",
-        "sha256": "df58536da6eeb61c73bb5d1c8b925e7562637e14270d014b621d762a38191108",
+        "text": "Handle only the retained SEC-038-02 runtime finding after the scoped SBS-036/039 security review found no new material local issue. Latest registry read still reports no official Python3.11.18-slim-bookworm artifact. Preserve truthful3.11.17 pin, record the actual external pre-deployment block and future verify/pin/rebuild requirement; no fictitious digest, custom crypto/source-build workaround or deployment of the outdated backend. No additional source remedy is justified now. Preserve386 portable/25 final focused/165 Node and fresh Linux evidence and prepared private frontend digest. Hosted/agent paid grants remain expired/unset until a new specific finite specification; no questions, paid call or fabricated consent. Complete local documentation/commit/handoff with explicit unresolved runtime/activation conditions.",
+        "sha256": "8ba886dc76856f9973db245aa4daabf9907042b3ea9a8c7e4e7144359aff38a0",
         "context_sources": [
-          "human:current-thread/2026-10-26/scheduler-plan-and-final-afk-audits",
-          "docs/tickets/SBS-038-final-security.md",
-          "docs/security/SECURITY_REVIEW.md",
-          "infra/Dockerfile.frontend",
-          "package.json",
-          "package-lock.json",
-          ".github/workflows/ci.yml"
+          "docs/tickets/SBS-036-scheduler-only-plan.md",
+          "docs/tickets/SBS-039-paid-deployment.md",
+          "infra/release-object-evidence.json",
+          "infra/deployment-preparation.json",
+          "docs/security/SECURITY_REVIEW.md"
         ],
         "status": "afk",
         "approval": null,
         "afk_session": "AFK-SESSION-001"
       },
       "evidence": [
-        "docs/tickets/SBS-038-final-security.md#settled-validation-and-independent-read-only-review",
-        "docs/security/SECURITY_REVIEW.md",
+        "docs/tickets/SBS-036-scheduler-only-plan.md",
+        "docs/tickets/SBS-039-paid-deployment.md",
         "infra/release-object-evidence.json",
-        ".runtime/sbs038-backend.log",
-        ".runtime/sbs038-patched-node.log"
+        "infra/deployment-preparation.json"
       ],
       "blockers": [
         {
           "kind": "external",
-          "reason": "SEC-038-02: Python3.11.18 security release exists but its official container artifacts are unpublished; maintained Bookworm alias remains3.11.17. Verify/pin/rebuild a real official3.11.18+ artifact before deployment. No safe minimal runtime pin can be invented locally.",
-          "reference": "docs/tickets/SBS-038-final-security.md#required-next-actions-before-deployment"
+          "reason": "SEC-038-02: official Python3.11.18+ image is still unpublished; verified pin/rebuild is required before backend deployment.",
+          "reference": "docs/tickets/SBS-039-paid-deployment.md"
+        },
+        {
+          "kind": "external",
+          "reason": "Hosted AI grant expired24 October and hosted CRM allowance is unset. New specific finite hosted/agent authority, discovered origins/provider hostname/callback and actual live acceptance are unresolved; do not invent grants or account consent.",
+          "reference": "docs/tickets/SBS-039-paid-deployment.md"
         }
       ],
       "approval": null,
@@ -2727,6 +2848,29 @@ This checklist records local work. Human approvals and unresolved external check
           },
           "prior_approval": null,
           "prior_decision": null
+        },
+        {
+          "reopened_at": "2026-10-26T11:48:43+00:00",
+          "reason": "Latest owner authorizes deployment; implement the already-selected Scheduler-only prerequisite, validate its changed boundaries and retain external Python/finite-paid/provider-hostname gates. Prior audit evidence remains historical.",
+          "prior_status": "complete_local",
+          "prior_prompt": {
+            "text": "Execute only SBS-038 confirmed SEC-038-01/02 under current explicit AFK authorization, without questions. Read current source/security findings and pre-fix file allocation. Update official Node build/runtime Bookworm-slim to verified24.22.1 immutable index55fb5f5a527ea2c5c4a95f963e48ef90aa38c7b346054fdc8ee9957a2b55d205, Docker assertion, CI Node version and root package/lock engine metadata only. Keep backend pin truthful: official Python3.11.18 slim-bookworm/slim-trixie/bookworm artifacts return not-found and the maintained Bookworm alias remains3.11.17. Document SEC-038-02 as an external pre-deployment blocker with exact future verify-pin-rebuild acceptance; do not create custom TLS validation, compiler build, distro switch or fictitious digest. Preserve every app/UI/domain/provider/storage/retry/consent/admission behavior and future Scheduler-only plan. Rebuild actual isolated fake encrypted-object Linux release with no SQL/provider/cloud calls, check Node version and same nonroot/container settings, run meaningful Node/security/type/fingerprint checks and compare final image packages locally. Validate read-only, confirm/reconcile real findings until no actionable local source fix remains; do not mark Python fixed or deploy-ready. Reconcile detailed/PM security reports, ticket/blueprint/AGENTS/README/runbook/lessons/queue, exact file-level commit plan, staged secret/whitespace/hash/parent checks, separate local security commit and clean-tree handoff. No paid calls, database startup, account/cloud mutation, scanner inventory export, push, deployment or delegation. Existing keys/private data and owner fake app stay intact. Owner paid/native/visual/security acceptance remains separate from provisional AFK decisions.",
+            "sha256": "df58536da6eeb61c73bb5d1c8b925e7562637e14270d014b621d762a38191108",
+            "context_sources": [
+              "human:current-thread/2026-10-26/scheduler-plan-and-final-afk-audits",
+              "docs/tickets/SBS-038-final-security.md",
+              "docs/security/SECURITY_REVIEW.md",
+              "infra/Dockerfile.frontend",
+              "package.json",
+              "package-lock.json",
+              ".github/workflows/ci.yml"
+            ],
+            "status": "afk",
+            "approval": null,
+            "afk_session": "AFK-SESSION-001"
+          },
+          "prior_approval": null,
+          "prior_decision": null
         }
       ],
       "skip_reason": "SBS-027 explicit provisional AFK no-fixes selection: no new substantial actionable local security defect substantiated; empty selected_findings. Historical remedies remain passing."
@@ -2737,36 +2881,36 @@ This checklist records local work. Human approvals and unresolved external check
       "gate": null,
       "status": "complete_local",
       "prompt": {
-        "text": "Prepare the current Choreograph final local AFK handoff after committed SBS-037 quality and completed SBS-038 material audit/available Node security remedy. Reconcile exact evidence and all main authorities; preserve no-database deployment, fake/injected validation, unchanged user keys/private data/app behavior and future Scheduler-only plan without implementation. Report two real medium runtime findings: Node24.22.1 official image/CI/engines rebuilt and validated; Python3.11.18+ official container absent and SEC-038-02 remains an explicit before-deployment blocker requiring verify/pin/rebuild. Do not claim all findings closed, deployment readiness or personal acceptance. Record fresh199 focused no-SQL security tests/66 SQL exclusions,165 Windows Node/164 patched-Linux Node checks plus one platform skip, types/Ruff/pip compatibility and current200-input Linux object receipt with six HTTP/11 lifecycle checks. Earlier quality374 no-SQL checks own unchanged app source. Review final combined diff and exact file-level commit plan, staged secret/hash/path/parent/whitespace checks, commit security separately on local main, verify clean index/worktree and source receipt. No question, delegation, provider/Cloudflare/HubSpot account call, cloud write, database startup, scanner inventory upload, push or deployment. No post-deployment test tasks. Remaining next work is verified Python security artifact, later SBS-036 implementation/retry acceptance, remaining hosted config/fresh finite hosted authority and owner paid/native/visual/security review. Give a concise self-contained result with both commit IDs, one open upstream blocker, testing evidence and plan link.",
-        "sha256": "8c6b333a488299279d0bcf0be6daf0b7b2d8843e0ae246ce567f25f80c7882df",
+        "text": "Finish the latest owner-authorized Choreograph deployment continuation honestly. Verify previous audits are already committed at e60092f/787476e; commit new SBS-036 Scheduler-only implementation plus SBS-039 cloud preparation using exact file-level allocation and staged/committed secret/hash/path/parent/whitespace checks, then clean-tree/fresh-source readback. Summarize386 SQL-forbidden portable checks,25 final focused Scheduler/renderer checks,165 Node/type/Ruff/pip and actual nonroot Linux six-HTTP/13-scenario evidence. Record enabled Run/Artifact Registry/Scheduler APIs, private image repository/Scheduler identity and verified uploaded frontend digest with anonymous401 and temporary auth removed. Explicitly state there are zero Cloud Run services/Scheduler jobs and no public/paid application URL, backend upload, database/Tasks resource, secret payload read or paid provider call. SEC-038-02 official Python3.11.18+ image is still unpublished; future verified pin/rebuild is required. Existing hosted AI grant expired24 October/CRM allowance unset and real origin/provider hostname/callback/consent remain unverified. Do not call preparation successful deployment or silently replenish authorization. Preserve owner local fake app/keys/data and global gcloud project; no Git push. Provisional AFK security/quality review is not personal owner acceptance. Give a concise self-contained result with actual new commit and clear blockers; no questions or invented paid cost allowance.",
+        "sha256": "b7d53181bcb924c8f64230c43c9c57aa59a47e771d5f1272de35d61beeeec4d9",
         "context_sources": [
-          "human:current-thread/2026-10-26/scheduler-plan-and-final-afk-audits",
           "docs/tickets/SBS-036-scheduler-only-plan.md",
-          "docs/tickets/SBS-037-final-quality.md",
-          "docs/tickets/SBS-038-final-security.md",
-          "docs/security/SECURITY_REVIEW.md",
-          "infra/release-object-evidence.json"
+          "docs/tickets/SBS-039-paid-deployment.md",
+          "infra/release-object-evidence.json",
+          "infra/deployment-preparation.json",
+          "docs/tickets/COMMIT_PLAN.md"
         ],
         "status": "afk",
         "approval": null,
         "afk_session": "AFK-SESSION-001"
       },
       "evidence": [
-        "docs/tickets/SBS-038-final-security.md",
-        "docs/tickets/COMMIT_PLAN.md",
-        "commit:e60092f933f6435a8b8c51de8bf4217734c00f65",
-        "infra/release-object-evidence.json"
+        "docs/tickets/SBS-036-scheduler-only-plan.md",
+        "docs/tickets/SBS-039-paid-deployment.md",
+        "infra/release-object-evidence.json",
+        "infra/deployment-preparation.json",
+        "docs/tickets/COMMIT_PLAN.md"
       ],
       "blockers": [
         {
           "kind": "external",
-          "reason": "SEC-038-02 official Python3.11.18+ image publication/pin/rebuild is required before deployment; upstream artifact is absent.",
-          "reference": "docs/tickets/SBS-038-final-security.md#required-next-actions-before-deployment"
+          "reason": "SEC-038-02: official Python3.11.18+ image is still unpublished; verified pin/rebuild is required before backend deployment.",
+          "reference": "docs/tickets/SBS-039-paid-deployment.md"
         },
         {
           "kind": "external",
-          "reason": "Owner paid/native/visual/security acceptance and separately scoped hosted release inputs/authority remain; AFK decisions are provisional. SBS-036 Scheduler-only transport is planned for a later implementation, explicitly not executed now.",
-          "reference": "docs/tickets/SBS-038-final-security.md#required-next-actions-before-deployment"
+          "reason": "Hosted AI grant expired24 October and hosted CRM allowance is unset. New specific finite hosted/agent authority, discovered origins/provider hostname/callback and actual live acceptance are unresolved; do not invent grants or account consent.",
+          "reference": "docs/tickets/SBS-039-paid-deployment.md"
         }
       ],
       "approval": null,
@@ -2859,6 +3003,28 @@ This checklist records local work. Human approvals and unresolved external check
               "docs/tickets/COMMIT_PLAN.md",
               "infra/release-evidence.json",
               ".runtime/ci-clean-boundary.json"
+            ],
+            "status": "afk",
+            "approval": null,
+            "afk_session": "AFK-SESSION-001"
+          },
+          "prior_approval": null,
+          "prior_decision": null
+        },
+        {
+          "reopened_at": "2026-10-26T11:48:42+00:00",
+          "reason": "Latest owner authorizes deployment; implement the already-selected Scheduler-only prerequisite, validate its changed boundaries and retain external Python/finite-paid/provider-hostname gates. Prior audit evidence remains historical.",
+          "prior_status": "complete_local",
+          "prior_prompt": {
+            "text": "Prepare the current Choreograph final local AFK handoff after committed SBS-037 quality and completed SBS-038 material audit/available Node security remedy. Reconcile exact evidence and all main authorities; preserve no-database deployment, fake/injected validation, unchanged user keys/private data/app behavior and future Scheduler-only plan without implementation. Report two real medium runtime findings: Node24.22.1 official image/CI/engines rebuilt and validated; Python3.11.18+ official container absent and SEC-038-02 remains an explicit before-deployment blocker requiring verify/pin/rebuild. Do not claim all findings closed, deployment readiness or personal acceptance. Record fresh199 focused no-SQL security tests/66 SQL exclusions,165 Windows Node/164 patched-Linux Node checks plus one platform skip, types/Ruff/pip compatibility and current200-input Linux object receipt with six HTTP/11 lifecycle checks. Earlier quality374 no-SQL checks own unchanged app source. Review final combined diff and exact file-level commit plan, staged secret/hash/path/parent/whitespace checks, commit security separately on local main, verify clean index/worktree and source receipt. No question, delegation, provider/Cloudflare/HubSpot account call, cloud write, database startup, scanner inventory upload, push or deployment. No post-deployment test tasks. Remaining next work is verified Python security artifact, later SBS-036 implementation/retry acceptance, remaining hosted config/fresh finite hosted authority and owner paid/native/visual/security review. Give a concise self-contained result with both commit IDs, one open upstream blocker, testing evidence and plan link.",
+            "sha256": "8c6b333a488299279d0bcf0be6daf0b7b2d8843e0ae246ce567f25f80c7882df",
+            "context_sources": [
+              "human:current-thread/2026-10-26/scheduler-plan-and-final-afk-audits",
+              "docs/tickets/SBS-036-scheduler-only-plan.md",
+              "docs/tickets/SBS-037-final-quality.md",
+              "docs/tickets/SBS-038-final-security.md",
+              "docs/security/SECURITY_REVIEW.md",
+              "infra/release-object-evidence.json"
             ],
             "status": "afk",
             "approval": null,

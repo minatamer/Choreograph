@@ -43,7 +43,9 @@ test('PID reuse and a sibling command never pass ownership checks', () => {
 test('Windows service survives its launcher without a visible window', { skip: process.platform !== 'win32' }, async () => {
   const directory = mkdtempSync(path.join(tmpdir(), 'choreograph hidden '));
   const log = path.join(directory, 'probe with spaces.log');
-  const probe = 'console.log("ready"); const timer=setInterval(()=>console.log("alive"),100); setTimeout(()=>clearInterval(timer),8000);';
+  // CIM/window inspection can exceed8s under Docker/test load. Keep this
+  // fixture alive through verified cleanup, with a finite crash fallback.
+  const probe = 'console.log("ready"); const timer=setInterval(()=>console.log("alive"),100); setTimeout(()=>clearInterval(timer),60000);';
   const source = `import {launchBackground} from ${JSON.stringify(new URL('./local.mjs', import.meta.url).href)}; const child=await launchBackground(process.execPath, ['-e', ${JSON.stringify(probe)}], {cwd:${JSON.stringify(root)},env:process.env,log:${JSON.stringify(log)}}); console.log(child.pid);`;
   let receipt;
   try {

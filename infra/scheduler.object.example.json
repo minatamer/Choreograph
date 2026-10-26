@@ -2,7 +2,7 @@
   "name": "projects/REPLACE_PROJECT_ID/locations/REPLACE_REGION/jobs/REPLACE_MAINTENANCE_JOB_NAME",
   "schedule": "* * * * *",
   "timeZone": "Etc/UTC",
-  "attemptDeadline": "60s",
+  "attemptDeadline": "240s",
   "retryConfig": {
     "retryCount": 2,
     "minBackoffDuration": "10s",

@@ -1,4 +1,4 @@
-"""Prepared private Cloud Tasks boundary; never mounted by the local guest API."""
+"""Private authenticated worker: Scheduler objects, optional legacy SQL tasks."""
 import asyncio
 import base64
 import re
@@ -78,8 +78,12 @@ def verify_google_token(token, audience):
         return verify_oauth2_token(token, bounded_request, audience=audience)
 
 
-def create_delivery_app(settings, engine, provider, target, *, verifier=verify_google_token, clock=None,close_provider=False,
+def create_delivery_app(settings, engine, provider, target=None, *, verifier=verify_google_token, clock=None,close_provider=False,
                         maintenance_target=None,publisher=None,close_publisher=False):
+    if target is None:
+        from .persistence import is_object
+        if not is_object(engine) or maintenance_target is None or publisher is not None:
+            raise ValueError('SCHEDULER_TARGET_REQUIRED')
     @asynccontextmanager
     async def lifespan(_):
         try:yield
@@ -122,7 +126,6 @@ def create_delivery_app(settings, engine, provider, target, *, verifier=verify_g
         except (ValidationError, ValueError):
             return Response(status_code=422)
 
-    @app.post('/internal/tasks/crm')
     async def delivery(request: Request):
         if not await authorized(request,target):return Response(status_code=403)
         command=await command_body(request,Delivery)
@@ -141,13 +144,17 @@ def create_delivery_app(settings, engine, provider, target, *, verifier=verify_g
         except Exception:  # noqa: BLE001 - the private delivery boundary returns only a retry status.
             return Response(status_code=503)
 
-    if maintenance_target is not None and publisher is not None:
+    if target is not None:app.post('/internal/tasks/crm')(delivery)
+
+    if maintenance_target is not None and (publisher is not None or target is None):
         @app.post('/internal/maintenance')
         async def maintenance(request:Request):
             if not await authorized(request,maintenance_target):return Response(status_code=403)
             command=await command_body(request,Maintenance)
             if isinstance(command,Response):return command
             def sweep():
+                if target is None:
+                    return jobs.scheduled_tick(engine,settings,provider,clock)
                 from . import dispatch
                 jobs.maintenance(engine,clock())
                 dispatch.settle_terminal(engine)

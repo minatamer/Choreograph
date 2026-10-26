@@ -80,13 +80,23 @@ from datetime import datetime
 from choreograph.object_store import FileObjects,ObjectEngine
 from choreograph.settings import Settings
 from choreograph.hubspot import FakeHubSpot
-from choreograph import jobs
+from choreograph.task_delivery import MaintenanceTarget,create_delivery_app
+from fastapi.testclient import TestClient
 data=json.load(sys.stdin)
 engine=ObjectEngine(FileObjects(data['root']),data['values']['CHOREOGRAPH_TOKEN_KEY'])
 settings=Settings.parse(data['values'],testing=True)
 provider=FakeHubSpot(engine)
-count=jobs.tick(engine,settings,provider,lambda:datetime.fromisoformat(data['now']))
-print(json.dumps({'count':count,'calls':provider.calls}))
+target=MaintenanceTarget('https://worker.example.invalid/internal/maintenance','https://worker.example.invalid',
+    'scheduler@test-project.iam.gserviceaccount.com')
+claims={'iss':'https://accounts.google.com','aud':target.audience,'email':target.service_email,'email_verified':True}
+app=create_delivery_app(settings,engine,provider,maintenance_target=target,verifier=lambda *_:claims,
+    clock=lambda:datetime.fromisoformat(data['now']))
+with TestClient(app) as client:
+    assert client.post('/internal/tasks/crm',json={}).status_code==404
+    assert client.post('/internal/maintenance',json={'sweep':True}).status_code==403
+    response=client.post('/internal/maintenance',headers={'authorization':'Bearer injected-scheduler'},json={'sweep':True})
+    assert response.status_code==204,response.text
+print(json.dumps({'calls':provider.calls}))
 engine.dispose()
 '''
     def process(at):
@@ -110,4 +120,5 @@ engine.dispose()
     engine.dispose();restarted.dispose()
 print(json.dumps({'storage':'encrypted-private-objects','sql_connections':0,'real_provider_calls':0,
     'checks':['original_sources','guide_retrieval','rolling_discovery','quote','booking','idempotent_replay',
-              'reschedule','separate_process_sync','refresh','browser_closed_expiry_cleanup','encrypted_credentials']}))
+              'reschedule','separate_process_scheduled_sync','refresh','browser_closed_scheduled_cleanup',
+              'encrypted_credentials','no_tasks_route','scheduler_identity']}))

@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "verifiedAt": "2026-10-26T11:27:23.666Z",
+  "verifiedAt": "2026-10-26T12:02:48.435Z",
   "profile": "local-isolated-linux-objects-fake",
   "source": {
-    "sha256": "89fb2bc0ad669a78caab3f5c46b7a9e4a56a2c77028e624b87a2d3bfdf1a87c5",
+    "sha256": "51cc624cfad5f3694064dfec2a347e1b4e916f3c81ff9a3a241a114be7caacbd",
     "files": {
       ".dockerignore": "cd3c5dc547e86af76b70a638e7d53339f5891c7e932b49d97eec6c66506caf4c",
       "apps/backend/alembic.ini": "e7955a0ffb9c32a9c5067d7885ee9197328f17a4a12fb4a5bb556c2b85763aa2",
@@ -14,7 +14,7 @@
       "apps/backend/choreograph/api.py": "fcff93b082eb51cc7c70a42a127094774222ea413476cde684b64800a626ec23",
       "apps/backend/choreograph/assistant.py": "77adfd7763a917fea105424f6145a30b8af9460fce3bc19b2497cb94c8562994",
       "apps/backend/choreograph/assistant_context.py": "74e1256e119917e8fc6def767790da1c51dda6ebbe5726757a0995fee1289bd3",
-      "apps/backend/choreograph/cloud_plan.py": "be3fb20a4db7a30f42374e9d7aca30a17c5a90cf1ee51b77a1df4ef1ac245f57",
+      "apps/backend/choreograph/cloud_plan.py": "2a1d5ac8e914eb90a6a5d25c3eb3fe448e88cd14a54ac4a6170637760e4972d1",
       "apps/backend/choreograph/composition.py": "c566338a7fea865630fe060a1192b762251673f92265295b2f7202ebce60c61e",
       "apps/backend/choreograph/contracts.py": "e36ea5f79d852f33d83c1ea2af4257a6ebb5f2c0c397a9a61b103730f8de5369",
       "apps/backend/choreograph/crm.py": "215240f164c53986966b3dbcf5f2facc937c0b0fb5041de42c2939460b8aef11",
@@ -29,19 +29,19 @@
       "apps/backend/choreograph/errors.py": "ce67d103765362c8f42c8a04ae45a7c4ca6427a0ca23bcdbff5709beb150c66c",
       "apps/backend/choreograph/hubspot.py": "efb8b8e51ee64c89f5583fe4d3ae9460bd8135b1847d048c928e438cbad9e990",
       "apps/backend/choreograph/interactions.py": "94d4f9fb8870bd4fc70e08689fc615e9fe25b9a6b3c4c1baf46b171d088d7276",
-      "apps/backend/choreograph/jobs.py": "ddc3742bb480edda57a80243a0d09793d651830684f5339cc7916974c376f748",
+      "apps/backend/choreograph/jobs.py": "125f6806b47b6c42ac48db4c449e6fba1225519ab8c35ebca571838e7a1f86e0",
       "apps/backend/choreograph/knowledge.py": "1b5e50410a726c28f0a92cbfca4807abc9d332a91641b4852141ccf5de1c634d",
       "apps/backend/choreograph/knowledge_api.py": "73c3032564d7dd15386b277319da3664fd1d0d818a214c72ba58bce4f290f46a",
       "apps/backend/choreograph/migrate.py": "ae4fc427fd2014d7e0f2e126d77a87f1898d312bfd70ececf75338527bae7419",
       "apps/backend/choreograph/models.py": "a35534a49faae799f80dec9e72b64092f74136a59bec7bc4990ec54c3f96e1e1",
-      "apps/backend/choreograph/object_store.py": "2051f7ddbaec1381e63c9edb2dc81cb64d98921ca3c11f5240377934d64b971f",
+      "apps/backend/choreograph/object_store.py": "d2bd45c6aa087e3bf8fc26930455d17ac37d111c0fa170e2586fb38445bf30cd",
       "apps/backend/choreograph/operator.py": "72b74043af703eab02a036d8404d6e5c4374c8a7d0a79293cf687ead6756af50",
       "apps/backend/choreograph/parse_document.py": "4d07051020ccd210a710b13b5f494ff43299693f6d768b1f6ddbc65751c23cfa",
       "apps/backend/choreograph/persistence.py": "4dda8c5058dbfd0754acfab38d386d1902847538a41f19ee3ff0f7dc67073b5e",
       "apps/backend/choreograph/providers.py": "4d5ab83b06d95fe3a1237036687b1d047302b8ab2d0e9f9522afc501227db0ef",
       "apps/backend/choreograph/publication.py": "8ca698cb0f75c35aafc18403de09615626c791bfc4f178c91d8db295f362e683",
       "apps/backend/choreograph/readiness.py": "9751e4a19f9d988ca05e97592332290297b8fac2509f0f9f1d2e2a3a37e16a92",
-      "apps/backend/choreograph/release.py": "c44ac96ef07d24efaeee2687c894499432a1565d0588ae041e76599bb6a66d47",
+      "apps/backend/choreograph/release.py": "5977f1ed308556a90a770432efe940ddc210722f332194f5a23b3676367b4bd4",
       "apps/backend/choreograph/runner.py": "e44deaa8b63d75d630a77a4d8c0519f0e5eca574cfbb203e0efb58b4c295d46d",
       "apps/backend/choreograph/runtime_config.py": "8563d91c7a0573d310d19912604223490cbb5b68d733141f6f700b5d30e9a934",
       "apps/backend/choreograph/server.py": "8c90600e81e4259e11b2163ab95a98b3bffb382b69cf0fde1f0d835116053f8e",
@@ -49,7 +49,7 @@
       "apps/backend/choreograph/sessions.py": "9f743cd47f507e3b74541d6631dc1418595cb724303ab02282d63f0fa0079693",
       "apps/backend/choreograph/settings.py": "382056b85ac542a60b11e2eba80b121f341076458bb37119ed1dceb0098bc405",
       "apps/backend/choreograph/storage_transfer.py": "bbd19d99ce7f8c4c8b89bac7bb4d54d2757f425c382d0a7f3667b507b6a8a058",
-      "apps/backend/choreograph/task_delivery.py": "a6956265192560cc84c53c548b33ae80d24c1238c2ae81200514fb501de0fc39",
+      "apps/backend/choreograph/task_delivery.py": "7463b311fbd308714bcb28880dc7a1c8bcfc38ed83c9bae51b561afd8fd58cd3",
       "apps/backend/choreograph/task_enqueue.py": "d414b83edafb45d08c2d0fbb6e03b15166a9d6c2aa17d36b5d3fe02748811d5a",
       "apps/backend/choreograph/tokenizers.py": "0c527c6f36dd599f2752c9b7771bfdc79655d34e097ae0faed8b134c096496e8",
       "apps/backend/choreograph/verification.py": "ad2d0c551376e945239596fb8345823b352a245a1d30d01d99bd7484b4859571",
@@ -209,15 +209,15 @@
   },
   "images": {
     "frontend": {
-      "tag": "choreograph-frontend:choreograph-release-50036e73-30fd-4735-ab91-ff351a87bbe8",
-      "id": "sha256:a35afcc84049e5a1275ce318a709c401826f9b1bd77cb58028473a89a422a43d",
+      "tag": "choreograph-frontend:choreograph-release-cf97bcf2-61f7-4b3c-ada4-a9aae32a81db",
+      "id": "sha256:22379005551d6b71d36f1dafb63d2e64efe2e647c6091fc45bd7eead93433872",
       "os": "linux",
       "architecture": "amd64",
       "user": "node"
     },
     "backend": {
-      "tag": "choreograph-api:choreograph-release-50036e73-30fd-4735-ab91-ff351a87bbe8",
-      "id": "sha256:57997a0142ae95d460e4ff5df07df1accf3bae917e334fc1961c59c987fed898",
+      "tag": "choreograph-api:choreograph-release-cf97bcf2-61f7-4b3c-ada4-a9aae32a81db",
+      "id": "sha256:0ef7c82a6a7459ca5b605adfd87eaa7a54cdcf676624cdedbb243f97d480ae0e",
       "os": "linux",
       "architecture": "amd64",
       "user": "10001:10001"
@@ -241,10 +241,12 @@
         "booking",
         "idempotent_replay",
         "reschedule",
-        "separate_process_sync",
+        "separate_process_scheduled_sync",
         "refresh",
-        "browser_closed_expiry_cleanup",
-        "encrypted_credentials"
+        "browser_closed_scheduled_cleanup",
+        "encrypted_credentials",
+        "no_tasks_route",
+        "scheduler_identity"
       ]
     },
     "nonRootLinuxImages": true,

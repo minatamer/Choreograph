@@ -25,11 +25,12 @@ def application(role, settings, engine, values, *, ai_runtime=None,crm_provider=
         def bootstrap_health():return {'status':'bootstrap','application_ready':False}
         return app
     publisher=None
-    if values.get('CHOREOGRAPH_TASKS_ENABLED')=='true':
+    object_mode=is_object(engine)
+    if object_mode and values.get('CHOREOGRAPH_TASKS_ENABLED')=='true':
+        raise ValueError('OBJECT_TASKS_NOT_USED')
+    if not object_mode and values.get('CHOREOGRAPH_TASKS_ENABLED')=='true':
         from .task_enqueue import CloudTasks, TasksConfig
         publisher=CloudTasks(TasksConfig.parse(values),authorized=True)
-    elif is_object(engine) and settings.object_backend=='gcs':
-        raise ValueError('OBJECT_DISPATCH_REQUIRED')
     if role == 'api':
         from .api import create_app
         try:
@@ -39,14 +40,15 @@ def application(role, settings, engine, values, *, ai_runtime=None,crm_provider=
             if publisher is not None:publisher.close()
             raise
     from .task_delivery import MaintenanceTarget, TaskTarget, create_delivery_app
-    target = TaskTarget(values.get('CHOREOGRAPH_TASK_URL', ''),
+    target = None if object_mode else TaskTarget(values.get('CHOREOGRAPH_TASK_URL', ''),
                         values.get('CHOREOGRAPH_TASK_AUDIENCE', ''),
                         values.get('CHOREOGRAPH_TASK_SERVICE_EMAIL', ''))
-    provider=crm_provider if crm_provider is not None else compose_crm(settings,engine)
     maintenance=None
-    if publisher is not None:
-        maintenance=MaintenanceTarget(target.audience+'/internal/maintenance',target.audience,
+    if object_mode or publisher is not None:
+        audience=values.get('CHOREOGRAPH_WORKER_AUDIENCE','') if object_mode else target.audience
+        maintenance=MaintenanceTarget(audience+'/internal/maintenance',audience,
                                      values.get('CHOREOGRAPH_MAINTENANCE_SERVICE_EMAIL',''))
+    provider=crm_provider if crm_provider is not None else compose_crm(settings,engine)
     app = create_delivery_app(settings, engine, provider, target,close_provider=crm_provider is None,
         maintenance_target=maintenance,publisher=publisher,close_publisher=publisher is not None)
 

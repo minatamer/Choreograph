@@ -116,22 +116,6 @@ spec:
             secretKeyRef:
               name: CHOREOGRAPH_TOKEN_KEY
               key: "REPLACE_PINNED_TOKEN_KEY_SECRET_VERSION"
-        - name: CHOREOGRAPH_TASKS_ENABLED
-          value: 'true'
-        - name: CHOREOGRAPH_TASK_PROJECT
-          value: REPLACE_PROJECT_ID
-        - name: CHOREOGRAPH_TASK_REGION
-          value: REPLACE_REGION
-        - name: CHOREOGRAPH_TASK_QUEUE
-          value: REPLACE_QUEUE_NAME
-        - name: CHOREOGRAPH_TASK_URL
-          value: https://REPLACE_WORKER_SERVICE_ORIGIN.run.app/internal/tasks/crm
-        - name: CHOREOGRAPH_TASK_AUDIENCE
-          value: https://REPLACE_WORKER_SERVICE_ORIGIN.run.app
-        - name: CHOREOGRAPH_TASK_SERVICE_EMAIL
-          value: REPLACE_TASK_DELIVERY_SA@REPLACE_PROJECT_ID.iam.gserviceaccount.com
-        - name: CHOREOGRAPH_MAINTENANCE_SERVICE_EMAIL
-          value: REPLACE_MAINTENANCE_SA@REPLACE_PROJECT_ID.iam.gserviceaccount.com
         startupProbe:
           httpGet:
             path: /health
@@ -165,7 +149,7 @@ spec:
     spec:
       serviceAccountName: REPLACE_WORKER_SA@REPLACE_PROJECT_ID.iam.gserviceaccount.com
       containerConcurrency: 2
-      timeoutSeconds: 120
+      timeoutSeconds: 180
       containers:
       - image: REPLACE_REGION-docker.pkg.dev/REPLACE_PROJECT_ID/REPLACE_REPOSITORY/backend@sha256:REPLACE_BACKEND_IMAGE_DIGEST
         command:
@@ -190,12 +174,6 @@ spec:
           value: 'false'
         - name: CHOREOGRAPH_ORIGIN
           value: https://REPLACE_FRONTEND_SERVICE_ORIGIN.run.app
-        - name: CHOREOGRAPH_TASK_URL
-          value: https://REPLACE_WORKER_SERVICE_ORIGIN.run.app/internal/tasks/crm
-        - name: CHOREOGRAPH_TASK_AUDIENCE
-          value: https://REPLACE_WORKER_SERVICE_ORIGIN.run.app
-        - name: CHOREOGRAPH_TASK_SERVICE_EMAIL
-          value: REPLACE_TASK_DELIVERY_SA@REPLACE_PROJECT_ID.iam.gserviceaccount.com
         - name: CHOREOGRAPH_BRIDGE_SECRET
           valueFrom:
             secretKeyRef:
@@ -206,14 +184,8 @@ spec:
             secretKeyRef:
               name: CHOREOGRAPH_TOKEN_KEY
               key: "REPLACE_PINNED_TOKEN_KEY_SECRET_VERSION"
-        - name: CHOREOGRAPH_TASKS_ENABLED
-          value: 'true'
-        - name: CHOREOGRAPH_TASK_PROJECT
-          value: REPLACE_PROJECT_ID
-        - name: CHOREOGRAPH_TASK_REGION
-          value: REPLACE_REGION
-        - name: CHOREOGRAPH_TASK_QUEUE
-          value: REPLACE_QUEUE_NAME
+        - name: CHOREOGRAPH_WORKER_AUDIENCE
+          value: https://REPLACE_WORKER_SERVICE_ORIGIN.run.app
         - name: CHOREOGRAPH_MAINTENANCE_SERVICE_EMAIL
           value: REPLACE_MAINTENANCE_SA@REPLACE_PROJECT_ID.iam.gserviceaccount.com
         startupProbe:

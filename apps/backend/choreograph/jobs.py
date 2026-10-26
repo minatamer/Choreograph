@@ -212,12 +212,14 @@ def finish_job(engine,provider,job,clock,*,result=None,error=None):
         return True
 
 
-def deliver(engine,settings,provider,job,clock):
-    deadline=time.monotonic()+90
-    provider=crm.scoped(provider,job['workspace_id'],seconds=90)
+def deliver(engine,settings,provider,job,clock,*,deadline=None):
+    deadline=min(time.monotonic()+90,deadline) if deadline is not None else time.monotonic()+90
+    provider=crm.scoped(provider,job['workspace_id'],seconds=max(0,deadline-time.monotonic()))
     try:
+        if time.monotonic()>=deadline:raise CRMFailure('CRM_TIMEOUT',True,True)
         data=prepare(engine,settings,provider,job,clock)
         result=perform(engine,provider,job,data,clock,deadline)
+        if time.monotonic()>=deadline:raise CRMFailure('CRM_TIMEOUT',True,True)
     except CRMFailure as error:return finish_job(engine,provider,job,clock,error=error)
     except Exception:  # noqa: BLE001 - the durable boundary records a bounded retry without exposing provider payloads.
         return finish_job(engine,provider,job,clock,error=CRMFailure('CRM_PROCESSING_FAILED',True))
@@ -277,3 +279,28 @@ def tick(engine,settings,provider,clock,limit=3):
         if not job:break
         deliver(engine,settings,provider,job,clock);processed+=1
     return processed
+
+
+def scheduled_tick(engine,settings,provider,clock):
+    """One bounded object sweep; job claims, never this wake-up, own effects.
+
+    A duplicate is a successful no-op. After process death the nonrenewing
+    global lease expires; existing per-job token/expiry and unknown outcomes
+    still govern reconciliation. No timer, background task or queue client.
+    """
+    from .persistence import is_object
+    if not is_object(engine):raise ValueError('SCHEDULED_OBJECT_STORAGE_REQUIRED')
+    deadline=time.monotonic()+150
+    lease=engine.acquire('scheduled-sweep-v1',seconds=240,wait=False)
+    if lease is None:return 0
+    try:
+        maintenance(engine,clock())
+        # Leave a complete provider window. The job lease cannot outlive the
+        # global lease when admitted within the first60s of this sweep.
+        if time.monotonic()+90>=deadline:return 0
+        job=claim(engine,clock())
+        if not job:return 0
+        deliver(engine,settings,provider,job,clock,deadline=deadline)
+        return 1
+    finally:
+        engine.release(lease)
