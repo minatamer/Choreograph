@@ -931,3 +931,36 @@ The image input fingerprint is `6ba812ef25ae75ef3de6d3b16acffa06653df644f9e53e3a
 Before staging, freeze exact working bytes and each intermediate staged snapshot; verify the38-file plan exactly covers tracked/untracked changes and the index is empty. Scan both final source and actual staged blobs against raw/URL-encoded/base64 variants of only this app's known private values, without printing them. Reject private runtime/env/cache paths, unexpected HEAD changes, unplanned staged paths, byte changes after review and whitespace errors. Stage explicit paths only.
 
 Each commit is verified against its exact planned paths, message and expected staged bytes, with an empty index afterward. An ignored `.runtime/checkpoint-hubspot-commits.json` records actual identities as they are created. The final clean-tree/parent-chain/file coverage verification is retained in `.runtime/checkpoint-hubspot-final.json`, avoiding a post-commit tracked receipt edit. No provider/cloud call, deployment, app restart or push is performed as part of staging/committing.
+
+
+## Owner no-database acceptance and onboarding checkpoint —26 October2026
+
+The owner explicitly confirms that the no-database path is working as intended locally and instructs documenting that fact, then staging and committing all current work. Baseline: `a767ba0`. This approval covers the following18 files in two local commits. No push, deployment, provider test, PostgreSQL startup or app restart is included.
+
+### Commit 1: SBS-032: restore default tour and animated chat welcome
+
+- `apps/frontend/app/demo/customer-chat.css`
+- `apps/frontend/components/chat-workspace.tsx`
+- `apps/frontend/components/crm-controls.tsx`
+- `apps/frontend/components/entry-client.tsx`
+- `apps/frontend/components/workspace-client.tsx`
+- `apps/frontend/components/workspace-tour.tsx`
+- `apps/frontend/lib/tour-preference.ts`
+- `scripts/confirmation-reset.test.mjs`
+- `scripts/hubspot-uninstall.test.mjs`
+- `scripts/tour-preference.test.mjs`
+
+### Commit 2: SBS-031: record local owner acceptance and current UI handoff
+
+- `AGENTS.md`
+- `README.md`
+- `docs/CHOREOGRAPH.md`
+- `docs/tickets/README.md`
+- `docs/tickets/COMMIT_PLAN.md`
+- `docs/tickets/SBS-031-optional-database.md`
+- `docs/tickets/SBS-032-tour-welcome.md`
+- `infra/README.md`
+
+The settled app evidence is165 Node tests and frontend TypeScript, six initial injected browser scenarios,19 all-step Skip scenarios plus three replay skips, and two focused refresh/keyboard-focus checks after the last scoped style correction. Existing511-backend/160-Node/Linux and23 PostgreSQL-off storage receipts remain dated SBS-031 evidence, without claiming a fresh Linux receipt for later UI edits. Documentation-only owner confirmation needs no new paid test or suite repetition.
+
+Before each commit, verify exact path coverage, an unchanged baseline/parent, planned filtered Git blob IDs, staged whitespace and absence of known app-private values. Keep app-local env files, `.runtime`, private storage, logs, screenshots and fixtures ignored. Stage explicit paths only. Save resulting commit IDs and final clean-tree evidence in ignored `.runtime/sbs032-checkpoint-result.json` instead of editing tracked receipts after committing.

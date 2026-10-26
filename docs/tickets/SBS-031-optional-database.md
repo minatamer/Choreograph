@@ -1,6 +1,6 @@
 # SBS-031 â€” Optional PostgreSQL and database-free deployment
 
-Status: **Complete local —26 October2026. Database-free app running; owner manual real-account and hosted acceptance remain separate.**
+Status: **Complete local —26 October2026. Owner confirms no-database mode is working as intended; separately scoped native-account and hosted acceptance remain outstanding.**
 
 ## Owner instruction and scope
 
@@ -280,3 +280,10 @@ A complete509-test backend run passed before the final durable-OAuth refinement,
 No new live-provider acceptance spending, external-account test, cloud resource/IAM change, deployment or push occurred. Existing manual-mode background sync/cleanup remains governed by the owner's earlier consent; automated acceptance used fake/injected providers. The owner plans hands-on testing separately. The object-storage cloud examples and policy are prepared but unapplied, and single-shard throughput/latency plus actual hosted durability remain explicit deployment gates.
 
 New-file line endings were normalized to LF before committing; Python syntax-tree equality was verified. The Linux receipt was rebuilt for the normalized byte hash above and passed again. This formatting change did not alter runtime behavior or configuration.
+
+
+## Owner confirmation and current Git authorization —26 October2026
+
+The owner explicitly requested documenting that no-database mode is working as intended, after testing the running local app and reviewing the onboarding/welcome refinements. This records the owner's confirmation of the local `DATABASE_ENABLED=false` path with PostgreSQL closed; it does not invent a list of individual manual actions or extend that confirmation to unperformed hosted/native lifecycle checks. Existing storage/regression evidence above remains the technical receipt.
+
+The same instruction authorizes staging and committing all current work, including SBS-032. The exact two-commit file allocation is in `docs/tickets/COMMIT_PLAN.md` under the26 October2026 checkpoint. Ignored env files, private state, tokens, logs, screenshots and test fixtures remain excluded. No deployment, push, new provider spending or app restart is included.

@@ -10,7 +10,8 @@ Fresh local ports: frontend **45860**, API **45861**, PostgreSQL **45862**. Sele
 
 | Ticket | Outcome | Owning phase | Dependencies | Status |
 | --- | --- | --- | --- | --- |
-| [SBS-031](SBS-031-optional-database.md) | Optional PostgreSQL, private object persistence and dual-mode validation | Owner25 October2026 continuation | Current booking/RAG/CRM/dispatch implementation | Complete local26 October2026;511 backend/160 Node/Linux checks; false-mode restart and23 tests with PostgreSQL stopped; approved local commit plan; owner live/hosted review remains |
+| [SBS-032](SBS-032-tour-welcome.md) | Default tour on both entry paths and a friendly guide-discovery welcome after exit | Owner26 October2026 correction | SBS-016/017/031 | Complete local;165 Node/types and six injected responsive browser scenarios; owner real-account review remains |
+| [SBS-031](SBS-031-optional-database.md) | Optional PostgreSQL, private object persistence and dual-mode validation | Owner25 October2026 continuation | Current booking/RAG/CRM/dispatch implementation | Complete local; owner confirms no-database works as intended26 October2026;511 backend/160 Node/Linux plus23 PostgreSQL-off checks; separately scoped native/hosted acceptance remains |
 | [SBS-000](SBS-000-baseline.md) | Verify the supported baseline and owned lifecycle | 07-build | None | Complete local |
 | [SBS-000A](SBS-000A-figma.md) | Adopt the approved compact Figma | Design milestone | None | Adopted visual design; owner approved |
 | [SBS-001](SBS-001-foundation.md) | Create the Next/FastAPI contract foundation | 07-build | SBS-000, SBS-000A | Complete local |
