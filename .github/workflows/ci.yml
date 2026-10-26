@@ -15,7 +15,8 @@ concurrency:
 jobs:
   verify:
     runs-on: ubuntu-24.04
-    timeout-minutes: 45
+    # Includes the finite optimized Python security source build on a cold runner.
+    timeout-minutes: 75
     env:
       # Optional SQL compatibility fixture only; deployment uses DATABASE_ENABLED=false.
       DATABASE_ENABLED: "true"

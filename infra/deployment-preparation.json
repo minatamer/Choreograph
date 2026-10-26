@@ -1,5 +1,5 @@
 {
-  "verified_at": "2026-10-26T11:59:06.552652+00:00",
+  "verified_at": "2026-10-26T14:18:38.022576+00:00",
   "project_id": "choreograph-512713",
   "region": "europe-west1",
   "authorization": "Owner26 October2026 direct deployment with paid access request; SBS-039",
@@ -24,15 +24,14 @@
   "tasks_resources_created": 0,
   "provider_calls": 0,
   "remaining_blockers": [
-    "SEC-038-02 official Python3.11.18+ container artifact and verified rebuild",
     "New specific finite hosted AI/CRM spending authority; expired acceptance allowance is not renewed",
     "Real frontend origin, Turnstile hostname and HubSpot callback/visitor consent verification"
   ],
   "prepared_frontend_image": {
-    "source_sha256": "51cc624cfad5f3694064dfec2a347e1b4e916f3c81ff9a3a241a114be7caacbd",
-    "local_image": "sha256:22379005551d6b71d36f1dafb63d2e64efe2e647c6091fc45bd7eead93433872",
-    "remote_tag": "europe-west1-docker.pkg.dev/choreograph-512713/choreograph/frontend:sbs036-51cc624cfad5",
-    "registry_digest": "sha256:22379005551d6b71d36f1dafb63d2e64efe2e647c6091fc45bd7eead93433872",
+    "source_sha256": "d2f4f9314ab9c53fe9eacf8f6c65192b3d6b85845563a06f443735122442bc30",
+    "local_image": "sha256:d777f237d728263d0dbca9c5ec9a999728a4bcd89a52ac0e1de7d2806d7acec2",
+    "remote_tag": "europe-west1-docker.pkg.dev/choreograph-512713/choreograph/frontend:sbs040-d2f4f9314ab9",
+    "registry_digest": "sha256:d777f237d728263d0dbca9c5ec9a999728a4bcd89a52ac0e1de7d2806d7acec2",
     "repository_public_members": false,
     "anonymous_manifest_status": 401,
     "temporary_auth_config_removed": true
@@ -42,8 +41,23 @@
     "FAKE_MODE": false,
     "PAID_DEMO_ENABLED": true,
     "application_ready": false,
-    "backend_image": null,
+    "backend_image": "europe-west1-docker.pkg.dev/choreograph-512713/choreograph/backend@sha256:d0509343532ff443a5dcf53d62f2a55a72d029699b10c650e2f69094f33ebb03",
     "frontend_origin": null,
-    "reason": "Verified patched backend artifact, finite provider policy and discovered/registered origin are pending; these settings are review-only, not applied."
+    "reason": "Patched backend verified and privately uploaded. Fresh finite hosted provider policy and discovered/registered origin are still pending; intended paid settings are not applied."
+  },
+  "prepared_backend_image": {
+    "source_sha256": "d2f4f9314ab9c53fe9eacf8f6c65192b3d6b85845563a06f443735122442bc30",
+    "local_image": "sha256:d0509343532ff443a5dcf53d62f2a55a72d029699b10c650e2f69094f33ebb03",
+    "remote_tag": "europe-west1-docker.pkg.dev/choreograph-512713/choreograph/backend:sbs040-d2f4f9314ab9",
+    "registry_digest": "sha256:d0509343532ff443a5dcf53d62f2a55a72d029699b10c650e2f69094f33ebb03",
+    "repository_public_members": false,
+    "anonymous_manifest_status": 401,
+    "temporary_auth_config_removed": true
+  },
+  "python_runtime": {
+    "version": "3.11.18",
+    "security_finding": "SEC-038-02",
+    "resolved": true,
+    "build": "Verified signed/hash-pinned official Docker recipe source build; not an official prebuilt Python image"
   }
 }

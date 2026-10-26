@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
-  "verifiedAt": "2026-10-26T12:02:48.435Z",
+  "verifiedAt": "2026-10-26T14:09:13.091Z",
   "profile": "local-isolated-linux-objects-fake",
   "source": {
-    "sha256": "51cc624cfad5f3694064dfec2a347e1b4e916f3c81ff9a3a241a114be7caacbd",
+    "sha256": "d2f4f9314ab9c53fe9eacf8f6c65192b3d6b85845563a06f443735122442bc30",
     "files": {
-      ".dockerignore": "cd3c5dc547e86af76b70a638e7d53339f5891c7e932b49d97eec6c66506caf4c",
+      ".dockerignore": "08021c3b3d792b7052e38eabc3796ec030ebc21dcd6cff1119f5a01b129e7d25",
       "apps/backend/alembic.ini": "e7955a0ffb9c32a9c5067d7885ee9197328f17a4a12fb4a5bb556c2b85763aa2",
       "apps/backend/choreograph/__init__.py": "61ae318dae245899e829b4f27dfa970d98e7d44f7b510f12f6638249afdd8029",
       "apps/backend/choreograph/acceptance.py": "047732a9bd5d22c76d580b4a4c89a0943d913391ce8164e04da79faf1b2ee962",
@@ -200,8 +200,9 @@
       "assets/tokenizers/cl100k_base.tiktoken": "223921b76ee99bde995b7ff738513eef100fb51d18c93597a113bcffe865b2a7",
       "assets/tokenizers/manifest.json": "f8da51833964b46909584594ebe9049a32d4a0bb9b4fe00b12b83c093b4c4529",
       "assets/tokenizers/o200k_base.tiktoken": "446a9538cb6c348e3516120d7c08b09f57c36495e2acfffe59a5bf8b0cfb1a2d",
-      "infra/Dockerfile.backend": "9936d684e1adcb4cefe3921e9057fe4cfb0b1ac0d05b01fac93fe9b321bf1945",
+      "infra/Dockerfile.backend": "91be0e2055879b8d96e38f85cfb919f1c8573f6f10b8b3f339ca37d6dd92ff9b",
       "infra/Dockerfile.frontend": "56f7387e797e98b50d2df5c4b65ae3d8d9769b943490773a9b0391d202bf5595",
+      "infra/licenses/python-docker.MIT.txt": "0a3ffdfc4f368b76ae1140b5fbe2f2f69ee76ee00a3024e8a09ca9b2e265186f",
       "package-lock.json": "e51202de9ecc798a22c6ea4221fa08444d57421e9007d02cfdb049d7df00c2ee",
       "package.json": "23918105eced2116564e66d2a6561abc36850674bf6597b4559158cbd1f15d28",
       "scripts/pdf-assets.mjs": "98767cccab7673e7e7037c486a03b7bd4b4786db5e0145f5fb75684af2d8c3e6"
@@ -209,15 +210,15 @@
   },
   "images": {
     "frontend": {
-      "tag": "choreograph-frontend:choreograph-release-cf97bcf2-61f7-4b3c-ada4-a9aae32a81db",
-      "id": "sha256:22379005551d6b71d36f1dafb63d2e64efe2e647c6091fc45bd7eead93433872",
+      "tag": "choreograph-frontend:choreograph-release-54ddda57-209e-4cd4-be7c-898b36694bd2",
+      "id": "sha256:d777f237d728263d0dbca9c5ec9a999728a4bcd89a52ac0e1de7d2806d7acec2",
       "os": "linux",
       "architecture": "amd64",
       "user": "node"
     },
     "backend": {
-      "tag": "choreograph-api:choreograph-release-cf97bcf2-61f7-4b3c-ada4-a9aae32a81db",
-      "id": "sha256:0ef7c82a6a7459ca5b605adfd87eaa7a54cdcf676624cdedbb243f97d480ae0e",
+      "tag": "choreograph-api:choreograph-release-54ddda57-209e-4cd4-be7c-898b36694bd2",
+      "id": "sha256:d0509343532ff443a5dcf53d62f2a55a72d029699b10c650e2f69094f33ebb03",
       "os": "linux",
       "architecture": "amd64",
       "user": "10001:10001"

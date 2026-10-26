@@ -1,0 +1,36 @@
+{
+  "upstream_repository": "https://github.com/docker-library/python",
+  "revision": "83054588043b3a7ac1ce8324c9242164b632beb9",
+  "commit_time": "2026-10-26T02:49:12Z",
+  "recipe_sha256": "479fe3f860c7742df5c081e956368b43beae8a2ad16b6af2152fe66ef8c218fb",
+  "python_version": "3.11.18",
+  "python_source_sha256": "9120e0a653868f6e3698d36cdd99e5a58903ec9469e448f21d98f7b16d8fa290",
+  "debian_index": "sha256:7ff6ba31527b9e336162fa061746c366c4b2032f4d2cff2078bea43f78efe3f8",
+  "gpg_release_fingerprint": "A035C8C19219BA821ECEA86B64E628F8D684696D",
+  "build_kind": "Reviewed official recipe source build; not an official prebuilt Docker image",
+  "adaptations": [
+    "Immutable Debian index",
+    "Finite archive/keyserver network work",
+    "Two compile jobs",
+    "Unchanged Choreograph application layer",
+    "MIT notice included"
+  ],
+  "application_dependencies_changed": false,
+  "runtime_verified": true,
+  "security_finding": "SEC-038-02",
+  "runtime": {
+    "python": "3.11.18",
+    "openssl": "OpenSSL 3.0.22 25 Aug 2026",
+    "expat": "expat_2.9.0",
+    "sqlite": "3.40.1",
+    "uid": 10001,
+    "native_imports": true,
+    "compiler_and_source_removed": true,
+    "tls_verification_enabled": true,
+    "license_included": true
+  },
+  "release_source_sha256": "d2f4f9314ab9c53fe9eacf8f6c65192b3d6b85845563a06f443735122442bc30",
+  "backend_image": "sha256:d0509343532ff443a5dcf53d62f2a55a72d029699b10c650e2f69094f33ebb03",
+  "packaged_backend_tests": 144,
+  "postgres_tests_excluded": 32
+}

@@ -66,7 +66,8 @@ try {
   // Build exactly the source fingerprint being accepted; cache hits are fine.
   for (const [name, tag] of Object.entries(tags)) {
     stage = `build-${name}`;
-    docker(['build','--platform','linux/amd64','--file',`infra/Dockerfile.${name}`,'--tag',tag,'.'],{timeout:900000});
+    // The verified Python source fallback performs an optimized cold build.
+    docker(['build','--platform','linux/amd64','--file',`infra/Dockerfile.${name}`,'--tag',tag,'.'],{timeout:2700000});
     const r = JSON.parse(docker(['image','inspect','--format','{{json .}}',tag]));
     if(r.Os!=='linux'||r.Architecture!=='amd64'||!r.Config.User||['root','0','0:0'].includes(r.Config.User))throw new Error('RUNTIME_IDENTITY_INVALID');
     images[name] = {tag,id:r.Id,os:r.Os,architecture:r.Architecture,user:r.Config.User};

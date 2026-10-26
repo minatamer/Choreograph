@@ -1,6 +1,9 @@
 # SBS-038 — Final AFK material security audit and scoped remedies
 
-Status: Complete local audit and Node remedy; Python official-artifact blocker remains —26 October2026. Clean quality baseline `e60092f933f6435a8b8c51de8bf4217734c00f65` verified before security starts.
+**Subsequent SBS-040 resolution:** Python is no longer a blocker. The patched3.11.18 image is built from the authenticated official recipe/source, passed actual packaged/no-database checks and was uploaded privately. [Runtime evidence and exact scope](SBS-040-python-security-runtime.md). Earlier wait-only instructions/results below are retained as dated history; finite hosted provider authority/origin/consent remain separate.
+
+
+Status: Local security/runtime preparation complete; Python subsequently resolved under SBS-040. Public paid activation still has separate SBS-039 conditions —26 October2026.
 
 The owner explicitly requests quality first (completed/committed), then a new full material security audit, justified local fixes/validation and exact local staging/commits without questions while AFK. No deployment/cloud/account/secret-payload/paid-provider action, database startup, dependency-inventory export, push or delegation. Current API health is fake; all tests use injected providers and isolated no-database state. The future Scheduler-only change is **plan only** and is not a security implementation task.
 

@@ -1151,3 +1151,34 @@ Latest direct owner authority: stage/commit current work, use gcloud, deploy the
 | `scripts/object-linux-smoke.py` | Exercise separate-process authenticated scheduled sync/expiry and absent Tasks route with fake providers/no SQL. |
 
 Validation is recorded in the owning ticket: fake/injected no-SQL tests, relevant regressions and current release fingerprint. Freeze raw hashes/Git blob IDs after this plan; stage explicit literal paths, scan actual staged/committed bytes for known local private-value variants/private-key patterns, check whitespace/parent/path coverage, then require a clean worktree/index. Store actual commit identities in ignored `.runtime/sbs-036-checkpoint-result.json`; do not edit a tracked file afterward just to embed its own hash. Existing runtime/private env/state remain outside Git.
+
+
+## SBS-040 Python security runtime checkpoint —26 October2026
+Latest direct owner authority: fix the Python Docker blocker directly; earlier stage/commit and deployment authorization persists. This checkpoint builds the real Python3.11.18 runtime using the authenticated official recipe/source while its prebuilt tag is absent, validates the actual packaged no-database app and privately uploads verified images. No owner Docker action is required. Python is resolved; fresh finite hosted provider authority and actual provider origins/visitor consent remain separate public-paid activation conditions. AFK requires no questions. Baseline `95706a00446e2bcfadb28ba79b5020425a28fc75`; index empty. This checkpoint commits only the reviewed current 21 files. No Git push, paid provider call or database/Tasks resource.
+### Commit: SBS-040: build and validate patched Python security runtime
+
+| Exact file | Allocation |
+| --- | --- |
+| `.dockerignore` | Admit exactly the required upstream MIT license through the existing narrow build allowlist. |
+| `.github/workflows/ci.yml` | Raise the finite no-key CI job ceiling to75minutes for the measured optimized Python cold build; preserve all steps. |
+| `AGENTS.md` | Record latest deployment authority, implemented object Scheduler path, bounded safeguards and real external activation limits. |
+| `README.md` | Reconcile implemented Scheduler topology, validated local work and actual blocked cloud/paid deployment state. |
+| `docs/CHOREOGRAPH.md` | Update selected architecture and canonical AFK build/quality/security/handoff ledger with actual source/cloud evidence and blockers. |
+| `docs/CHOREOGRAPH_OVERVIEW.html` | Show the implemented local Scheduler-only no-database path and explicit pending public deployment. |
+| `docs/LESSONS_LEARNED.md` | Record that authenticated official recipe/source can fix a runtime before a prebuilt tag exists; preserve no-database/private/provider boundaries. |
+| `docs/security/SECURITY_OVERVIEW.html` | Show both selected runtime findings resolved and distinguish actual private images from pending public paid activation. |
+| `docs/security/SECURITY_REVIEW.md` | Resolve SEC-038-02 with actual authenticated runtime/packaged/Linux evidence, preserving dated audit limitations. |
+| `docs/tickets/COMMIT_PLAN.md` | This exact file-level staging allocation and private-byte safeguards. |
+| `docs/tickets/README.md` | Record SBS-036 local completion and SBS-039 partial cloud preparation/external activation conditions. |
+| `docs/tickets/SBS-038-final-security.md` | Link subsequent Python resolution and supersede the wait-only disposition while preserving original audit evidence. |
+| `docs/tickets/SBS-039-paid-deployment.md` | Own direct deployment authorization, cloud actions/private artifact, exact acceptance scope and honest unexecuted prerequisites. |
+| `docs/tickets/SBS-040-python-security-runtime.md` | Own direct owner Python fix, exact file plan, signed-source build, actual runtime/tests/private upload and scoped clean validation. |
+| `infra/Dockerfile.backend` | Build Python3.11.18 from the pinned official recipe/source with SHA256/GPG verification, same-layer compiler/source cleanup and unchanged application layer. |
+| `infra/README.md` | Document validated signed-source Python runtime, license, finite cold-build bounds, private image preparation and remaining paid/origin conditions. |
+| `infra/deployment-preparation.json` | Read back validated private backend/frontend digests and nonpublic access, resolve Python only, retain unapplied paid settings/services0. |
+| `infra/licenses/python-docker.MIT.txt` | Preserve the exact upstream MIT permission notice in source and the backend image. |
+| `infra/python-runtime-source.json` | Record immutable upstream recipe/source/base/key provenance and actual packaged runtime/compatibility evidence. |
+| `infra/release-object-evidence.json` | Record actual fresh Linux no-database images/checks for the current source. |
+| `scripts/release-smoke.mjs` | Allow a finite45minute image build for the measured cold source build; preserve actual acceptance behavior. |
+
+Validation is recorded in the owning ticket: fake/injected no-SQL tests, relevant regressions and current release fingerprint. Freeze raw hashes/Git blob IDs after this plan; stage explicit literal paths, scan actual staged/committed bytes for known local private-value variants/private-key patterns, check whitespace/parent/path coverage, then require a clean worktree/index. Store actual commit identities in ignored `.runtime/sbs-040-checkpoint-result.json`; do not edit a tracked file afterward just to embed its own hash. Existing runtime/private env/state remain outside Git.

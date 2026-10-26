@@ -17,6 +17,8 @@
 !infra/
 !infra/Dockerfile.frontend
 !infra/Dockerfile.backend
+!infra/licenses/
+!infra/licenses/python-docker.MIT.txt
 **/node_modules/**
 **/.next/**
 **/__pycache__/**

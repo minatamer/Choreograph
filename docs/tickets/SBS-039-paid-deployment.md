@@ -1,6 +1,9 @@
 # SBS-039 — Owner-authorized no-database paid deployment
 
-Status: Independent cloud/release preparation complete; public paid deployment blocked —26 October2026. Clean baseline `787476e5043e6ea73e5642f4c49f86e383795a70`; prior quality/security work is already committed with exact file-level plans. No duplicate checkpoint is needed.
+**Subsequent SBS-040 resolution:** Python is no longer a blocker. The patched3.11.18 image is built from the authenticated official recipe/source, passed actual packaged/no-database checks and was uploaded privately. [Runtime evidence and exact scope](SBS-040-python-security-runtime.md). Earlier wait-only instructions/results below are retained as dated history; finite hosted provider authority/origin/consent remain separate.
+
+
+Status: Local security/runtime preparation complete; Python subsequently resolved under SBS-040. Public paid activation still has separate SBS-039 conditions —26 October2026.
 
 The owner's latest direct request authorizes local staging/commits and gcloud deployment with paid access, followed by verification of the fully deployed app. This supersedes earlier scoped prohibitions on necessary deployment/cloud operations. It does not authorize a database, secret exposure, unrelated account/outreach, Git push, automatic HubSpot export/uninstall consent, CAPTCHA bypass or unlimited provider spending. Preserve the local fake app and existing keys/data. AFK/no questions remains active; choose reversible recommendations and report real external blockers honestly.
 
