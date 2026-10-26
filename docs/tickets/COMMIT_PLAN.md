@@ -1065,3 +1065,28 @@ Make the current no-database architecture, completed cloud setup and remaining s
 - Freeze raw file hashes and Git-filtered blob IDs after writing this plan. Require unchanged baseline/parent, exact allocation, unchanged reviewed bytes, empty initial index and staged whitespace checks. `.gitattributes` preserves tested bytes (`* -text`). Stage only the enumerated literal paths.
 - Scan final files and actual staged/committed blobs for raw/URL/base64/JSON variants of known app-local private values and private-key patterns, without displaying values. Reject env/runtime/cache/credential paths. No cloud secret payload is fetched for Git. Safe tracked receipts contain names/version numbers/counts/hashes only.
 - Verify every commit message, parent, exact file list and blob IDs; require an empty index after each. Save actual commit identities/final clean-tree evidence in ignored `.runtime/predeployment-checkpoint-result.json`, avoiding a post-commit tracked edit. Existing local services, private env/state and the stopped PostgreSQL volume remain intact.
+
+
+## SBS-037 AFK audit checkpoint —26 October2026
+Direct owner authority: document Scheduler-only future deployment without implementing it, then complete/commit quality before separately auditing/fixing/committing material security findings. AFK requires no questions. Baseline `266c89903c29bb51e1680fbd655cc47255bd6ce9`; index empty. This checkpoint commits only the reviewed current 15 files. No push, cloud action, provider call or database startup.
+### Commit: SBS-037: validate final quality and plan scheduler simplification
+
+| Exact file | Allocation |
+| --- | --- |
+| `AGENTS.md` | Reconcile the current owning audit/planning authority, evidence, AFK progress and next action; preserve dated results and functionality. |
+| `README.md` | Reconcile the current owning audit/planning authority, evidence, AFK progress and next action; preserve dated results and functionality. |
+| `apps/backend/choreograph/object_store.py` | Reuse exactly unchanged canonical packs, with detached cache ownership and unchanged conditional state writes. |
+| `apps/backend/tests/test_object_pack_cache.py` | Prove no repeated canonical serialization across private writes/restart and preserve changed caller-owned content. |
+| `apps/backend/tests/test_prepare_knowledge_command.py` | Run the actual retained fake command against isolated encrypted objects with SQL trapped. |
+| `docs/CHOREOGRAPH.md` | Reconcile the current owning audit/planning authority, evidence, AFK progress and next action; preserve dated results and functionality. |
+| `docs/CHOREOGRAPH_OVERVIEW.html` | Reconcile the current owning audit/planning authority, evidence, AFK progress and next action; preserve dated results and functionality. |
+| `docs/LESSONS_LEARNED.md` | Reconcile the current owning audit/planning authority, evidence, AFK progress and next action; preserve dated results and functionality. |
+| `docs/tickets/COMMIT_PLAN.md` | This exact file-level staging allocation and private-byte safeguards. |
+| `docs/tickets/README.md` | Reconcile the current owning audit/planning authority, evidence, AFK progress and next action; preserve dated results and functionality. |
+| `docs/tickets/SBS-036-scheduler-only-plan.md` | Own the future Scheduler-only design, cost/retry/cutover and validation plan; no implementation. |
+| `docs/tickets/SBS-037-final-quality.md` | Own current quality findings, minimal allocation, actual checks and read-only validation. |
+| `infra/README.md` | Reconcile the current owning audit/planning authority, evidence, AFK progress and next action; preserve dated results and functionality. |
+| `infra/release-object-evidence.json` | Record actual fresh Linux no-database images/checks for the current source. |
+| `scripts/prepare-knowledge.py` | Use the existing shared Session wrapper rather than SQL-only Session. |
+
+Validation is recorded in the owning ticket: fake/injected no-SQL tests, relevant regressions and current release fingerprint. Freeze raw hashes/Git blob IDs after this plan; stage explicit literal paths, scan actual staged/committed bytes for known local private-value variants/private-key patterns, check whitespace/parent/path coverage, then require a clean worktree/index. Store actual commit identities in ignored `.runtime/sbs-037-checkpoint-result.json`; do not edit a tracked file afterward just to embed its own hash. Existing runtime/private env/state remain outside Git.

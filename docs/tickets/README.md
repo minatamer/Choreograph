@@ -12,6 +12,8 @@ Fresh local ports: frontend **45860**, API **45861**, PostgreSQL **45862**. Sele
 
 | Ticket | Outcome | Owning phase | Dependencies | Status |
 | --- | --- | --- | --- | --- |
+| [SBS-036](SBS-036-scheduler-only-plan.md) | Plan one Scheduler-driven private worker and remove Tasks from future object deployment | Owner26 October2026 simplification | SBS-031/034/035 | Planned only; implementation explicitly deferred; current runtime still uses Tasks |
+| [SBS-037](SBS-037-final-quality.md) | Renew functionality-preserving quality/structure/efficiency audit before security | Owner26 October2026 AFK | SBS-036 documentation | Complete local quality; two scoped fixes,374 no-SQL backend/165 Node/Linux; local Git checkpoint before security |
 | [SBS-035](SBS-035-canonical-promotion.md) | Promote only prepared canonical RAG data and bind runtime secrets | Owner26 October2026 continuation | SBS-034 | Complete; six hosted sources/23 live passages, scoped secret roles,13 isolated promotion tests; no app deployment/provider calls |
 | [SBS-034](SBS-034-private-storage-foundation.md) | Configure private no-database bucket and deployed-app identities | Owner26 October2026 cloud setup | SBS-031/033 | Complete foundation; europe-west1 bucket, exact API/worker bucket role, anonymous401, six version1 secrets; no application deployment/data promotion |
 | [SBS-033](SBS-033-predeployment-audit.md) | Audit the selected no-database deployment, repair local gaps and identify remaining launch checks | Owner26 October2026 pre-deployment request | SBS-031/032 | Complete local;358 no-SQL backend/165 Node/Linux checks; renderer/transport/CI fixes; hosted gates remain; no Git writes |

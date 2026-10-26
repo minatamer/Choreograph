@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "verifiedAt": "2026-10-26T08:43:32.520Z",
+  "verifiedAt": "2026-10-26T10:57:03.150Z",
   "profile": "local-isolated-linux-objects-fake",
   "source": {
-    "sha256": "fd2c4d159d77f8c6d2c8f36cfbbc59dcab39a0339726f7ae108c6b68c431d802",
+    "sha256": "e957cea3310dab33136e2128dff9e9336eb464fc83a09e096449c0d66c6be953",
     "files": {
       ".dockerignore": "cd3c5dc547e86af76b70a638e7d53339f5891c7e932b49d97eec6c66506caf4c",
       "apps/backend/alembic.ini": "e7955a0ffb9c32a9c5067d7885ee9197328f17a4a12fb4a5bb556c2b85763aa2",
@@ -34,7 +34,7 @@
       "apps/backend/choreograph/knowledge_api.py": "73c3032564d7dd15386b277319da3664fd1d0d818a214c72ba58bce4f290f46a",
       "apps/backend/choreograph/migrate.py": "ae4fc427fd2014d7e0f2e126d77a87f1898d312bfd70ececf75338527bae7419",
       "apps/backend/choreograph/models.py": "a35534a49faae799f80dec9e72b64092f74136a59bec7bc4990ec54c3f96e1e1",
-      "apps/backend/choreograph/object_store.py": "8e109b0b1ce1ddf210ab574d740265050acdbf5f2661dd6203820b8228416666",
+      "apps/backend/choreograph/object_store.py": "2051f7ddbaec1381e63c9edb2dc81cb64d98921ca3c11f5240377934d64b971f",
       "apps/backend/choreograph/operator.py": "72b74043af703eab02a036d8404d6e5c4374c8a7d0a79293cf687ead6756af50",
       "apps/backend/choreograph/parse_document.py": "4d07051020ccd210a710b13b5f494ff43299693f6d768b1f6ddbc65751c23cfa",
       "apps/backend/choreograph/persistence.py": "4dda8c5058dbfd0754acfab38d386d1902847538a41f19ee3ff0f7dc67073b5e",
@@ -209,15 +209,15 @@
   },
   "images": {
     "frontend": {
-      "tag": "choreograph-frontend:choreograph-release-a46e8105-ff6e-4610-8e60-8957c8645e69",
-      "id": "sha256:7ac204806fb6ef5c57bdefcb2f1a3299431412adc776b656a29d24ed06a03e01",
+      "tag": "choreograph-frontend:choreograph-release-2ab2f3b7-7dd8-4982-8085-f1f5b923bf5e",
+      "id": "sha256:cc05a9b93cfa59ef74248a1c196846b0ef4daa3978e69e54234e8b1cc396cfef",
       "os": "linux",
       "architecture": "amd64",
       "user": "node"
     },
     "backend": {
-      "tag": "choreograph-api:choreograph-release-a46e8105-ff6e-4610-8e60-8957c8645e69",
-      "id": "sha256:d07232bfbd155b103ad4cd800522dab9b2b328748d71648e6e610562e9243384",
+      "tag": "choreograph-api:choreograph-release-2ab2f3b7-7dd8-4982-8085-f1f5b923bf5e",
+      "id": "sha256:37df362e3aed6dd2d37067f911aa1c34f193f6a45e383ecd235b79a098058846",
       "os": "linux",
       "architecture": "amd64",
       "user": "10001:10001"

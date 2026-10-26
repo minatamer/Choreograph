@@ -1,5 +1,9 @@
 # Choreograph
 
+**Renewed quality complete locally,26 October2026:** [SBS-037](tickets/SBS-037-final-quality.md) repairs repeated canonical serialization and the fake-preparation command’s SQL-only session.374 no-SQL backend/165 Node checks, types/lint/contracts/dependency compatibility and fresh Linux object release pass. UI/business rules/provider budgets are unchanged; the owned API now reflects the owner’s existing fake setting. Security follows after quality commits. SBS-036 is documentation-only.
+
+**Planned deployment simplification,26 October2026:** the owner selects a future single Scheduler-driven private worker for the no-database path, removing Cloud Tasks after implementation/validation. Current runtime still uses Tasks; this change is **documentation only**. Do not provision a new queue or disable current dispatch before the planned refactor is implemented. [SBS-036 plan](tickets/SBS-036-scheduler-only-plan.md). Quality and security are being renewed sequentially in AFK using fake/no-SQL evidence; this does not authorize deployment or paid calls.
+
 **Hosted canonical data and secret roles prepared,26 October2026:** [SBS-035](tickets/SBS-035-canonical-promotion.md) promotes six repo-verified fictional guides/23 prepared live passages into the no-database private GCS store with fresh encrypted readback. Frontend/API/worker have scoped secret-resource grants, pinned version1 metadata and no project-wide roles/key files. No guest state, counters or CRM work was copied; no new provider call or app deployment occurred. Current setup no longer needs document indexing/promotion or secret IAM.
 
 **Cloud storage foundation configured,26 October2026:** [SBS-034](tickets/SBS-034-private-storage-foundation.md) creates the selected no-database private bucket in `europe-west1` and grants exact-bucket access to separate API/worker service identities. All six secrets have enabled version1 (metadata verified). Anonymous bucket metadata is denied401; no key files/GitHub access or SQL resources were created. The bucket was empty at that foundation checkpoint; SBS-035 subsequently promoted canonical data and configured secret IAM. Application deployment/service references remain separate.
@@ -146,7 +150,7 @@ This is product positioning, not a requirement for a universal scheduling engine
 | CRM | Optional visitor-owned HubSpot OAuth, with reviewed synthetic records and an Open in HubSpot link after verified sync. Continue without CRM skips CRM calls/outbox work. A separate operator-owned account/credential is for explicitly controlled testing, never a silent public fallback. See section 12. |
 | Hosting | Local frontend/API/worker processes for development; Google Cloud Run for deployed public frontend and private API. No local Cloud Run dependency. |
 | Local configuration | Ignored `apps/backend/.env.local` for API/runner/database/provider settings and `apps/frontend/.env.local` for server-only API/bridge settings; matching bridge secret/origin. App-local files supersede the original root-file convention under the owner's 23 October request. No local Secret Manager or Google service-account prerequisite. |
-| Background work | Atomic destination-bound outbox with local runner in development; immediate Cloud Tasks publication and authenticated minute Cloud Scheduler maintenance on the deployed private worker. No always-running WorkerPool in the selected no-database topology. |
+| Background work | **Future deployment target (SBS-036, plan only):** one authenticated minute Scheduler sweep executes bounded durable GCS outbox/cleanup jobs directly. Current code still uses Cloud Tasks publication/delivery until that future refactor. Local runner remains unchanged; no always-running WorkerPool or database is selected. |
 | Working company | Juniper Cleaning, the fictional company inside Try demo. Choreograph remains the product brand; Juniper is not a real service operator. |
 | Workspace lifetime | Proposed two-hour absolute guest lifetime. A planning default, not a promise of immediate physical erasure. |
 | Currency / region | English, exact USD demo prices and one fictional service area. Each isolated workspace uses the visiting user's detected local IANA timezone for its entire schedule, relative dates, business hours and CRM appointment display. No fixed New York zone. See section 7.1. |
@@ -741,6 +745,8 @@ Primary sources checked 22 October 2026: [install limits](https://developers.hub
 
 ## 13. Durable work, retries and recovery
 
+**Future target, planned only:** [SBS-036](tickets/SBS-036-scheduler-only-plan.md) replaces Tasks with one authenticated Scheduler-driven private worker reusing durable GCS outbox claims/retries/cleanup. The current Tasks implementation and its invariants below remain active until that separate ticket is implemented and validated. No transport resource is provisioned by this plan.
+
 For a connected destination with export consent, the transaction writes an outbox row with the booking event and immutable account/connection binding. A local runner processes due rows in development; on deployment, a dispatcher enqueues authenticated Cloud Tasks. The outbox preserves work if a process crashes between database commit and enqueue; a recovery command must find and dispatch those rows after restart. A task is a delivery mechanism, not the only record that work exists. Continue without CRM creates no CRM outbox row/task; document-processing and expiry jobs remain independent.
 
 **Current local/cloud behavior,26 October2026:** the owned local runner performs bounded recovery and expiry cleanup. Deployment selects immediate post-commit publication plus an authenticated minute Cloud Scheduler maintenance request to the IAM-private worker. Cloud Tasks delivers accepted CRM work; no always-running WorkerPool or SQL connection is required.
@@ -1037,14 +1043,14 @@ The four-file packet passed static HTML structure/ID checks, local document/sour
 <!-- build-progress:start -->
 ## Build command progress
 
-Current phase: **local workflow finished**
-Next action: Local quality/security work is complete: make the already-authorized exact six-file SBS-027 audit/handoff commit, verify the entire worktree/index empty and read back canonical state. Then hand back linked artifacts, real checks, clean local hashes and provisional AFK decisions; owner can continue manual review. Resume external acceptance only with its specific inputs/authorization.
-Active ticket: none
+Current phase: **10a-quality**
+Next action: Prepare exact quality file-level allocation, commit reviewed files and verify clean before security.
+Active ticket: SBS-037
 Phase prompts: delegated during AFK
 Local commits approved: yes
 
 AFK mode: AFK-SESSION-001
-Provisional owner reviews: 04-decisions, 05-tickets, 09-visual-review, 10b-security-review
+Provisional owner reviews: 04-decisions, 05-tickets, 09-visual-review
 
 ### AFK decisions
 
@@ -1172,6 +1178,14 @@ Provisional owner reviews: 04-decisions, 05-tickets, 09-visual-review, 10b-secur
   Reason: Current offline/isolated work and report checks are complete, but AFK and local Git permission do not renew the expired OpenAI allowance or authorize accounts, CRM exports, cloud deployment, scanner metadata export or personal acceptance. Browser policy also forbids the local-file HTML visual preview; structure/link verification is complete without bypass.
   Consequence / reversibility: No additional external action or service change. Owner can review the current app and linked audit artifacts; live tests need a fresh specific finite allowance and configured authorized accounts. Review remains provisional.
   Owner review requested on return: yes. Evidence: docs/tickets/SBS-027-security-review.md, docs/security/SECURITY_REVIEW.md, docs/security/SECURITY_OVERVIEW.html, docs/CHOREOGRAPH.md
+- **AFK-0032** (AFK-SESSION-001, 2026-10-26T10:47:00+00:00, 10a-quality): Honor the owner's26 October AFK instruction: document Scheduler-only deployment as future SBS-036, then complete SBS-037 quality and local file-level commits before a separate material security audit/fix/commit phase. Ask no questions; use isolated fake providers and no SQL.
+  Reason: Direct current owner message explicitly says plan only for the scheduler change, quality first, security second, preserve functionality, commit both and choose recommendations while AFK. Existing session AFK-SESSION-001 is active and is preserved rather than duplicated.
+  Consequence / reversibility: No runtime scheduler refactor, cloud mutation, secret payload access, paid provider call, scanner metadata export, delegation, deployment or push. Owner paid/visual/provider acceptance remains separate; scoped local Git writes and justified repairs are authorized.
+  Owner review requested on return: yes. Evidence: human:current-thread/2026-10-26/scheduler-plan-and-final-afk-audits, commit:266c89903c29bb51e1680fbd655cc47255bd6ce9
+- **AFK-0033** (AFK-SESSION-001, 2026-10-26T11:03:11+00:00, 10a-quality): Apply only Q-037-01 immutable pack reuse with detached ownership and Q-037-02 shared-session fake preparation. Defer Scheduler implementation. Apply the already-set fake configuration through only the verified owned API restart, leaving frontend/runner/keys/state intact.
+  Reason: Both defects reproduce in isolated fake/no-SQL regressions; minimal remedies reuse existing owners. Existing env flags were fake but the old API was live.374 backend/165 Node/types/lint/contracts/Linux checks pass; health is now fake.
+  Consequence / reversibility: No paid/provider/account/cloud/database action. Preserve functionality except lower serialization cost and restored default-mode command compatibility. Owner paid/native/visual acceptance remains separate. Commit reviewed quality before security.
+  Owner review requested on return: yes. Evidence: docs/tickets/SBS-037-final-quality.md, .runtime/sbs037-backend.log, .runtime/sbs037-node.log, infra/release-object-evidence.json, .runtime/sbs037-pack-before.json, .runtime/sbs037-pack-after.json
 
 - [x] 01-docs — Documentation (complete)
 - [x] 02-flow — Core flow (complete)
@@ -1182,10 +1196,10 @@ Provisional owner reviews: 04-decisions, 05-tickets, 09-visual-review, 10b-secur
 - [x] 07-build — Execute and validate tickets (complete_local)
 - [x] 08-performance — Performance investigation (complete)
 - [x] 09-visual-review — Frontend visual approval checkpoint (provisional)
-- [x] 10a-quality — Quality audit and fixes (complete)
-- [x] 10b-security-review — Security audit and manual review (provisional)
-- [x] 11-security-fixes — Approved security fixes (skipped)
-- [x] 12-handoff — Final local handoff (complete_local)
+- [ ] 10a-quality — Quality audit and fixes (in_progress)
+- [ ] 10b-security-review — Security audit and manual review (pending)
+- [ ] 11-security-fixes — Approved security fixes (pending)
+- [ ] 12-handoff — Final local handoff (pending)
 
 This checklist records local work. Human approvals and unresolved external checks are preserved below; it does not authorize paid calls or deployment.
 
@@ -1194,7 +1208,7 @@ This checklist records local work. Human approvals and unresolved external check
   "schema_version": 3,
   "repo_root": "C:\\Users\\minat\\Work\\Choreograph",
   "main_document": "docs/CHOREOGRAPH.md",
-  "updated_at": "2026-10-24T14:52:58+00:00",
+  "updated_at": "2026-10-26T11:03:11+00:00",
   "context": {
     "PROJECT_NAME": {
       "value": "Choreograph",
@@ -1732,6 +1746,38 @@ This checklist records local work. Human approvals and unresolved external check
           "docs/security/SECURITY_OVERVIEW.html",
           "docs/CHOREOGRAPH.md"
         ]
+      },
+      {
+        "id": "AFK-0032",
+        "session_id": "AFK-SESSION-001",
+        "recorded_at": "2026-10-26T10:47:00+00:00",
+        "phase": "10a-quality",
+        "choice": "Honor the owner's26 October AFK instruction: document Scheduler-only deployment as future SBS-036, then complete SBS-037 quality and local file-level commits before a separate material security audit/fix/commit phase. Ask no questions; use isolated fake providers and no SQL.",
+        "rationale": "Direct current owner message explicitly says plan only for the scheduler change, quality first, security second, preserve functionality, commit both and choose recommendations while AFK. Existing session AFK-SESSION-001 is active and is preserved rather than duplicated.",
+        "consequence": "No runtime scheduler refactor, cloud mutation, secret payload access, paid provider call, scanner metadata export, delegation, deployment or push. Owner paid/visual/provider acceptance remains separate; scoped local Git writes and justified repairs are authorized.",
+        "review_needed": true,
+        "evidence": [
+          "human:current-thread/2026-10-26/scheduler-plan-and-final-afk-audits",
+          "commit:266c89903c29bb51e1680fbd655cc47255bd6ce9"
+        ]
+      },
+      {
+        "id": "AFK-0033",
+        "session_id": "AFK-SESSION-001",
+        "recorded_at": "2026-10-26T11:03:11+00:00",
+        "phase": "10a-quality",
+        "choice": "Apply only Q-037-01 immutable pack reuse with detached ownership and Q-037-02 shared-session fake preparation. Defer Scheduler implementation. Apply the already-set fake configuration through only the verified owned API restart, leaving frontend/runner/keys/state intact.",
+        "rationale": "Both defects reproduce in isolated fake/no-SQL regressions; minimal remedies reuse existing owners. Existing env flags were fake but the old API was live.374 backend/165 Node/types/lint/contracts/Linux checks pass; health is now fake.",
+        "consequence": "No paid/provider/account/cloud/database action. Preserve functionality except lower serialization cost and restored default-mode command compatibility. Owner paid/native/visual acceptance remains separate. Commit reviewed quality before security.",
+        "review_needed": true,
+        "evidence": [
+          "docs/tickets/SBS-037-final-quality.md",
+          ".runtime/sbs037-backend.log",
+          ".runtime/sbs037-node.log",
+          "infra/release-object-evidence.json",
+          ".runtime/sbs037-pack-before.json",
+          ".runtime/sbs037-pack-after.json"
+        ]
       }
     ]
   },
@@ -1771,8 +1817,8 @@ This checklist records local work. Human approvals and unresolved external check
     "final_commit_subject": "SBS-011: Record build, security and external acceptance handoff",
     "final_commit_identity": "git log owns the final documentation commit hash; it cannot be embedded in its own content."
   },
-  "active_ticket": null,
-  "next_action": "Local quality/security work is complete: make the already-authorized exact six-file SBS-027 audit/handoff commit, verify the entire worktree/index empty and read back canonical state. Then hand back linked artifacts, real checks, clean local hashes and provisional AFK decisions; owner can continue manual review. Resume external acceptance only with its specific inputs/authorization.",
+  "active_ticket": "SBS-037",
+  "next_action": "Prepare exact quality file-level allocation, commit reviewed files and verify clean before security.",
   "phases": [
     {
       "id": "01-docs",
@@ -2257,15 +2303,18 @@ This checklist records local work. Human approvals and unresolved external check
       "id": "10a-quality",
       "name": "Quality audit and fixes",
       "gate": null,
-      "status": "complete",
+      "status": "in_progress",
       "prompt": {
-        "text": "Complete the supplemental SBS-026 quality finding Q-026-03 in Choreograph: the actual no-key GitHub Actions fixture still sets the removed CHOREOGRAPH_PROFILE and fails the current external loader. Document its trigger and exact file plan first. Replace both workflow job and generated backend-file mode fields with FAKE_MODE=true and PAID_DEMO_ENABLED=false; add a meaningful regression that parses the actual workflow, executes its actual Python fixture generator only in a temporary checkout and loads it through the actual Settings loader, proving fake AI/disabled CRM/no live keys independently of the owner checkout. Run the regression before/after, focused configuration tests and Ruff; review the complete diff read-only. Make an explicit ticket-level file allocation, stage and commit the quality repair under the current direct owner Git authority; verify a clean tree before resuming audit-only security. Do not change application source, private files, running services, providers, paid allowance or release image inputs. Preserve the earlier quality/results/history.",
-        "sha256": "33b533bb96fc07a5814926e9fba65b7f0d2ccd91795767df1c5d39e2b49f84c3",
+        "text": "At clean Choreograph266c899, first fully document the owner's proposed simpler no-database deployment under SBS-036: one authenticated Scheduler-driven private worker, durable GCS outbox/domain retries and cleanup, with Cloud Tasks removal deferred until a later implementation. Inspect actual jobs/claim/lease/publication/runtime code and official cost semantics; preserve local runner, exact booking/CRM/consent/idempotency/timezone/source rules, finite grants, private logging and all current cloud resources. Do not implement or provision that refactor now. Reconcile current guidance so planned target and implemented runtime are distinct. Then execute SBS-037 renewed code quality, structure and efficiency audit across the actual frontend/backend/operator/release/test paths. Fully record scope and any confirmed finding/file allocation before source edits; avoid speculative cleanup, cosmetic churn and manufactured findings. Use execute/read-only validate/independent confirmation/fix/revalidation until no actionable scoped quality finding remains. All provider checks must be fake/injected, paid off, with isolated encrypted object stores and SQL connections trapped; the owner app flags already read DATABASE_ENABLED=false,FAKE_MODE=true,PAID_DEMO_ENABLED=false. Preserve running services, local state, diagnostics, motion and UI behavior. Run focused meaningful regressions, then appropriate settled no-SQL/Node/types/lint/contracts/Linux gates at a cohesive boundary; refresh image receipt only for changed image inputs. Prepare an exact file-level commit plan, scan actual staged bytes for private values, and make ticket-prefixed local quality/planning commits with a clean index/tree. Do not begin security until that quality commit boundary is verified. No questions during active AFK, no delegation, no database startup, live AI/HubSpot, cloud writes, secret payload reads, external scanner inventory export, deployment or push.",
+        "sha256": "4f3999918c5c6d6b17ad65d946adedce76c33221cf79cf7c3b3fcda7be7da8eb",
         "context_sources": [
-          "human:current-thread/24October2026/security-quality-AFK-and-local-Git-request",
-          ".github/workflows/ci.yml",
-          "apps/backend/choreograph/runtime_config.py",
-          "docs/tickets/SBS-026-pre-sharing-quality.md"
+          "human:current-thread/2026-10-26/scheduler-plan-and-final-afk-audits",
+          "AGENTS.md",
+          "docs/CHOREOGRAPH.md",
+          "docs/LESSONS_LEARNED.md",
+          "docs/tickets/SBS-026-pre-sharing-quality.md",
+          "docs/tickets/SBS-033-predeployment-audit.md",
+          "docs/tickets/SBS-035-canonical-promotion.md"
         ],
         "status": "afk",
         "approval": null,
@@ -2347,6 +2396,26 @@ This checklist records local work. Human approvals and unresolved external check
           },
           "prior_approval": null,
           "prior_decision": null
+        },
+        {
+          "reopened_at": "2026-10-26T10:46:59+00:00",
+          "reason": "Owner requests renewed functionality-preserving quality audit at clean266c899, after documentation-only Scheduler simplification planning.",
+          "prior_status": "complete",
+          "prior_prompt": {
+            "text": "Complete the supplemental SBS-026 quality finding Q-026-03 in Choreograph: the actual no-key GitHub Actions fixture still sets the removed CHOREOGRAPH_PROFILE and fails the current external loader. Document its trigger and exact file plan first. Replace both workflow job and generated backend-file mode fields with FAKE_MODE=true and PAID_DEMO_ENABLED=false; add a meaningful regression that parses the actual workflow, executes its actual Python fixture generator only in a temporary checkout and loads it through the actual Settings loader, proving fake AI/disabled CRM/no live keys independently of the owner checkout. Run the regression before/after, focused configuration tests and Ruff; review the complete diff read-only. Make an explicit ticket-level file allocation, stage and commit the quality repair under the current direct owner Git authority; verify a clean tree before resuming audit-only security. Do not change application source, private files, running services, providers, paid allowance or release image inputs. Preserve the earlier quality/results/history.",
+            "sha256": "33b533bb96fc07a5814926e9fba65b7f0d2ccd91795767df1c5d39e2b49f84c3",
+            "context_sources": [
+              "human:current-thread/24October2026/security-quality-AFK-and-local-Git-request",
+              ".github/workflows/ci.yml",
+              "apps/backend/choreograph/runtime_config.py",
+              "docs/tickets/SBS-026-pre-sharing-quality.md"
+            ],
+            "status": "afk",
+            "approval": null,
+            "afk_session": "AFK-SESSION-001"
+          },
+          "prior_approval": null,
+          "prior_decision": null
         }
       ]
     },
@@ -2354,27 +2423,8 @@ This checklist records local work. Human approvals and unresolved external check
       "id": "10b-security-review",
       "name": "Security audit and manual review",
       "gate": "security",
-      "status": "provisional",
-      "prompt": {
-        "text": "Perform Choreograph's full renewed pre-sharing STRIDE, general application and dependency security audit at clean committed baseline96cf2b50145e30fd11225b6930b084d5acb1f4e6, after the completed/committed SBS-026 quality phase. Target the actual Next.js/React/TypeScript browser and narrow BFF, Python/FastAPI/SQLAlchemy domain and private API, PostgreSQL17/pgvector migrations/relationships, LlamaIndex/OpenAI retrieval and paid admission, optional visitor HubSpot OAuth/transport/token storage/account-scoped exports/cleanup/uninstall, local runner/Cloud Tasks/WorkerPool delivery and cloud/CI/Linux release proposals. Use fake/injected external providers and actual isolated PostgreSQL/owned disposable Linux resources; preserve the owner's running real-mode app, credentials, data and manual paid-demo/HubSpot review. Do not make any paid provider, actual account/OAuth, cloud/publish/push/outreach or remote-scanner metadata-export call. Use current official maintainer/package advisories as public read-only research without uploading a dependency graph/repo. Audit actual source and all relevant existing adversarial tests, not only previous reports. Consider spoofing, tampering, repudiation, disclosure, denial of service, elevation, CSRF/origin/cookie/session/guest identity, bounded bytes/work/queues/concurrency/rate/cost/deadlines, replay/stale/reset/expiry, real original-source authorization, untrusted PDF/prompt/model output, unsafe input/injection/SSRF, credential/data/log exposure, tenant/app/account/destination boundaries and supply chain/deployment defaults. Preserve private backend diagnostics and content-free helpful public/browser errors. Include only meaningful substantiated findings, with severity, trigger/path/evidence, actual impact, current controls, carefully scoped functionality-preserving fix/verification plan and residual limits; do not manufacture minor recommendations or overengineer a demo. Prepare a new SBS-027 security-review ticket, update the detailed Markdown audit and severity-ranked PM HTML in docs/security, and keep this phase audit-only. After findings/artifacts are concrete and reviewed, use an explicit provisional AFK security selection for justified scoped local fixes under the owner's direct current authorization; do not invent human approval or silently broaden external action permissions. Finish the separate phase11 execute/validate loop and authorized file-level local commits only after that selection. Record actual coverage, public advisory sources/version comparisons, unavailable scanner/hosted/native/human checks, future-edit guardrails and evidence. The previous reports and fixes remain readable as history; a prior receipt is not current proof. Security review and visual acceptance remain provisional AFK/owner-review outcomes. Supplemental quality Q-026-03 is now separately committed and clean at96cf2b5: real CI generator/loader regression failed before and passes after. Existing326 backend security/domain tests passed during this read-only inspection; the new CI regression separately adds one test. Reassess current source with those distinctions.",
-        "sha256": "a80d317472faac80e72fe3fc4214ca41118150badf225a01976c2b11c442741f",
-        "context_sources": [
-          "human:current-thread/24October2026/security-quality-AFK-and-local-Git-request",
-          "AGENTS.md",
-          "docs/CHOREOGRAPH.md",
-          "docs/LESSONS_LEARNED.md",
-          "docs/tickets/SBS-026-pre-sharing-quality.md",
-          "docs/security/SECURITY_REVIEW.md",
-          "docs/security/SECURITY_OVERVIEW.html",
-          "docs/tickets/SBS-009B-security-review.md",
-          "docs/tickets/SBS-009C-security-fixes.md",
-          "infra/README.md",
-          "infra/release-evidence.json"
-        ],
-        "status": "afk",
-        "approval": null,
-        "afk_session": "AFK-SESSION-001"
-      },
+      "status": "pending",
+      "prompt": null,
       "evidence": [
         "docs/tickets/SBS-027-security-review.md",
         "docs/security/SECURITY_REVIEW.md",
@@ -2387,7 +2437,7 @@ This checklist records local work. Human approvals and unresolved external check
       ],
       "blockers": [],
       "approval": null,
-      "decision": "no-fixes",
+      "decision": null,
       "reviews": [
         {
           "afk_review": {
@@ -2483,32 +2533,43 @@ This checklist records local work. Human approvals and unresolved external check
             "recorded_at": "2026-10-24T14:49:30+00:00"
           },
           "decision": "no-fixes"
+        },
+        {
+          "reopened_at": "2026-10-26T10:46:58+00:00",
+          "reason": "Owner requests a fresh whole-repository material security audit after the new quality commit.",
+          "prior_status": "provisional",
+          "prior_prompt": {
+            "text": "Perform Choreograph's full renewed pre-sharing STRIDE, general application and dependency security audit at clean committed baseline96cf2b50145e30fd11225b6930b084d5acb1f4e6, after the completed/committed SBS-026 quality phase. Target the actual Next.js/React/TypeScript browser and narrow BFF, Python/FastAPI/SQLAlchemy domain and private API, PostgreSQL17/pgvector migrations/relationships, LlamaIndex/OpenAI retrieval and paid admission, optional visitor HubSpot OAuth/transport/token storage/account-scoped exports/cleanup/uninstall, local runner/Cloud Tasks/WorkerPool delivery and cloud/CI/Linux release proposals. Use fake/injected external providers and actual isolated PostgreSQL/owned disposable Linux resources; preserve the owner's running real-mode app, credentials, data and manual paid-demo/HubSpot review. Do not make any paid provider, actual account/OAuth, cloud/publish/push/outreach or remote-scanner metadata-export call. Use current official maintainer/package advisories as public read-only research without uploading a dependency graph/repo. Audit actual source and all relevant existing adversarial tests, not only previous reports. Consider spoofing, tampering, repudiation, disclosure, denial of service, elevation, CSRF/origin/cookie/session/guest identity, bounded bytes/work/queues/concurrency/rate/cost/deadlines, replay/stale/reset/expiry, real original-source authorization, untrusted PDF/prompt/model output, unsafe input/injection/SSRF, credential/data/log exposure, tenant/app/account/destination boundaries and supply chain/deployment defaults. Preserve private backend diagnostics and content-free helpful public/browser errors. Include only meaningful substantiated findings, with severity, trigger/path/evidence, actual impact, current controls, carefully scoped functionality-preserving fix/verification plan and residual limits; do not manufacture minor recommendations or overengineer a demo. Prepare a new SBS-027 security-review ticket, update the detailed Markdown audit and severity-ranked PM HTML in docs/security, and keep this phase audit-only. After findings/artifacts are concrete and reviewed, use an explicit provisional AFK security selection for justified scoped local fixes under the owner's direct current authorization; do not invent human approval or silently broaden external action permissions. Finish the separate phase11 execute/validate loop and authorized file-level local commits only after that selection. Record actual coverage, public advisory sources/version comparisons, unavailable scanner/hosted/native/human checks, future-edit guardrails and evidence. The previous reports and fixes remain readable as history; a prior receipt is not current proof. Security review and visual acceptance remain provisional AFK/owner-review outcomes. Supplemental quality Q-026-03 is now separately committed and clean at96cf2b5: real CI generator/loader regression failed before and passes after. Existing326 backend security/domain tests passed during this read-only inspection; the new CI regression separately adds one test. Reassess current source with those distinctions.",
+            "sha256": "a80d317472faac80e72fe3fc4214ca41118150badf225a01976c2b11c442741f",
+            "context_sources": [
+              "human:current-thread/24October2026/security-quality-AFK-and-local-Git-request",
+              "AGENTS.md",
+              "docs/CHOREOGRAPH.md",
+              "docs/LESSONS_LEARNED.md",
+              "docs/tickets/SBS-026-pre-sharing-quality.md",
+              "docs/security/SECURITY_REVIEW.md",
+              "docs/security/SECURITY_OVERVIEW.html",
+              "docs/tickets/SBS-009B-security-review.md",
+              "docs/tickets/SBS-009C-security-fixes.md",
+              "infra/README.md",
+              "infra/release-evidence.json"
+            ],
+            "status": "afk",
+            "approval": null,
+            "afk_session": "AFK-SESSION-001"
+          },
+          "prior_approval": null,
+          "prior_decision": "no-fixes"
         }
       ],
-      "selected_findings": [],
-      "afk_review": {
-        "session_id": "AFK-SESSION-001",
-        "decision_id": "AFK-0030",
-        "recorded_at": "2026-10-24T14:49:30+00:00"
-      }
+      "selected_findings": []
     },
     {
       "id": "11-security-fixes",
       "name": "Approved security fixes",
       "gate": null,
-      "status": "skipped",
-      "prompt": {
-        "text": "Apply the explicit SBS-027 provisional AFK no-fixes result in Choreograph. The completed full renewed audit at clean96cf2b5 found no new substantial actionable local security defect; selected_findings is empty. Do not invent or execute a security remedy, change application behavior or broaden external authorization. Preserve the completed reports and six historical regression-covered remedies, record this phase as skipped solely because of the explicit no-fixes selection, then proceed to final local handoff and authorized documentation commit. Native/hosted/scanner and personal security acceptance remain outstanding.",
-        "sha256": "8bc19c2c1752172ec0a0739870c360d6a7de6d21d202b561b2bcb590b354acbe",
-        "context_sources": [
-          "docs/tickets/SBS-027-security-review.md",
-          "docs/security/SECURITY_REVIEW.md",
-          "docs/security/SECURITY_OVERVIEW.html"
-        ],
-        "status": "afk",
-        "approval": null,
-        "afk_session": "AFK-SESSION-001"
-      },
+      "status": "pending",
+      "prompt": null,
       "evidence": [
         "docs/tickets/SBS-027-security-review.md",
         "docs/security/SECURITY_REVIEW.md"
@@ -2576,6 +2637,25 @@ This checklist records local work. Human approvals and unresolved external check
           },
           "prior_approval": null,
           "prior_decision": null
+        },
+        {
+          "reopened_at": "2026-10-26T10:46:57+00:00",
+          "reason": "New audit must disposition actual current findings after quality completion; older selections are historical.",
+          "prior_status": "skipped",
+          "prior_prompt": {
+            "text": "Apply the explicit SBS-027 provisional AFK no-fixes result in Choreograph. The completed full renewed audit at clean96cf2b5 found no new substantial actionable local security defect; selected_findings is empty. Do not invent or execute a security remedy, change application behavior or broaden external authorization. Preserve the completed reports and six historical regression-covered remedies, record this phase as skipped solely because of the explicit no-fixes selection, then proceed to final local handoff and authorized documentation commit. Native/hosted/scanner and personal security acceptance remain outstanding.",
+            "sha256": "8bc19c2c1752172ec0a0739870c360d6a7de6d21d202b561b2bcb590b354acbe",
+            "context_sources": [
+              "docs/tickets/SBS-027-security-review.md",
+              "docs/security/SECURITY_REVIEW.md",
+              "docs/security/SECURITY_OVERVIEW.html"
+            ],
+            "status": "afk",
+            "approval": null,
+            "afk_session": "AFK-SESSION-001"
+          },
+          "prior_approval": null,
+          "prior_decision": null
         }
       ],
       "skip_reason": "SBS-027 explicit provisional AFK no-fixes selection: no new substantial actionable local security defect substantiated; empty selected_findings. Historical remedies remain passing."
@@ -2584,25 +2664,8 @@ This checklist records local work. Human approvals and unresolved external check
       "id": "12-handoff",
       "name": "Final local handoff",
       "gate": null,
-      "status": "complete_local",
-      "prompt": {
-        "text": "Finish Choreograph local AFK audit handoff after the owner-authorized clean pre-audit checkpoint and completed quality/security workflow. Preserve the ten baseline commits through13f608bc, quality commits through8318b61 and supplemental CI repair96cf2b5 as actual local Git evidence. Reconcile canonical main progress and ticket queue with SBS-026 scoped formatter150-to6/focus-owner improvements, failing-before/passing-after actual CI generator/loader repair, and SBS-027 full STRIDE/general/targeted official-advisory audit with no new substantial local finding. Explicit provisional AFK no-fixes skips phase11; do not call that personal security approval or invent a remediation. Check report links/HTML structure (local-file browser preview is policy-blocked and must not be bypassed), actual326 full backend plus26 focused config/setup tests including the new regression,75 Node/no skips, Ruff/pip compatibility, zero known-private-value current-tree matches,112 npm integrity entries/93 exact Python pins, and source-fresh192-input Linux44HTTP/291assertions. Adopt unchanged responsive source/highlight/focus evidence rather than claim a new browser visual check. Confirm owned frontend/API/runner still running without restart and leave keys, mode flags, current expired grant and manual data unchanged. Prepare an exact six-file documentation allocation, inspect staged bytes/known private values and whitespace, and make the authorized local SBS-027 commit(s); verify the entire worktree/index empty. No push, provider spending, account/OAuth/cloud/outreach/scanner metadata export or deployment. Mark handoff complete_local only with named blockers for owner runnable/security review, fresh finite real-provider allowance/quality, registered visitor HubSpot/native cleanup/uninstall/capacity, real verification, hosted IAM/SQL/Tasks/WorkerPool/backups and authorized transitive/distro scanning. Preserve historical decisions and report the material AFK choices/rationale/consequences, actual checks, Git state and concrete remaining manual acceptance lanes without asking ordinary questions.",
-        "sha256": "6f53b9e554d8054fe6563a18f65754302b25c1fd06d952909e4447994b5a8027",
-        "context_sources": [
-          "human:current-thread/24October2026/security-quality-AFK-and-local-Git-request",
-          "AGENTS.md",
-          "docs/tickets/SBS-026-pre-sharing-quality.md",
-          "docs/tickets/SBS-027-security-review.md",
-          "docs/security/SECURITY_REVIEW.md",
-          "docs/security/SECURITY_OVERVIEW.html",
-          "docs/tickets/COMMIT_PLAN.md",
-          "infra/release-evidence.json",
-          ".runtime/ci-clean-boundary.json"
-        ],
-        "status": "afk",
-        "approval": null,
-        "afk_session": "AFK-SESSION-001"
-      },
+      "status": "pending",
+      "prompt": null,
       "evidence": [
         "docs/tickets/SBS-026-pre-sharing-quality.md",
         "docs/tickets/SBS-027-security-review.md",
@@ -2707,6 +2770,31 @@ This checklist records local work. Human approvals and unresolved external check
               "docs/security/SECURITY_REVIEW.md",
               "infra/README.md",
               "infra/release-evidence.json"
+            ],
+            "status": "afk",
+            "approval": null,
+            "afk_session": "AFK-SESSION-001"
+          },
+          "prior_approval": null,
+          "prior_decision": null
+        },
+        {
+          "reopened_at": "2026-10-26T10:46:57+00:00",
+          "reason": "Owner26 October explicitly requests a new scheduler-only documentation plan, then renewed AFK quality and security audits with scoped fixes and local commits.",
+          "prior_status": "complete_local",
+          "prior_prompt": {
+            "text": "Finish Choreograph local AFK audit handoff after the owner-authorized clean pre-audit checkpoint and completed quality/security workflow. Preserve the ten baseline commits through13f608bc, quality commits through8318b61 and supplemental CI repair96cf2b5 as actual local Git evidence. Reconcile canonical main progress and ticket queue with SBS-026 scoped formatter150-to6/focus-owner improvements, failing-before/passing-after actual CI generator/loader repair, and SBS-027 full STRIDE/general/targeted official-advisory audit with no new substantial local finding. Explicit provisional AFK no-fixes skips phase11; do not call that personal security approval or invent a remediation. Check report links/HTML structure (local-file browser preview is policy-blocked and must not be bypassed), actual326 full backend plus26 focused config/setup tests including the new regression,75 Node/no skips, Ruff/pip compatibility, zero known-private-value current-tree matches,112 npm integrity entries/93 exact Python pins, and source-fresh192-input Linux44HTTP/291assertions. Adopt unchanged responsive source/highlight/focus evidence rather than claim a new browser visual check. Confirm owned frontend/API/runner still running without restart and leave keys, mode flags, current expired grant and manual data unchanged. Prepare an exact six-file documentation allocation, inspect staged bytes/known private values and whitespace, and make the authorized local SBS-027 commit(s); verify the entire worktree/index empty. No push, provider spending, account/OAuth/cloud/outreach/scanner metadata export or deployment. Mark handoff complete_local only with named blockers for owner runnable/security review, fresh finite real-provider allowance/quality, registered visitor HubSpot/native cleanup/uninstall/capacity, real verification, hosted IAM/SQL/Tasks/WorkerPool/backups and authorized transitive/distro scanning. Preserve historical decisions and report the material AFK choices/rationale/consequences, actual checks, Git state and concrete remaining manual acceptance lanes without asking ordinary questions.",
+            "sha256": "6f53b9e554d8054fe6563a18f65754302b25c1fd06d952909e4447994b5a8027",
+            "context_sources": [
+              "human:current-thread/24October2026/security-quality-AFK-and-local-Git-request",
+              "AGENTS.md",
+              "docs/tickets/SBS-026-pre-sharing-quality.md",
+              "docs/tickets/SBS-027-security-review.md",
+              "docs/security/SECURITY_REVIEW.md",
+              "docs/security/SECURITY_OVERVIEW.html",
+              "docs/tickets/COMMIT_PLAN.md",
+              "infra/release-evidence.json",
+              ".runtime/ci-clean-boundary.json"
             ],
             "status": "afk",
             "approval": null,

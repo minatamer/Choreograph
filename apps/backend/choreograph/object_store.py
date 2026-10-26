@@ -283,20 +283,25 @@ class ObjectEngine:
             row for row in records.get('knowledge_chunks',[]) if row['version_id'] in ids]}
         digest=None
         if canonical:
-            raw=json.dumps(packed,default=encode,sort_keys=True,separators=(',',':'),allow_nan=False).encode()
-            if len(raw)>MAX_BYTES:raise ValueError('STORAGE_SIZE_INVALID')
-            digest=hashlib.sha256(raw).hexdigest()
-            if digest not in self.packs:
-                name='canonical/'+digest
-                existing,version=self.objects.read(name)
-                if existing is None:
-                    try:self.objects.replace(name,self.cipher.encrypt(gzip.compress(raw,mtime=0)),version)
-                    except DomainError as error:
-                        if error.code!='WRITE_RETRY':raise
-                        existing,_=self.objects.read(name)
-                        if existing is None or self._open(existing)!=raw:raise
-                elif self._open(existing)!=raw:raise ValueError('STORAGE_PACK_INVALID')
-                self.packs={digest:packed}
+            cached=next(iter(self.packs.items()),None)
+            if cached is not None and cached[1]==packed:
+                digest=cached[0]
+            else:
+                raw=json.dumps(packed,default=encode,sort_keys=True,separators=(',',':'),allow_nan=False).encode()
+                if len(raw)>MAX_BYTES:raise ValueError('STORAGE_SIZE_INVALID')
+                digest=hashlib.sha256(raw).hexdigest()
+                if digest not in self.packs:
+                    name='canonical/'+digest
+                    existing,version=self.objects.read(name)
+                    if existing is None:
+                        try:self.objects.replace(name,self.cipher.encrypt(gzip.compress(raw,mtime=0)),version)
+                        except DomainError as error:
+                            if error.code!='WRITE_RETRY':raise
+                            existing,_=self.objects.read(name)
+                            if existing is None or self._open(existing)!=raw:raise
+                    elif self._open(existing)!=raw:raise ValueError('STORAGE_PACK_INVALID')
+                    # Caller mutations must never make an old digest appear current.
+                    self.packs={digest:copy.deepcopy(packed)}
         private={**records,'document_versions':[row for row in records.get('document_versions',[]) if row['id'] not in ids],
                  'knowledge_chunks':[row for row in records.get('knowledge_chunks',[]) if row['version_id'] not in ids]}
         data = json.dumps({'schema': 1, 'records': private,'canonical':digest}, default=encode, sort_keys=True,

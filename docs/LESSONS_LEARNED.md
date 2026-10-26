@@ -1,5 +1,7 @@
 # Lessons learned for Choreograph
 
+**Planned deployment simplification,26 October2026:** the owner selects a future single Scheduler-driven private worker for the no-database path, removing Cloud Tasks after implementation/validation. Current runtime still uses Tasks; this change is **documentation only**. Do not provision a new queue or disable current dispatch before the planned refactor is implemented. The current blueprint/SBS-036 controls this planned change; database-free storage and existing behavior remain.
+
 **Selected deployment,26 October2026: NO DATABASE (`DATABASE_ENABLED=false`).** Use encrypted private GCS objects, three scale-to-zero Cloud Run services, Cloud Tasks and authenticated minute Scheduler maintenance. No Cloud SQL, hosted PostgreSQL/pgvector, SQL migrations, database secret or always-running WorkerPool is required. PostgreSQL remains an optional `true` implementation; dated SQL-first designs and test receipts are historical. Database-specific lessons below apply only to optional SQL compatibility, not a hosting prerequisite.
 
 Merged guidance · prepared 21 October 2026; project alignment updated 22 October 2026 · Prepared from the Retailor-derived lessons used in Roomedy and fresh evidence from Roomedy itself.

@@ -1,10 +1,9 @@
 """Prepare the immutable sample vectors once with explicitly fake embeddings."""
 from datetime import UTC, datetime
 
-from sqlalchemy.orm import Session
-
 from choreograph.db import build_engine
 from choreograph.knowledge import prepare_samples
+from choreograph.persistence import Session
 from choreograph.settings import load_local
 
 engine=build_engine(load_local())
