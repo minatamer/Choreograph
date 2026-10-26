@@ -40,6 +40,12 @@ class ManualCRMAllowance:
     workspace_requests = None
 
 
+@dataclass(frozen=True)
+class HostedVisitorCRMAllowance(ManualCRMAllowance):
+    """Normal visitor-owned hosting; bounded operations with durable accounting."""
+    policy = 'hosted_visitor'
+
+
 class CRMAdmission:
     def __init__(self, engine, allowance, workspace_id, clock):
         self.engine,self.allowance,self.workspace_id,self.clock=engine,allowance,UUID(str(workspace_id)),clock
@@ -47,7 +53,8 @@ class CRMAdmission:
     @storage_retry
     def reserve(self):
         now=self.clock();spec=asdict(self.allowance);expiry=self.allowance.expires_at
-        if isinstance(self.allowance,ManualCRMAllowance):spec['policy']='local_owner_manual'
+        if isinstance(self.allowance,ManualCRMAllowance):
+            spec['policy']=getattr(self.allowance,'policy','local_owner_manual')
         else:spec['expires_at']=expiry.isoformat()
         if expiry is not None and now>=expiry:raise CRMFailure('CRM_ALLOWANCE_EXPIRED')
         digest=hashlib.sha256(json.dumps(spec,sort_keys=True,separators=(',',':')).encode()).hexdigest()

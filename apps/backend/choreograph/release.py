@@ -82,7 +82,10 @@ def main():
             import json
 
             from .readiness import report
-            result=report(os.environ,engine=engine);print(json.dumps(result))
+            from .runtime_config import container_policy_ids
+            ai_id,crm_id=container_policy_ids(os.environ)
+            result=report(os.environ,engine=engine,hosted_ai_grant_id=ai_id,
+                          hosted_crm_grant_id=crm_id);print(json.dumps(result))
             if not all(result[key]['ready'] for key in ('configuration','corpus','database')):raise SystemExit(2)
             return
         if args.role in {'migrate', 'schema-downgrade'}:

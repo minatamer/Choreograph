@@ -23,6 +23,22 @@ CHAT_VERIFICATION_SECONDS = 30 * 60
 LOCAL_MANUAL_AI_GRANT_ID = 'owner-manual-local-20261025'
 LOCAL_MANUAL_CRM_GRANT_ID = 'owner-manual-hubspot-local-20261025'
 
+# Owner26 October2026: normal hosted AI spending is controlled on the provider
+# dashboard. These stable accounting identities have no app aggregate budget or
+# expiry; historical finite test grants below are not renewed or repurposed.
+HOSTED_FRONTEND_ORIGIN = 'https://choreograph-frontend-ue3m7uxqdq-ew.a.run.app'
+HOSTED_DASHBOARD_AI_GRANT_ID = 'owner-dashboard-hosted-20261026'
+HOSTED_VISITOR_CRM_GRANT_ID = 'visitor-hubspot-hosted-20261026'
+
+
+def container_policy_ids(values):
+    """Only the selected no-database deployment uses normal hosted policies."""
+    if (values.get('CHOREOGRAPH_ORIGIN') != HOSTED_FRONTEND_ORIGIN or
+            values.get('DATABASE_ENABLED', 'false') != 'false'):
+        return None, None
+    ai = HOSTED_DASHBOARD_AI_GRANT_ID if values.get('FAKE_MODE', 'true') == 'false' else None
+    return ai, HOSTED_VISITOR_CRM_GRANT_ID
+
 # Reviewed24 October2026; preserve the prepared1536-dimensional source profile.
 # The input rate includes conservative cache-write headroom ($2.50/M tokens).
 APPLICATION = MappingProxyType({

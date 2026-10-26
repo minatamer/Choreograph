@@ -7,7 +7,10 @@
     "distribution": "marketplace",
     "auth": {
       "type": "oauth",
-      "redirectUrls": ["http://localhost:45860/auth/hubspot/callback"],
+      "redirectUrls": [
+        "http://localhost:45860/auth/hubspot/callback",
+        "https://choreograph-frontend-ue3m7uxqdq-ew.a.run.app/auth/hubspot/callback"
+      ],
       "requiredScopes": [
         "oauth",
         "crm.objects.contacts.read",
@@ -24,7 +27,9 @@
       "conditionallyRequiredScopes": []
     },
     "permittedUrls": {
-      "fetch": ["https://api.hubapi.com"],
+      "fetch": [
+        "https://api.hubapi.com"
+      ],
       "iframe": [],
       "img": []
     }

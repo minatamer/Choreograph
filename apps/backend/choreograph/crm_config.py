@@ -5,7 +5,7 @@ from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from urllib.parse import urlsplit
 
-from .crm_admission import CRMAllowance, ManualCRMAllowance
+from .crm_admission import CRMAllowance, HostedVisitorCRMAllowance, ManualCRMAllowance
 from .hubspot import HubSpotConfig
 
 
@@ -15,7 +15,7 @@ class LiveCRMConfig:
     allowance: CRMAllowance | ManualCRMAllowance
 
 
-def parse_live_crm(values, origin, *, now=None, manual_grant_id=None):
+def parse_live_crm(values, origin, *, now=None, manual_grant_id=None, hosted_grant_id=None):
     app_id=values.get('CHOREOGRAPH_HUBSPOT_APP_ID','')
     client=values.get('CHOREOGRAPH_HUBSPOT_CLIENT_ID','')
     secret=values.get('CHOREOGRAPH_HUBSPOT_CLIENT_SECRET','')
@@ -43,10 +43,14 @@ def parse_live_crm(values, origin, *, now=None, manual_grant_id=None):
     capacity=number('CHOREOGRAPH_HUBSPOT_CAPACITY',maximum)
     schema=values.get('CHOREOGRAPH_HUBSPOT_SCHEMA_SETUP_ALLOWED','false')
     if schema not in {'true','false'}:raise ValueError('CRM_CONFIGURATION_INVALID')
-    grant=manual_grant_id if manual_grant_id is not None else values.get('CHOREOGRAPH_CRM_GRANT_ID','')
+    if manual_grant_id is not None and hosted_grant_id is not None:
+        raise ValueError('CRM_POLICY_CONFLICT')
+    accounting_id=hosted_grant_id if hosted_grant_id is not None else manual_grant_id
+    grant=accounting_id if accounting_id is not None else values.get('CHOREOGRAPH_CRM_GRANT_ID','')
     if not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9._-]{0,79}',grant):raise ValueError('CRM_CONFIGURATION_INVALID')
-    if manual_grant_id is not None:
-        allowance=ManualCRMAllowance(grant,app_id)
+    if accounting_id is not None:
+        policy=HostedVisitorCRMAllowance if hosted_grant_id is not None else ManualCRMAllowance
+        allowance=policy(grant,app_id)
     else:
         try:
             expiry=datetime.fromisoformat(values.get('CHOREOGRAPH_CRM_EXPIRES_AT','').replace('Z','+00:00'))

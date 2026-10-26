@@ -1,6 +1,6 @@
 # Choreograph
 
-**Latest deployment continuation,26 October2026:** [SBS-040](tickets/SBS-040-python-security-runtime.md) resolves SEC-038-02 using the published official Docker Python3.11.18 Bookworm recipe, pinned Debian/source hashes and verified release signature. The prebuilt tag is unnecessary: the reviewed recipe builds the real patched interpreter. The unchanged application passes fresh no-database Linux six-HTTP/13-scenario acceptance, 144 packaged backend checks (32 SQL cases excluded) and165 Node checks. Non-root runtime has no compiler/source tree, dependency compatibility and normal TLS verification pass. Backend/frontend images are verified in the private registry; public application/paid traffic remain disabled pending finite hosted provider authority and actual provider origins/consent. No database or paid call; owner local services/data/keys unchanged.
+**Latest deployment,26 October2026 — PAID, NO DATABASE:** [Open Choreograph](https://choreograph-frontend-ue3m7uxqdq-ew.a.run.app). The public frontend, private API/private worker and one authenticated minute Scheduler are deployed; `DATABASE_ENABLED=false`, `FAKE_MODE=false`, `PAID_DEMO_ENABLED=true` on the API. Encrypted private GCS holds authority and the prepared six-source/23-vector index; originals stay in the repo/image. No SQL, Tasks or always-running worker. Real hosted Turnstile, default tour/Skip welcome, sourced RAG/PDF, USD80 two-bedroom quote, reviewed booking, refresh persistence and test-guest reset pass; five AI calls completed, Scheduler returned204. HubSpot callback build3 is registered; native visitor OAuth/export was not exercised. The owner confirms AI spending limits are correctly set on the provider dashboard: [SBS-041](tickets/SBS-041-hosted-provider-policy.md) selects distinct durable hosted accounting with no app aggregate budget/request/token/vector ceiling or expiry. **Do not ask for an app AI cap/expiry again.** Per-request/verification/session/source/consent/replay/unknown safeguards remain. 394 portable backend checks/162 SQL exclusions,150 packaged checks/32 SQL exclusions, Ruff and source-fresh six-HTTP/13-object Linux acceptance pass. Historical finite test grants and local manual policies remain distinct; earlier deployment-blocked snapshots below are superseded only within this verified scope.
 
 **Final AFK audits,26 October2026:** quality is committed at `e60092f`; [SBS-038](tickets/SBS-038-final-security.md) found two medium runtime issues. Node24.22.1 was fixed there; the Python3.11.18 runtime is now fixed and validated under SBS-040. Both selected findings are resolved locally. Scheduler-only object delivery is implemented under SBS-036. Dated audit results remain historical; hosted paid/native/visual/security acceptance is separate from provisional AFK review.
 
@@ -1048,8 +1048,8 @@ The four-file packet passed static HTML structure/ID checks, local document/sour
 ## Build command progress
 
 Current phase: **local workflow finished**
-Next action: Verify the exact authorized local checkpoint. Python is resolved; future public paid deployment requires fresh finite hosted provider authority and actual provider origins/visitor consent.
-Active ticket: SBS-039
+Next action: Verify the exact authorized local commit/clean tree and hand off the actual public URL; no new coding or budget input required.
+Active ticket: SBS-041
 Phase prompts: delegated during AFK
 Local commits approved: yes
 
@@ -1210,6 +1210,14 @@ Provisional owner reviews: 04-decisions, 05-tickets, 09-visual-review, 10b-secur
   Reason: The owner explicitly asked to fix the Docker/Python block; published signed source and the updated maintainer recipe provide the real patched runtime without waiting for an image tag. Actual build/runtime/packaged/Linux evidence passes; no new material issue is confirmed in the scoped delta.
   Consequence / reversibility: Mark SEC-038-02 resolved locally and supersede the unnecessarily strict wait-only recommendation. Preserve upstream license/provenance, app behavior and finite policy. Public paid activation still requires its separate authority/origin/consent conditions; AFK is not personal owner approval.
   Owner review requested on return: yes. Evidence: docs/tickets/SBS-040-python-security-runtime.md, infra/python-runtime-source.json, infra/release-object-evidence.json, infra/deployment-preparation.json, .runtime/sbs040-container-tests.log, .runtime/sbs040-runtime-readback.json, .runtime/sbs040-linux.log, .runtime/sbs040-node.log
+- **AFK-0039** (AFK-SESSION-001, 2026-10-26T15:37:24+00:00, 07-build): Use the owner dashboard for normal hosted AI spending, with separate stable hosted accounting identities and unchanged request/verification/consent safeguards.
+  Reason: The owner directly supersedes the old app AI cap/expiry gate. Reusing an expired finite agent-test grant or local-only manual identity would misrepresent the authority; a narrowly bound normal hosted policy reuses existing durable accounting. Normal visitor HubSpot remains consent/account/capacity/bounded-operation protected.
+  Consequence / reversibility: No app aggregate AI cap/expiry or budget prompt; existing finite test and local manual policies remain separate. Bind normal policies to actual no-database container origin, deny operator sample ingestion and retain unknown/replay/concurrency/resource protections. Rebuild/validate actual images and continue authorized paid cloud rollout.
+  Owner review requested on return: yes. Evidence: human:current-thread/2026-10-26/dashboard-spending-authority, docs/tickets/SBS-041-hosted-provider-policy.md, docs/tickets/SBS-039-paid-deployment.md, AGENTS.md
+- **AFK-0040** (AFK-SESSION-001, 2026-10-26T16:22:56+00:00, 10b-security-review): Complete the settled policy/deployment security delta with no additional actionable finding.
+  Reason: Current source, portable/packaged tests and actual public/private/worker checks preserve request, verification, scope, consent and unknown-result fences. The direct owner dashboard spending correction intentionally supersedes only the hosted app aggregate/expiry gate; finite/local policies and source/account protections stay distinct.
+  Consequence / reversibility: No extra source refactor or duplicate security-fix phase is justified. Keep successful hosted functional evidence separate from unperformed native visitor HubSpot/high-load/owner personal review. Finish exact local commit and clean-tree handoff without a new budget request.
+  Owner review requested on return: yes. Evidence: docs/tickets/SBS-041-hosted-provider-policy.md, docs/tickets/SBS-039-paid-deployment.md, infra/deployment-preparation.json, infra/release-object-evidence.json, infra/python-runtime-source.json, AGENTS.md, .runtime/sbs041-backend.log, .runtime/sbs041-container-tests.log, .runtime/sbs041-linux-settled.log, .runtime/sbs041-provider-evidence.log, .runtime/sbs041-scheduler-verification.log, .runtime/sbs041-live-rag.png, .runtime/sbs041-live-booking.png, docs/security/SECURITY_REVIEW.md
 
 - [x] 01-docs — Documentation (complete)
 - [x] 02-flow — Core flow (complete)
@@ -1217,12 +1225,12 @@ Provisional owner reviews: 04-decisions, 05-tickets, 09-visual-review, 10b-secur
 - [x] 04-decisions — Product decisions (provisional)
 - [x] 05-tickets — Ticket plan (provisional)
 - [x] 06-plan-commit — Planning commit (complete)
-- [x] 07-build — Execute and validate tickets (complete_local)
+- [x] 07-build — Execute and validate tickets (complete)
 - [x] 08-performance — Performance investigation (complete)
 - [x] 09-visual-review — Frontend visual approval checkpoint (provisional)
 - [x] 10a-quality — Quality audit and fixes (complete)
 - [x] 10b-security-review — Security audit and manual review (provisional)
-- [x] 11-security-fixes — Approved security fixes (complete)
+- [x] 11-security-fixes — Approved security fixes (skipped)
 - [x] 12-handoff — Final local handoff (complete_local)
 
 This checklist records local work. Human approvals and unresolved external checks are preserved below; it does not authorize paid calls or deployment.
@@ -1232,7 +1240,7 @@ This checklist records local work. Human approvals and unresolved external check
   "schema_version": 3,
   "repo_root": "C:\\Users\\minat\\Work\\Choreograph",
   "main_document": "docs/CHOREOGRAPH.md",
-  "updated_at": "2026-10-26T14:20:11+00:00",
+  "updated_at": "2026-10-26T16:23:56+00:00",
   "context": {
     "PROJECT_NAME": {
       "value": "Choreograph",
@@ -1255,8 +1263,8 @@ This checklist records local work. Human approvals and unresolved external check
       "confidence": "confirmed"
     },
     "DEPLOYMENT_PLATFORM": {
-      "value": "NO DATABASE Cloud Run/private GCS/one authenticated Scheduler. Python3.11.18 is built/tested from signed hash-pinned official recipe; verified backend/frontend privately uploaded. Public/paid runtime disabled pending finite hosted provider authority and actual origins/consent.",
-      "source": "docs/tickets/SBS-040-python-security-runtime.md",
+      "value": "PAID NO DATABASE deployed: public frontend, private API/worker, one authenticated minute Scheduler/private GCS; actual RAG/quote/reviewed booking/refresh/reset and Scheduler204 verified. Owner dashboard controls AI spending; no app aggregate budget/expiry or renewed test grant required. HubSpot callback build3 deployed, native visitor consent/export unexercised.",
+      "source": "infra/deployment-preparation.json",
       "confidence": "confirmed"
     },
     "LOCAL_GIT_AUTHORIZATION": {
@@ -1883,6 +1891,48 @@ This checklist records local work. Human approvals and unresolved external check
           ".runtime/sbs040-linux.log",
           ".runtime/sbs040-node.log"
         ]
+      },
+      {
+        "id": "AFK-0039",
+        "session_id": "AFK-SESSION-001",
+        "recorded_at": "2026-10-26T15:37:24+00:00",
+        "phase": "07-build",
+        "choice": "Use the owner dashboard for normal hosted AI spending, with separate stable hosted accounting identities and unchanged request/verification/consent safeguards.",
+        "rationale": "The owner directly supersedes the old app AI cap/expiry gate. Reusing an expired finite agent-test grant or local-only manual identity would misrepresent the authority; a narrowly bound normal hosted policy reuses existing durable accounting. Normal visitor HubSpot remains consent/account/capacity/bounded-operation protected.",
+        "consequence": "No app aggregate AI cap/expiry or budget prompt; existing finite test and local manual policies remain separate. Bind normal policies to actual no-database container origin, deny operator sample ingestion and retain unknown/replay/concurrency/resource protections. Rebuild/validate actual images and continue authorized paid cloud rollout.",
+        "review_needed": true,
+        "evidence": [
+          "human:current-thread/2026-10-26/dashboard-spending-authority",
+          "docs/tickets/SBS-041-hosted-provider-policy.md",
+          "docs/tickets/SBS-039-paid-deployment.md",
+          "AGENTS.md"
+        ]
+      },
+      {
+        "id": "AFK-0040",
+        "session_id": "AFK-SESSION-001",
+        "recorded_at": "2026-10-26T16:22:56+00:00",
+        "phase": "10b-security-review",
+        "choice": "Complete the settled policy/deployment security delta with no additional actionable finding.",
+        "rationale": "Current source, portable/packaged tests and actual public/private/worker checks preserve request, verification, scope, consent and unknown-result fences. The direct owner dashboard spending correction intentionally supersedes only the hosted app aggregate/expiry gate; finite/local policies and source/account protections stay distinct.",
+        "consequence": "No extra source refactor or duplicate security-fix phase is justified. Keep successful hosted functional evidence separate from unperformed native visitor HubSpot/high-load/owner personal review. Finish exact local commit and clean-tree handoff without a new budget request.",
+        "review_needed": true,
+        "evidence": [
+          "docs/tickets/SBS-041-hosted-provider-policy.md",
+          "docs/tickets/SBS-039-paid-deployment.md",
+          "infra/deployment-preparation.json",
+          "infra/release-object-evidence.json",
+          "infra/python-runtime-source.json",
+          "AGENTS.md",
+          ".runtime/sbs041-backend.log",
+          ".runtime/sbs041-container-tests.log",
+          ".runtime/sbs041-linux-settled.log",
+          ".runtime/sbs041-provider-evidence.log",
+          ".runtime/sbs041-scheduler-verification.log",
+          ".runtime/sbs041-live-rag.png",
+          ".runtime/sbs041-live-booking.png",
+          "docs/security/SECURITY_REVIEW.md"
+        ]
       }
     ]
   },
@@ -1922,8 +1972,8 @@ This checklist records local work. Human approvals and unresolved external check
     "final_commit_subject": "SBS-011: Record build, security and external acceptance handoff",
     "final_commit_identity": "git log owns the final documentation commit hash; it cannot be embedded in its own content."
   },
-  "active_ticket": "SBS-039",
-  "next_action": "Verify the exact authorized local checkpoint. Python is resolved; future public paid deployment requires fresh finite hosted provider authority and actual provider origins/visitor consent.",
+  "active_ticket": "SBS-041",
+  "next_action": "Verify the exact authorized local commit/clean tree and hand off the actual public URL; no new coding or budget input required.",
   "phases": [
     {
       "id": "01-docs",
@@ -2208,38 +2258,38 @@ This checklist records local work. Human approvals and unresolved external check
       "id": "07-build",
       "name": "Execute and validate tickets",
       "gate": null,
-      "status": "complete_local",
+      "status": "complete",
       "prompt": {
-        "text": "Execute SBS-040 for Choreograph after the owner asks why the Python Docker blocker is not being fixed. Read current AGENTS/blueprint/lessons/ticket; clean baseline95706a0 and existing deployment/Git authority. Correct the earlier wait-only assumption: official Python3.11.18 release source and Docker recipe commit83054588043b3a7ac1ce8324c9242164b632beb9 are available despite no prebuilt tag. Embed that reviewed same-Bookworm/same-Python-minor runtime recipe in backend Dockerfile, pin Debian index7ff6ba31527b9e336162fa061746c366c4b2032f4d2cff2078bea43f78efe3f8 and release SHA9120e0a653868f6e3698d36cdd99e5a58903ec9469e448f21d98f7b16d8fa290, preserve GPG fingerprintA035C8C19219BA821ECEA86B64E628F8D684696D/archive verification, optimization/native module behavior and same-layer build dependency/source cleanup. Bound compile to2 jobs/network downloads/keyserver; include exact MIT license via narrow Docker ignore/COPY. Keep app layer/locks/UI/domain/provider/storage/scheduler policies, local fake services/keys/state and no-SQL deployment unchanged. Record immutable provenance. Build locally from public inputs; verify actual3.11.18/TLS/modules/no compiler/root identity, compatibility, finite source parser, source-fresh production Linux six HTTP/13-object scenarios and focused packaged backend security/storage/Scheduler tests with SQL forbidden/network disabled. Review final delta read-only, independently confirm/fix/revalidate material issues, update owning docs/reports/queue and exact staged private/hash/whitespace commit plan. Existing deployment authorization permits preparing/uploading the verified backend after validation, but no unverified public/paid acceptance or old-grant renewal; hosted finite policy/origin/consent remain separate. No database, unrelated account action, owner secret payload read, paid provider call, scanner export, Git push or questions while AFK. Resolve Python blocker only on actual verified image evidence and explain simply that no Docker task is required from the owner.",
-        "sha256": "26438a52a3fdcc326128670b3e31e9d6342f8498eef6a07ac8f3bbb9cc53b390",
+        "text": "Execute SBS-041 and continue SBS-039 paid no-database deployment under the latest direct owner dashboard-spending correction. Read exact file allocation/current code; use fixed actual frontend origin and explicit container loader to select distinct owner_dashboard_hosted AI and hosted_visitor CRM accounting, never local manual or expired finite test grants. Remove app aggregate AI spending/request/token/vector caps/expiry only for normal hosting; keep all per-request/token/parser/network/deadline/concurrency/human-check, session/CSRF/generation/revision/idempotency, source, consent/account/capacity/retry/unknown safeguards and operator sample-ingestion denial. Use existing prepared six-source/23-vector canonical live pack, same1536 profile, exact prices/domain and cached verified Python3.11.18/Node24.22.1. No new env/public profile switch, SQL/Tasks, local service/key/state change, credential exposure or Git push. Preserve finite automated and local manual policies.394 SQL-forbidden portable tests/162 SQL exclusions and Ruff already pass; Linux six-HTTP/13-object lifecycle passes after correcting the reproduced nondeterministic one-wakeup smoke assumption to two bounded separate-process wakeups (worker remains one job/tick). Verify actual packaged new-policy/security/native/TLS/source/compiler cleanup, source-fresh release images and private registry digests. Apply prepared actual-origin/numeric-secret definitions with rebuilt image; verify private API/worker/startup/GCS boundaries before public frontend and one authenticated Scheduler. Verify real public pages/config/bridge/private-denial, normal human-check and visitor consent boundaries, actual provider functionality when possible without solving CAPTCHA or fabricating OAuth/account actions. Fix genuine defects and rerun meaningful relevant checks; do not stop for an app AI budget or expiry. Reconcile current docs/receipts/progress/queue and exact local commit plan; no false full acceptance.",
+        "sha256": "bc3c08d465225e209acf9754d998d0facefd6d93776bc0b781f32c80b178226b",
         "context_sources": [
-          "human:current-thread/2026-10-26/fix-python-docker-blocker",
-          "docs/tickets/SBS-040-python-security-runtime.md",
-          "infra/python-runtime-source.json",
+          "human:current-thread/2026-10-26/dashboard-spending-authority",
+          "docs/tickets/SBS-041-hosted-provider-policy.md",
+          "docs/tickets/SBS-039-paid-deployment.md",
           "AGENTS.md",
-          "infra/Dockerfile.backend"
+          "infra/deployment-preparation.json",
+          "infra/release-object-evidence.json"
         ],
         "status": "afk",
         "approval": null,
         "afk_session": "AFK-SESSION-001"
       },
       "evidence": [
-        "docs/tickets/SBS-040-python-security-runtime.md",
-        "infra/python-runtime-source.json",
-        "infra/release-object-evidence.json",
+        "docs/tickets/SBS-041-hosted-provider-policy.md",
+        "docs/tickets/SBS-039-paid-deployment.md",
         "infra/deployment-preparation.json",
-        ".runtime/sbs040-container-tests.log",
-        ".runtime/sbs040-runtime-readback.json",
-        ".runtime/sbs040-linux.log",
-        ".runtime/sbs040-node.log"
+        "infra/release-object-evidence.json",
+        "infra/python-runtime-source.json",
+        "AGENTS.md",
+        ".runtime/sbs041-backend.log",
+        ".runtime/sbs041-container-tests.log",
+        ".runtime/sbs041-linux-settled.log",
+        ".runtime/sbs041-provider-evidence.log",
+        ".runtime/sbs041-scheduler-verification.log",
+        ".runtime/sbs041-live-rag.png",
+        ".runtime/sbs041-live-booking.png"
       ],
-      "blockers": [
-        {
-          "kind": "external",
-          "reason": "Fresh specific finite hosted AI/CRM authority is still required; prior hosted AI grant expired24 October and CRM allowance is unset. Actual provider origins/Turnstile hostname/HubSpot callback and visitor consent remain unverified. No public paid deployment is claimed.",
-          "reference": "docs/tickets/SBS-039-paid-deployment.md"
-        }
-      ],
+      "blockers": [],
       "approval": null,
       "decision": null,
       "reviews": [
@@ -2303,6 +2353,27 @@ This checklist records local work. Human approvals and unresolved external check
               "docs/tickets/SBS-036-scheduler-only-plan.md",
               "docs/tickets/SBS-039-paid-deployment.md",
               "docs/tickets/SBS-038-final-security.md"
+            ],
+            "status": "afk",
+            "approval": null,
+            "afk_session": "AFK-SESSION-001"
+          },
+          "prior_approval": null,
+          "prior_decision": null
+        },
+        {
+          "reopened_at": "2026-10-26T15:37:23+00:00",
+          "reason": "Owner explicitly confirms dashboard AI spending controls and instructs us to ignore app AI budgets/expiry and stop asking. Implement distinct normal hosted accounting, validate and continue paid deployment.",
+          "prior_status": "complete_local",
+          "prior_prompt": {
+            "text": "Execute SBS-040 for Choreograph after the owner asks why the Python Docker blocker is not being fixed. Read current AGENTS/blueprint/lessons/ticket; clean baseline95706a0 and existing deployment/Git authority. Correct the earlier wait-only assumption: official Python3.11.18 release source and Docker recipe commit83054588043b3a7ac1ce8324c9242164b632beb9 are available despite no prebuilt tag. Embed that reviewed same-Bookworm/same-Python-minor runtime recipe in backend Dockerfile, pin Debian index7ff6ba31527b9e336162fa061746c366c4b2032f4d2cff2078bea43f78efe3f8 and release SHA9120e0a653868f6e3698d36cdd99e5a58903ec9469e448f21d98f7b16d8fa290, preserve GPG fingerprintA035C8C19219BA821ECEA86B64E628F8D684696D/archive verification, optimization/native module behavior and same-layer build dependency/source cleanup. Bound compile to2 jobs/network downloads/keyserver; include exact MIT license via narrow Docker ignore/COPY. Keep app layer/locks/UI/domain/provider/storage/scheduler policies, local fake services/keys/state and no-SQL deployment unchanged. Record immutable provenance. Build locally from public inputs; verify actual3.11.18/TLS/modules/no compiler/root identity, compatibility, finite source parser, source-fresh production Linux six HTTP/13-object scenarios and focused packaged backend security/storage/Scheduler tests with SQL forbidden/network disabled. Review final delta read-only, independently confirm/fix/revalidate material issues, update owning docs/reports/queue and exact staged private/hash/whitespace commit plan. Existing deployment authorization permits preparing/uploading the verified backend after validation, but no unverified public/paid acceptance or old-grant renewal; hosted finite policy/origin/consent remain separate. No database, unrelated account action, owner secret payload read, paid provider call, scanner export, Git push or questions while AFK. Resolve Python blocker only on actual verified image evidence and explain simply that no Docker task is required from the owner.",
+            "sha256": "26438a52a3fdcc326128670b3e31e9d6342f8498eef6a07ac8f3bbb9cc53b390",
+            "context_sources": [
+              "human:current-thread/2026-10-26/fix-python-docker-blocker",
+              "docs/tickets/SBS-040-python-security-runtime.md",
+              "infra/python-runtime-source.json",
+              "AGENTS.md",
+              "infra/Dockerfile.backend"
             ],
             "status": "afk",
             "approval": null,
@@ -2450,13 +2521,14 @@ This checklist records local work. Human approvals and unresolved external check
       "gate": null,
       "status": "complete",
       "prompt": {
-        "text": "Read-only validate the settled SBS-040 Python security runtime against its preallocated ticket and exact combined diff from95706a0. Confirm immutable official recipe83054588043b3a7ac1ce8324c9242164b632beb9, pinned same-distribution Debian, published Python3.11.18 archive/hash/release-key signature and MIT permission. App layer from ENV onward, all requirements/package locks and finite provider policy remain byte-identical. Check finite two-job compilation/downloads, same-layer source/dev cleanup, narrow build context, final nonroot/native module/pip/TLS checks, justified45minute image/75minute CI cold-build bounds and source-fresh Linux six-HTTP/13-object-scenario acceptance. Review144 packaged backend passes/32 SQL exclusions with SQL forbidden/networknone/no owner env; the failed initial collection caused by stale Windows test bytecode is explicitly not counted.165 Node checks pass; no UI change or new broad tests. Inspect actual private upload readback and temporary auth cleanup; zero public services/Scheduler jobs/paid calls/database resources. Confirm material findings independently, fix and revalidate only actual defects; no cosmetic refactor, questions, delegation, provider call or Git push. Record a concise verdict and actual limits.",
-        "sha256": "2cd3290ae9bd0ff862c33b96ac5ee23e0a88e48e228bee3b89f7454729fab575",
+        "text": "Perform read-only final quality validation of SBS-041/SBS-039 current settled diff. Confirm distinct fixed-origin/no-database container policies implement the direct owner dashboard authority, keep local manual and finite test paths separate, and preserve actual request/verification/source/session/replay/unknown/operator-ingestion guards. Confirm hosted visitor CRM retains consent/account/capacity/bounded operation/retry; developer CLI callback update is not visitor consent. Review394 portable no-SQL passes/162 SQL exclusions,150 packaged passes/32 SQL exclusions, Ruff, source-fresh six-HTTP/13-object Linux acceptance, native/TLS/nonroot/compiler cleanup and actual private image readbacks. Review the independently reproduced smoke UUID-order failure and bounded two-wakeup fixture-only fix; worker stays one-job-per-tick. Actual public browser supplies RAG/PDF, USD80/120minute quote, explicit booking/refresh/reset; five completed AI attempts/no unknown; Scheduler204; temporary readiness/evidence jobs removed. Independently confirm/fix meaningful defects and revalidate relevant checks only; no broad refactor or repeat whole test suite without reason. Do not ask AI budget/expiry, start SQL/Tasks, change owner local settings/state, solve CAPTCHA, invent account consent or push. Record actual limits and file-level commit allocation.",
+        "sha256": "6c7af314054321904a2f3ed0c3bb84fe3435290522c6029435ee3046845218f1",
         "context_sources": [
-          "docs/tickets/SBS-040-python-security-runtime.md",
-          "infra/python-runtime-source.json",
-          "infra/release-object-evidence.json",
+          "docs/tickets/SBS-041-hosted-provider-policy.md",
+          "docs/tickets/SBS-039-paid-deployment.md",
           "infra/deployment-preparation.json",
+          "infra/release-object-evidence.json",
+          "infra/python-runtime-source.json",
           "AGENTS.md"
         ],
         "status": "afk",
@@ -2464,14 +2536,19 @@ This checklist records local work. Human approvals and unresolved external check
         "afk_session": "AFK-SESSION-001"
       },
       "evidence": [
-        "docs/tickets/SBS-040-python-security-runtime.md",
-        "infra/python-runtime-source.json",
-        "infra/release-object-evidence.json",
+        "docs/tickets/SBS-041-hosted-provider-policy.md",
+        "docs/tickets/SBS-039-paid-deployment.md",
         "infra/deployment-preparation.json",
-        ".runtime/sbs040-container-tests.log",
-        ".runtime/sbs040-runtime-readback.json",
-        ".runtime/sbs040-linux.log",
-        ".runtime/sbs040-node.log"
+        "infra/release-object-evidence.json",
+        "infra/python-runtime-source.json",
+        "AGENTS.md",
+        ".runtime/sbs041-backend.log",
+        ".runtime/sbs041-container-tests.log",
+        ".runtime/sbs041-linux-settled.log",
+        ".runtime/sbs041-provider-evidence.log",
+        ".runtime/sbs041-scheduler-verification.log",
+        ".runtime/sbs041-live-rag.png",
+        ".runtime/sbs041-live-booking.png"
       ],
       "blockers": [],
       "approval": null,
@@ -2607,6 +2684,27 @@ This checklist records local work. Human approvals and unresolved external check
           },
           "prior_approval": null,
           "prior_decision": null
+        },
+        {
+          "reopened_at": "2026-10-26T15:37:23+00:00",
+          "reason": "Owner explicitly confirms dashboard AI spending controls and instructs us to ignore app AI budgets/expiry and stop asking. Implement distinct normal hosted accounting, validate and continue paid deployment.",
+          "prior_status": "complete",
+          "prior_prompt": {
+            "text": "Read-only validate the settled SBS-040 Python security runtime against its preallocated ticket and exact combined diff from95706a0. Confirm immutable official recipe83054588043b3a7ac1ce8324c9242164b632beb9, pinned same-distribution Debian, published Python3.11.18 archive/hash/release-key signature and MIT permission. App layer from ENV onward, all requirements/package locks and finite provider policy remain byte-identical. Check finite two-job compilation/downloads, same-layer source/dev cleanup, narrow build context, final nonroot/native module/pip/TLS checks, justified45minute image/75minute CI cold-build bounds and source-fresh Linux six-HTTP/13-object-scenario acceptance. Review144 packaged backend passes/32 SQL exclusions with SQL forbidden/networknone/no owner env; the failed initial collection caused by stale Windows test bytecode is explicitly not counted.165 Node checks pass; no UI change or new broad tests. Inspect actual private upload readback and temporary auth cleanup; zero public services/Scheduler jobs/paid calls/database resources. Confirm material findings independently, fix and revalidate only actual defects; no cosmetic refactor, questions, delegation, provider call or Git push. Record a concise verdict and actual limits.",
+            "sha256": "2cd3290ae9bd0ff862c33b96ac5ee23e0a88e48e228bee3b89f7454729fab575",
+            "context_sources": [
+              "docs/tickets/SBS-040-python-security-runtime.md",
+              "infra/python-runtime-source.json",
+              "infra/release-object-evidence.json",
+              "infra/deployment-preparation.json",
+              "AGENTS.md"
+            ],
+            "status": "afk",
+            "approval": null,
+            "afk_session": "AFK-SESSION-001"
+          },
+          "prior_approval": null,
+          "prior_decision": null
         }
       ]
     },
@@ -2616,33 +2714,40 @@ This checklist records local work. Human approvals and unresolved external check
       "gate": "security",
       "status": "provisional",
       "prompt": {
-        "text": "Perform the scoped SBS-040 security follow-up for retained SEC-038-02 only. Inspect the official immutable Docker recipe and actual build proof: Python3.11.18 source SHA2569120e0a653868f6e3698d36cdd99e5a58903ec9469e448f21d98f7b16d8fa290, GPG fingerprintA035C8C19219BA821ECEA86B64E628F8D684696D and pinned Debian index. Checks must fail closed; no custom crypto, broad version/distro migration or TLS disablement. Confirm compiler/source/cache cleanup, native locked wheels/parser behavior, network-disabled144 security/storage/domain/Scheduler tests with SQL forbidden, nonroot readonly object acceptance and normal default CA/hostname verification. Review private artifact upload uses short-lived in-memory token/password-stdin/exact temporary ignored config deletion and no public Artifact reader. Existing app/provider/account/consent/grant authority is unchanged; no paid call, database or secret payload read. Update detailed/PM reports honestly: Node and Python selected runtime findings are now resolved locally, not a vulnerability-free certification or owner security approval. Preserve dated advisory limits and separate finite hosted policy/origin/consent conditions. Record provisional AFK selected finding SEC-038-02 and whether a new actionable issue exists; no questions or scanner inventory export.",
-        "sha256": "a26c8dcdb9ed298a1fbfd93cce7f70f849550ef443914a58beeef1e4954db200",
+        "text": "Read-only security delta review for SBS-041 hosted policy and SBS-039 actual deployment. Check explicit owner dashboard supersession does not erase per-request/parser/network/deadline/concurrency/human-check/session/source/replay/unknown safeguards, operator ingestion denial or native visitor consent/account/capacity/retry protections. Distinct stable hosted accounting must not renew finite fixtures or export the local manual policy. Inspect fixed-origin/no-database/test guards, numeric secret version refs, exact private API/frontend and worker/Scheduler invokers, only frontend public, private bucket/artifact registry, scoped request-log privacy, min0/bounded maximums and no SQL/Tasks/WorkerPool. Actual missing origin/proof and anonymous API/worker reject403; real normal human verification and five visitor-scoped completed AI calls prove successful permitted path; no unknown attempts. Validate source/images/provenance and actual Scheduler204 plus no temporary evidence/readiness job left. No operator secret payload read/new versions/keys, local env/state change or visitor account export. Prior runtime findings remain resolved; this scoped delta is not a new all-dependency audit or owner personal security acceptance. Record only actual serious actionable findings. No app AI cap/expiry question or Git push.",
+        "sha256": "f9cd699136ae7ba371c2949b40ba3a66feec5a8ca36b9a29934d75f91bd35cf3",
         "context_sources": [
-          "docs/tickets/SBS-040-python-security-runtime.md",
-          "infra/python-runtime-source.json",
-          "infra/release-object-evidence.json",
+          "docs/tickets/SBS-041-hosted-provider-policy.md",
+          "docs/tickets/SBS-039-paid-deployment.md",
           "infra/deployment-preparation.json",
-          "docs/security/SECURITY_REVIEW.md",
-          "AGENTS.md"
+          "infra/release-object-evidence.json",
+          "infra/python-runtime-source.json",
+          "AGENTS.md",
+          "docs/security/SECURITY_REVIEW.md"
         ],
         "status": "afk",
         "approval": null,
         "afk_session": "AFK-SESSION-001"
       },
       "evidence": [
-        "docs/tickets/SBS-040-python-security-runtime.md",
-        "infra/python-runtime-source.json",
-        "infra/release-object-evidence.json",
+        "docs/tickets/SBS-041-hosted-provider-policy.md",
+        "docs/tickets/SBS-039-paid-deployment.md",
         "infra/deployment-preparation.json",
-        ".runtime/sbs040-container-tests.log",
-        ".runtime/sbs040-runtime-readback.json",
-        ".runtime/sbs040-linux.log",
-        ".runtime/sbs040-node.log"
+        "infra/release-object-evidence.json",
+        "infra/python-runtime-source.json",
+        "AGENTS.md",
+        ".runtime/sbs041-backend.log",
+        ".runtime/sbs041-container-tests.log",
+        ".runtime/sbs041-linux-settled.log",
+        ".runtime/sbs041-provider-evidence.log",
+        ".runtime/sbs041-scheduler-verification.log",
+        ".runtime/sbs041-live-rag.png",
+        ".runtime/sbs041-live-booking.png",
+        "docs/security/SECURITY_REVIEW.md"
       ],
       "blockers": [],
       "approval": null,
-      "decision": "selected-fixes",
+      "decision": "no-fixes",
       "reviews": [
         {
           "afk_review": {
@@ -2834,30 +2939,55 @@ This checklist records local work. Human approvals and unresolved external check
             "recorded_at": "2026-10-26T14:18:51+00:00"
           },
           "decision": "selected-fixes"
+        },
+        {
+          "reopened_at": "2026-10-26T15:37:22+00:00",
+          "reason": "Owner explicitly confirms dashboard AI spending controls and instructs us to ignore app AI budgets/expiry and stop asking. Implement distinct normal hosted accounting, validate and continue paid deployment.",
+          "prior_status": "provisional",
+          "prior_prompt": {
+            "text": "Perform the scoped SBS-040 security follow-up for retained SEC-038-02 only. Inspect the official immutable Docker recipe and actual build proof: Python3.11.18 source SHA2569120e0a653868f6e3698d36cdd99e5a58903ec9469e448f21d98f7b16d8fa290, GPG fingerprintA035C8C19219BA821ECEA86B64E628F8D684696D and pinned Debian index. Checks must fail closed; no custom crypto, broad version/distro migration or TLS disablement. Confirm compiler/source/cache cleanup, native locked wheels/parser behavior, network-disabled144 security/storage/domain/Scheduler tests with SQL forbidden, nonroot readonly object acceptance and normal default CA/hostname verification. Review private artifact upload uses short-lived in-memory token/password-stdin/exact temporary ignored config deletion and no public Artifact reader. Existing app/provider/account/consent/grant authority is unchanged; no paid call, database or secret payload read. Update detailed/PM reports honestly: Node and Python selected runtime findings are now resolved locally, not a vulnerability-free certification or owner security approval. Preserve dated advisory limits and separate finite hosted policy/origin/consent conditions. Record provisional AFK selected finding SEC-038-02 and whether a new actionable issue exists; no questions or scanner inventory export.",
+            "sha256": "a26c8dcdb9ed298a1fbfd93cce7f70f849550ef443914a58beeef1e4954db200",
+            "context_sources": [
+              "docs/tickets/SBS-040-python-security-runtime.md",
+              "infra/python-runtime-source.json",
+              "infra/release-object-evidence.json",
+              "infra/deployment-preparation.json",
+              "docs/security/SECURITY_REVIEW.md",
+              "AGENTS.md"
+            ],
+            "status": "afk",
+            "approval": null,
+            "afk_session": "AFK-SESSION-001"
+          },
+          "prior_approval": null,
+          "prior_decision": "selected-fixes"
+        },
+        {
+          "afk_review": {
+            "session_id": "AFK-SESSION-001",
+            "decision_id": "AFK-0040",
+            "recorded_at": "2026-10-26T16:22:56+00:00"
+          },
+          "decision": "no-fixes"
         }
       ],
-      "selected_findings": [
-        "SEC-038-02"
-      ],
+      "selected_findings": [],
       "afk_review": {
         "session_id": "AFK-SESSION-001",
-        "decision_id": "AFK-0038",
-        "recorded_at": "2026-10-26T14:18:51+00:00"
+        "decision_id": "AFK-0040",
+        "recorded_at": "2026-10-26T16:22:56+00:00"
       }
     },
     {
       "id": "11-security-fixes",
       "name": "Approved security fixes",
       "gate": null,
-      "status": "complete",
+      "status": "skipped",
       "prompt": {
-        "text": "Finalize only retained SEC-038-02 after scoped SBS-040 quality/security review. The signed/hash-pinned official Python3.11.18 recipe build already exists and passed144 packaged backend checks/32 SQL exclusions,165 Node checks and fresh six-HTTP/13-object Linux acceptance. Verify the exact actual image/source and private registry digests match the receipts, compiler/source are absent, normal TLS is on, and no application/dependency/provider policy or owner local env/state changed. Resolve the former prebuilt-tag blocker, update current guides/reports/queue/provenance and exact COMMIT_PLAN allocation. Read-only inspect final diff; independently confirm/fix/revalidate meaningful findings until clean. No additional source change is needed merely to fill a phase. Retain hosted finite provider authority/origin/consent as separate unexecuted deployment conditions. Use authorized explicit local stage/commit with frozen bytes, private-value/whitespace/parent/path checks and clean tree; no push, database, paid call, secret payload or questions.",
-        "sha256": "c981e2b98757d0f207b53b8e4a42bbde4a9ea16bb5f10f3747239fa15286edc4",
+        "text": "No additional actionable issue remains after the settled SBS-041 policy/deployment security delta. Preserve the no-fixes AFK selection and existing source/tests/runtime evidence. Skip this phase without claiming new remediation or changing functionality; continue exact-file local commit and deployed handoff. Earlier runtime issues remain resolved under SBS-038/040. Do not add source changes, app AI budget/expiry questions, SQL/Tasks, owner settings/state changes, provider/account actions or Git push.",
+        "sha256": "079f7d283f34438ebc548c615aa65d2110d338fafcf10b534df8a66ee68cf949",
         "context_sources": [
-          "docs/tickets/SBS-040-python-security-runtime.md",
-          "infra/python-runtime-source.json",
-          "infra/release-object-evidence.json",
-          "infra/deployment-preparation.json",
+          "docs/tickets/SBS-041-hosted-provider-policy.md",
           "docs/security/SECURITY_REVIEW.md"
         ],
         "status": "afk",
@@ -2865,14 +2995,8 @@ This checklist records local work. Human approvals and unresolved external check
         "afk_session": "AFK-SESSION-001"
       },
       "evidence": [
-        "docs/tickets/SBS-040-python-security-runtime.md",
-        "infra/python-runtime-source.json",
-        "infra/release-object-evidence.json",
-        "infra/deployment-preparation.json",
-        ".runtime/sbs040-container-tests.log",
-        ".runtime/sbs040-runtime-readback.json",
-        ".runtime/sbs040-linux.log",
-        ".runtime/sbs040-node.log"
+        "docs/tickets/SBS-041-hosted-provider-policy.md",
+        "docs/security/SECURITY_REVIEW.md"
       ],
       "blockers": [],
       "approval": null,
@@ -3000,9 +3124,30 @@ This checklist records local work. Human approvals and unresolved external check
           },
           "prior_approval": null,
           "prior_decision": null
+        },
+        {
+          "reopened_at": "2026-10-26T15:37:22+00:00",
+          "reason": "Owner explicitly confirms dashboard AI spending controls and instructs us to ignore app AI budgets/expiry and stop asking. Implement distinct normal hosted accounting, validate and continue paid deployment.",
+          "prior_status": "complete",
+          "prior_prompt": {
+            "text": "Finalize only retained SEC-038-02 after scoped SBS-040 quality/security review. The signed/hash-pinned official Python3.11.18 recipe build already exists and passed144 packaged backend checks/32 SQL exclusions,165 Node checks and fresh six-HTTP/13-object Linux acceptance. Verify the exact actual image/source and private registry digests match the receipts, compiler/source are absent, normal TLS is on, and no application/dependency/provider policy or owner local env/state changed. Resolve the former prebuilt-tag blocker, update current guides/reports/queue/provenance and exact COMMIT_PLAN allocation. Read-only inspect final diff; independently confirm/fix/revalidate meaningful findings until clean. No additional source change is needed merely to fill a phase. Retain hosted finite provider authority/origin/consent as separate unexecuted deployment conditions. Use authorized explicit local stage/commit with frozen bytes, private-value/whitespace/parent/path checks and clean tree; no push, database, paid call, secret payload or questions.",
+            "sha256": "c981e2b98757d0f207b53b8e4a42bbde4a9ea16bb5f10f3747239fa15286edc4",
+            "context_sources": [
+              "docs/tickets/SBS-040-python-security-runtime.md",
+              "infra/python-runtime-source.json",
+              "infra/release-object-evidence.json",
+              "infra/deployment-preparation.json",
+              "docs/security/SECURITY_REVIEW.md"
+            ],
+            "status": "afk",
+            "approval": null,
+            "afk_session": "AFK-SESSION-001"
+          },
+          "prior_approval": null,
+          "prior_decision": null
         }
       ],
-      "skip_reason": "SBS-027 explicit provisional AFK no-fixes selection: no new substantial actionable local security defect substantiated; empty selected_findings. Historical remedies remain passing."
+      "skip_reason": "The settled scoped security review selected no new actionable finding; no extra source remediation is justified."
     },
     {
       "id": "12-handoff",
@@ -3010,36 +3155,42 @@ This checklist records local work. Human approvals and unresolved external check
       "gate": null,
       "status": "complete_local",
       "prompt": {
-        "text": "Finish the owner-requested Python Docker fix with a concise honest handoff. Explain that no Docker task is required from the owner: earlier waiting for a prebuilt image was unnecessarily restrictive, and actual Python3.11.18 is now built from authenticated official source/recipe, tested and privately uploaded. Confirm exact COMMIT_PLAN staging, frozen raw/blob hashes, known private-byte/whitespace/path/parent checks and authorized local ticket-prefixed commit; verify clean index/worktree and source-fresh release receipt. Report144 packaged backend checks/32 SQL exclusions,165 Node checks, six frontend HTTP/13 object scenarios plus nonroot/TLS/native/pip/compiler cleanup. Do not claim public paid deployment: actual Run services0/Scheduler jobs0; fresh finite hosted AI/CRM authority and real provider-origin/callback/visitor consent still unresolved. Preserve owner local fake app/data/keys, no database, secret payload, paid call, scanner upload or Git push. AFK quality/security conclusions are provisional. Store actual commit identity in ignored receipt without editing tracked files to embed their own hash.",
-        "sha256": "9169562d6f9fa8788f04fdebd2b0b2c5bf61df8d9bb69cf93c444fcc5976f843",
+        "text": "Finalize the successful paid NO DATABASE deployment under SBS-039/041. Reconcile current README/AGENTS/blueprint/lessons/runbook/reports/tickets and actual nonsecret resource/source/runtime receipts. State public URL, API flags false/false/true for database/fake/paid, private API/worker, one authenticated minute Scheduler204, prepared six-source/23-vector pack, five completed real AI attempts and actual RAG/PDF/quote/explicit booking/refresh/reset. The disposable no-HubSpot test guest was reset to provider choice; native visitor OAuth/export was not tested. AI spending controls are owner-confirmed on the provider dashboard, no app aggregate budget/expiry and do not ask again. Do not turn historical finite fixtures into a current gate. Record scoped quality/security no further findings, package/native/Linux evidence and honest native/high-load/owner personal limits. Generate exact file-level COMMIT_PLAN from actual current paths; freeze raw/blob hashes, scan private variants/whitespace, stage explicit files and commit under current owner permission. Verify exact parent/path/blob coverage, clean index/worktree and release fingerprint. Store commit identity ignored, no tracked self-hash edit or Git push. Keep public demo tab deliverable and include saved proof with concise URL/commit final. No SQL, local app/env/key/state change, CAPTCHA solving or unconsented visitor account work.",
+        "sha256": "8d77d1a7c66c76c8123c8d955d8c92adf3ebec26961343d27b241ea68ad5d794",
         "context_sources": [
-          "docs/tickets/SBS-040-python-security-runtime.md",
-          "infra/python-runtime-source.json",
-          "infra/release-object-evidence.json",
+          "docs/tickets/SBS-041-hosted-provider-policy.md",
+          "docs/tickets/SBS-039-paid-deployment.md",
           "infra/deployment-preparation.json",
-          "docs/tickets/COMMIT_PLAN.md",
-          "AGENTS.md"
+          "infra/release-object-evidence.json",
+          "infra/python-runtime-source.json",
+          "AGENTS.md",
+          "docs/tickets/COMMIT_PLAN.md"
         ],
         "status": "afk",
         "approval": null,
         "afk_session": "AFK-SESSION-001"
       },
       "evidence": [
-        "docs/tickets/SBS-040-python-security-runtime.md",
-        "infra/python-runtime-source.json",
-        "infra/release-object-evidence.json",
+        "docs/tickets/SBS-041-hosted-provider-policy.md",
+        "docs/tickets/SBS-039-paid-deployment.md",
         "infra/deployment-preparation.json",
-        ".runtime/sbs040-container-tests.log",
-        ".runtime/sbs040-runtime-readback.json",
-        ".runtime/sbs040-linux.log",
-        ".runtime/sbs040-node.log",
+        "infra/release-object-evidence.json",
+        "infra/python-runtime-source.json",
+        "AGENTS.md",
+        ".runtime/sbs041-backend.log",
+        ".runtime/sbs041-container-tests.log",
+        ".runtime/sbs041-linux-settled.log",
+        ".runtime/sbs041-provider-evidence.log",
+        ".runtime/sbs041-scheduler-verification.log",
+        ".runtime/sbs041-live-rag.png",
+        ".runtime/sbs041-live-booking.png",
         "docs/tickets/COMMIT_PLAN.md"
       ],
       "blockers": [
         {
           "kind": "external",
-          "reason": "Fresh specific finite hosted AI/CRM authority is still required; prior hosted AI grant expired24 October and CRM allowance is unset. Actual provider origins/Turnstile hostname/HubSpot callback and visitor consent remain unverified. No public paid deployment is claimed.",
-          "reference": "docs/tickets/SBS-039-paid-deployment.md"
+          "reason": "Optional native visitor HubSpot install/export/cleanup/uninstall and owner personal/high-load acceptance were not exercised. Public paid no-database deployment and scoped functional verification are complete; no AI budget/expiry blocker remains.",
+          "reference": "docs/tickets/SBS-041-hosted-provider-policy.md"
         }
       ],
       "approval": null,
@@ -3180,6 +3331,36 @@ This checklist records local work. Human approvals and unresolved external check
             "approval": null,
             "afk_session": "AFK-SESSION-001"
           },
+          "prior_approval": null,
+          "prior_decision": null
+        },
+        {
+          "reopened_at": "2026-10-26T15:16:53+00:00",
+          "reason": "Owner renews paid deployment request after Python fix, handles Turnstile and supplies HubSpot developer CLI authentication/callback update authority. Record actual private deployment and completed callback, retaining the finite hosted-policy gate.",
+          "prior_status": "complete_local",
+          "prior_prompt": {
+            "text": "Finish the owner-requested Python Docker fix with a concise honest handoff. Explain that no Docker task is required from the owner: earlier waiting for a prebuilt image was unnecessarily restrictive, and actual Python3.11.18 is now built from authenticated official source/recipe, tested and privately uploaded. Confirm exact COMMIT_PLAN staging, frozen raw/blob hashes, known private-byte/whitespace/path/parent checks and authorized local ticket-prefixed commit; verify clean index/worktree and source-fresh release receipt. Report144 packaged backend checks/32 SQL exclusions,165 Node checks, six frontend HTTP/13 object scenarios plus nonroot/TLS/native/pip/compiler cleanup. Do not claim public paid deployment: actual Run services0/Scheduler jobs0; fresh finite hosted AI/CRM authority and real provider-origin/callback/visitor consent still unresolved. Preserve owner local fake app/data/keys, no database, secret payload, paid call, scanner upload or Git push. AFK quality/security conclusions are provisional. Store actual commit identity in ignored receipt without editing tracked files to embed their own hash.",
+            "sha256": "9169562d6f9fa8788f04fdebd2b0b2c5bf61df8d9bb69cf93c444fcc5976f843",
+            "context_sources": [
+              "docs/tickets/SBS-040-python-security-runtime.md",
+              "infra/python-runtime-source.json",
+              "infra/release-object-evidence.json",
+              "infra/deployment-preparation.json",
+              "docs/tickets/COMMIT_PLAN.md",
+              "AGENTS.md"
+            ],
+            "status": "afk",
+            "approval": null,
+            "afk_session": "AFK-SESSION-001"
+          },
+          "prior_approval": null,
+          "prior_decision": null
+        },
+        {
+          "reopened_at": "2026-10-26T15:37:21+00:00",
+          "reason": "Owner explicitly confirms dashboard AI spending controls and instructs us to ignore app AI budgets/expiry and stop asking. Implement distinct normal hosted accounting, validate and continue paid deployment.",
+          "prior_status": "pending",
+          "prior_prompt": null,
           "prior_approval": null,
           "prior_decision": null
         }

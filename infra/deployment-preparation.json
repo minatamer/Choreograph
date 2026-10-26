@@ -1,12 +1,13 @@
 {
-  "verified_at": "2026-10-26T14:18:38.022576+00:00",
+  "verified_at": "2026-10-26T16:21:51.790240+00:00",
   "project_id": "choreograph-512713",
   "region": "europe-west1",
   "authorization": "Owner26 October2026 direct deployment with paid access request; SBS-039",
   "enabled_required_apis": [
     "run.googleapis.com",
     "artifactregistry.googleapis.com",
-    "cloudscheduler.googleapis.com"
+    "cloudscheduler.googleapis.com",
+    "cloudresourcemanager.googleapis.com"
   ],
   "private_image_repository": {
     "format": "DOCKER",
@@ -16,22 +17,25 @@
   "scheduler_identity": {
     "email": "choreograph-scheduler@choreograph-512713.iam.gserviceaccount.com"
   },
-  "application_deployed": false,
-  "paid_runtime_enabled": false,
+  "application_deployed": true,
+  "paid_runtime_enabled": true,
   "new_secret_versions": 0,
   "secret_payload_reads": 0,
   "database_resources_created": 0,
   "tasks_resources_created": 0,
-  "provider_calls": 0,
-  "remaining_blockers": [
-    "New specific finite hosted AI/CRM spending authority; expired acceptance allowance is not renewed",
-    "Real frontend origin, Turnstile hostname and HubSpot callback/visitor consent verification"
-  ],
+  "provider_calls": {
+    "openai": 5,
+    "visitor_hubspot_crm": 0,
+    "hubspot_developer_control_plane": "Authorized existing-project metadata, validation, upload and deploy performed through CLI",
+    "openai_scope": "Five completed visitor-scoped calls: three interpretation, one query embedding and one evidence response; read-only receipt job made zero additional calls.",
+    "cloudflare": "Normal hosted human verification succeeded; exact Siteverify request count was not collected."
+  },
+  "remaining_blockers": [],
   "prepared_frontend_image": {
-    "source_sha256": "d2f4f9314ab9c53fe9eacf8f6c65192b3d6b85845563a06f443735122442bc30",
-    "local_image": "sha256:d777f237d728263d0dbca9c5ec9a999728a4bcd89a52ac0e1de7d2806d7acec2",
-    "remote_tag": "europe-west1-docker.pkg.dev/choreograph-512713/choreograph/frontend:sbs040-d2f4f9314ab9",
-    "registry_digest": "sha256:d777f237d728263d0dbca9c5ec9a999728a4bcd89a52ac0e1de7d2806d7acec2",
+    "source_sha256": "076998a808af9c7ddee697cf990a4877bac9dffea6b1483dcdd8191983b2f5ac",
+    "local_image": "sha256:e62915cf2800945d41d2d2e13ac5780de8a5c6a2931bd5f31fd6c22dcf2e42df",
+    "remote_tag": "europe-west1-docker.pkg.dev/choreograph-512713/choreograph/frontend:sbs041-076998a808af",
+    "registry_digest": "sha256:e62915cf2800945d41d2d2e13ac5780de8a5c6a2931bd5f31fd6c22dcf2e42df",
     "repository_public_members": false,
     "anonymous_manifest_status": 401,
     "temporary_auth_config_removed": true
@@ -40,16 +44,19 @@
     "DATABASE_ENABLED": false,
     "FAKE_MODE": false,
     "PAID_DEMO_ENABLED": true,
-    "application_ready": false,
-    "backend_image": "europe-west1-docker.pkg.dev/choreograph-512713/choreograph/backend@sha256:d0509343532ff443a5dcf53d62f2a55a72d029699b10c650e2f69094f33ebb03",
-    "frontend_origin": null,
-    "reason": "Patched backend verified and privately uploaded. Fresh finite hosted provider policy and discovered/registered origin are still pending; intended paid settings are not applied."
+    "application_ready": true,
+    "backend_image": "europe-west1-docker.pkg.dev/choreograph-512713/choreograph/backend@sha256:f3a8476ec9c0d7bc12e39ade088eb223b4204b5bc0197d523564c267bce337ba",
+    "frontend_origin": "https://choreograph-frontend-ue3m7uxqdq-ew.a.run.app",
+    "reason": "Paid dashboard-controlled API and public frontend are live; real browser RAG/quote/reviewed booking/refresh/reset and authenticated Scheduler204 verified.",
+    "manifests_ready": true,
+    "manifest_directory": ".runtime/sbs039-deploy",
+    "manifests_applied": true
   },
   "prepared_backend_image": {
-    "source_sha256": "d2f4f9314ab9c53fe9eacf8f6c65192b3d6b85845563a06f443735122442bc30",
-    "local_image": "sha256:d0509343532ff443a5dcf53d62f2a55a72d029699b10c650e2f69094f33ebb03",
-    "remote_tag": "europe-west1-docker.pkg.dev/choreograph-512713/choreograph/backend:sbs040-d2f4f9314ab9",
-    "registry_digest": "sha256:d0509343532ff443a5dcf53d62f2a55a72d029699b10c650e2f69094f33ebb03",
+    "source_sha256": "076998a808af9c7ddee697cf990a4877bac9dffea6b1483dcdd8191983b2f5ac",
+    "local_image": "sha256:f3a8476ec9c0d7bc12e39ade088eb223b4204b5bc0197d523564c267bce337ba",
+    "remote_tag": "europe-west1-docker.pkg.dev/choreograph-512713/choreograph/backend:sbs041-076998a808af",
+    "registry_digest": "sha256:f3a8476ec9c0d7bc12e39ade088eb223b4204b5bc0197d523564c267bce337ba",
     "repository_public_members": false,
     "anonymous_manifest_status": 401,
     "temporary_auth_config_removed": true
@@ -59,5 +66,294 @@
     "security_finding": "SEC-038-02",
     "resolved": true,
     "build": "Verified signed/hash-pinned official Docker recipe source build; not an official prebuilt Python image"
-  }
+  },
+  "bootstrap_services": {
+    "frontend": {
+      "name": "choreograph-frontend",
+      "url": "https://choreograph-frontend-ue3m7uxqdq-ew.a.run.app",
+      "revision": "choreograph-frontend-00001-5rl",
+      "bootstrap_only": true,
+      "public": false,
+      "service_account": "choreograph-frontend@choreograph-512713.iam.gserviceaccount.com"
+    },
+    "api": {
+      "name": "choreograph-api",
+      "url": "https://choreograph-api-ue3m7uxqdq-ew.a.run.app",
+      "revision": "choreograph-api-00001-98h",
+      "bootstrap_only": true,
+      "public": false,
+      "service_account": "choreograph-api@choreograph-512713.iam.gserviceaccount.com"
+    },
+    "worker": {
+      "name": "choreograph-worker",
+      "url": "https://choreograph-worker-ue3m7uxqdq-ew.a.run.app",
+      "revision": "choreograph-worker-00001-2pc",
+      "bootstrap_only": true,
+      "public": false,
+      "service_account": "choreograph-worker@choreograph-512713.iam.gserviceaccount.com"
+    }
+  },
+  "request_log_privacy": {
+    "name": "choreograph-request-privacy",
+    "filter": "resource.type=\"cloud_run_revision\" AND LOG_ID(\"run.googleapis.com/requests\") AND (resource.labels.service_name=\"choreograph-frontend\" OR resource.labels.service_name=\"choreograph-api\" OR resource.labels.service_name=\"choreograph-worker\")",
+    "disabled": false,
+    "sinks_reviewed": [
+      "_Default",
+      "_Required"
+    ],
+    "scope": "Exclude only these services run request logs from project default retention; preserve fixed app diagnostics and required audit logs"
+  },
+  "private_invokers": {
+    "choreograph-api": "serviceAccount:choreograph-frontend@choreograph-512713.iam.gserviceaccount.com",
+    "choreograph-worker": "serviceAccount:choreograph-scheduler@choreograph-512713.iam.gserviceaccount.com"
+  },
+  "bootstrap_http_checks": {
+    "frontend": {
+      "anonymous_health": 403,
+      "authenticated_health": 200,
+      "bootstrap_only": true,
+      "guest_route": 404
+    },
+    "api": {
+      "anonymous_health": 403,
+      "authenticated_health": 200,
+      "bootstrap_only": true,
+      "guest_route": 404
+    },
+    "worker": {
+      "anonymous_health": 403,
+      "authenticated_health": 200,
+      "bootstrap_only": true,
+      "guest_route": 404
+    }
+  },
+  "provider_setup": {
+    "turnstile_hostname": "choreograph-frontend-ue3m7uxqdq-ew.a.run.app",
+    "hubspot_redirect_uri": "https://choreograph-frontend-ue3m7uxqdq-ew.a.run.app/auth/hubspot/callback",
+    "dashboard_registration_verified": false,
+    "owner_handling_turnstile": true,
+    "hubspot_cli_authentication_pending": false,
+    "turnstile_owner_confirmed": true,
+    "turnstile_live_verification_performed": true,
+    "hubspot_callback_registered": true,
+    "visitor_oauth_or_siteverify_acceptance_performed": true,
+    "visitor_oauth_acceptance_performed": false,
+    "registration_evidence": "Turnstile dashboard setup owner-confirmed and actual public verification passed; HubSpot existing app callback deployed/read back through CLI."
+  },
+  "hubspot_callback": {
+    "registered": true,
+    "project_id": 345312604,
+    "project_name": "choreograph-front-desk",
+    "app_id": 58593051,
+    "app_uid": "choreograph-front-desk",
+    "deployed_build_id": 3,
+    "platform_version": "2026.09",
+    "redirect_urls": [
+      "http://localhost:45860/auth/hubspot/callback",
+      "https://choreograph-frontend-ue3m7uxqdq-ew.a.run.app/auth/hubspot/callback"
+    ],
+    "existing_app_identity_preserved": true,
+    "scopes_changed": false,
+    "new_credentials_created": false,
+    "visitor_install_or_export_performed": false,
+    "cli_validation_errors": 0,
+    "cli_validation_warnings": 0
+  },
+  "ai_spending_control": {
+    "authority": "Owner26 October2026 direct instruction: dashboard limits are correctly set; ignore app AI budgets and stop asking",
+    "provider_dashboard_owner_confirmed": true,
+    "dashboard_independently_inspected": false,
+    "app_aggregate_ai_budget": false,
+    "app_ai_expiry": false,
+    "policy": "owner_dashboard_hosted",
+    "per_request_verification_accounting_safeguards_preserved": true
+  },
+  "application_services": {
+    "api": {
+      "name": "choreograph-api",
+      "url": "https://choreograph-api-ue3m7uxqdq-ew.a.run.app",
+      "revision": "choreograph-api-00002-tgh",
+      "image": "europe-west1-docker.pkg.dev/choreograph-512713/choreograph/backend@sha256:f3a8476ec9c0d7bc12e39ade088eb223b4204b5bc0197d523564c267bce337ba",
+      "private": true,
+      "health": {
+        "status": "ok",
+        "profile": "live"
+      },
+      "anonymous_health": 403
+    },
+    "worker": {
+      "name": "choreograph-worker",
+      "url": "https://choreograph-worker-ue3m7uxqdq-ew.a.run.app",
+      "revision": "choreograph-worker-00002-4tw",
+      "image": "europe-west1-docker.pkg.dev/choreograph-512713/choreograph/backend@sha256:f3a8476ec9c0d7bc12e39ade088eb223b4204b5bc0197d523564c267bce337ba",
+      "private": true,
+      "health": {
+        "status": "ok"
+      },
+      "anonymous_health": 403
+    },
+    "frontend": {
+      "name": "choreograph-frontend",
+      "url": "https://choreograph-frontend-ue3m7uxqdq-ew.a.run.app",
+      "revision": "choreograph-frontend-00002-4zx",
+      "image": "europe-west1-docker.pkg.dev/choreograph-512713/choreograph/frontend@sha256:e62915cf2800945d41d2d2e13ac5780de8a5c6a2931bd5f31fd6c22dcf2e42df",
+      "private": false,
+      "health": {
+        "status": "ok",
+        "authenticated_homepage": 200,
+        "internal_startup_probe": "/healthz"
+      },
+      "public_homepage_status": 200
+    }
+  },
+  "frontend_private_bridge_check": {
+    "status": 200,
+    "turnstile_enabled": true,
+    "required": true,
+    "site_key_present": true
+  },
+  "public_frontend_enabled": true,
+  "deployment_complete": true,
+  "secret_payload_reads_scope": "Operator CLI/tooling only; runtime Secret Manager references supply values directly to assigned server identities.",
+  "hosted_readiness": {
+    "job": "choreograph-ready-2d7097b8331b",
+    "execution_succeeded": true,
+    "report": {
+      "configuration": {
+        "ai": "live",
+        "ai_policy": "owner_dashboard_hosted",
+        "code": "CONFIGURATION_VALID",
+        "crm": "hubspot",
+        "crm_policy": "hosted_visitor",
+        "ready": true
+      },
+      "corpus": {
+        "code": "CORPUS_HASHES_VERIFIED",
+        "ready": true,
+        "source_slots": 6
+      },
+      "database": {
+        "code": "OBJECT_STORAGE_READY",
+        "extensions": {},
+        "head": "object-v1",
+        "profile_id": "43374774b0d3a0b95aac6083cd3d2720ed3d4eb809e540c32af27eb9628fdd9b",
+        "ready": true,
+        "ready_slots": 6
+      },
+      "missing": [],
+      "mode": "read-only-readiness",
+      "provider_calls": 0
+    },
+    "job_removed": true
+  },
+  "public_http_checks": {
+    "/": {
+      "status": 200,
+      "security_headers": true
+    },
+    "/demo": {
+      "status": 200,
+      "security_headers": true
+    },
+    "/demo/workspace": {
+      "status": 200,
+      "security_headers": true
+    },
+    "/vendor/pdfjs/pdf.worker.min.mjs": {
+      "status": 200,
+      "security_headers": true
+    },
+    "/fonts/OFL.txt": {
+      "status": 200,
+      "security_headers": true
+    },
+    "verification": {
+      "status": 200,
+      "enabled": true,
+      "required": true,
+      "site_key_present": true
+    },
+    "session_without_proof": {
+      "status": 403,
+      "code": "VERIFICATION_REQUIRED"
+    },
+    "session_without_origin": {
+      "status": 403,
+      "code": "ORIGIN_REQUIRED"
+    },
+    "api_anonymous": {
+      "status": 403
+    },
+    "worker_anonymous": {
+      "status": 403
+    }
+  },
+  "public_url": "https://choreograph-frontend-ue3m7uxqdq-ew.a.run.app",
+  "scheduler": {
+    "name": "projects/choreograph-512713/locations/europe-west1/jobs/choreograph-maintenance",
+    "schedule": "* * * * *",
+    "attempt_deadline": "240s",
+    "http_uri": "https://choreograph-worker-ue3m7uxqdq-ew.a.run.app/internal/maintenance",
+    "oidc_service_account": "choreograph-scheduler@choreograph-512713.iam.gserviceaccount.com",
+    "audience": "https://choreograph-worker-ue3m7uxqdq-ew.a.run.app",
+    "manual_run_requested": true,
+    "successful_execution_verified": true,
+    "last_attempt_time": "2026-10-26T15:58:05.188532Z",
+    "completion_status": "OK",
+    "completion_type": "type.googleapis.com/google.cloud.scheduler.logging.AttemptFinished",
+    "debug_info": "URL_CRAWLED. Original HTTP response code number = 204"
+  },
+  "hosted_provider_receipt": {
+    "job": "choreograph-evidence-e08d22a1b973",
+    "execution_succeeded": true,
+    "report": {
+      "all_visitor_scoped": true,
+      "app_aggregate_budget_fields_present": false,
+      "app_expiry": null,
+      "attempts": 5,
+      "mode": "read-only-provider-receipt",
+      "models": [
+        "gpt-6.1-sol",
+        "text-embedding-3-small"
+      ],
+      "phases": {
+        "evidence": 1,
+        "interpret": 3,
+        "query_embed": 1
+      },
+      "policy": "owner_dashboard_hosted",
+      "provider_calls": 0,
+      "provider_references_present": false,
+      "states": {
+        "completed": 5
+      }
+    },
+    "job_removed": true
+  },
+  "browser_acceptance": {
+    "path": "Continue without HubSpot",
+    "turnstile_passed": true,
+    "tour_default_and_skip_welcome": true,
+    "sourced_answer_and_original_pdf": true,
+    "quote": {
+      "service": "Regular cleaning",
+      "bedrooms": 2,
+      "cents": 8000,
+      "duration_minutes": 120
+    },
+    "explicit_review_and_booking": true,
+    "refresh_restored_booking": true,
+    "skipped_crm_no_records_sent": true,
+    "reset_completed_to_provider_choice": true,
+    "agent_test_workspace_cleanup": "Reset completed via normal shared dialog and fresh verification; no native CRM records existed.",
+    "screenshots": [
+      ".runtime/sbs041-live-rag.png",
+      ".runtime/sbs041-live-booking.png"
+    ]
+  },
+  "acceptance_limits": [
+    "Native visitor HubSpot install/export/cleanup/uninstall was not exercised; developer CLI access is not visitor consent.",
+    "This functional pass does not establish high-concurrency GCS load capacity or owner personal visual/security acceptance.",
+    "Provider dashboard spending settings are owner-confirmed, not independently inspected."
+  ]
 }

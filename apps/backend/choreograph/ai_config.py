@@ -4,7 +4,7 @@ from collections.abc import Mapping
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
 
-from .ai_admission import EmbeddingSpec, GrantSpec, ManualGrantSpec
+from .ai_admission import DashboardGrantSpec, EmbeddingSpec, GrantSpec, ManualGrantSpec
 from .tokenizers import ASSET_DIRECTORY, RESPONSE_COUNTER
 
 POSITIVE_GRANT_FIELDS = (
@@ -55,15 +55,19 @@ def _positive(values, name):
 
 
 def parse_live_ai(values: Mapping[str, str], *, now: datetime | None = None,
-                  manual_grant_id: str | None = None) -> LiveAIConfig:
+                  manual_grant_id: str | None = None,
+                  dashboard_grant_id: str | None = None) -> LiveAIConfig:
     """Require every spending input; flags or inherited SDK defaults are insufficient."""
     if values.get('PAID_DEMO_ENABLED') != 'true':
         raise ValueError('LIVE_AI_NOT_ENABLED')
     key = values.get('OPENAI_API_KEY', '')
     if not isinstance(key, str) or not key or len(key) > 512 or any(char.isspace() for char in key):
         raise ValueError('LIVE_AI_CONFIGURATION_INVALID')
+    if manual_grant_id is not None and dashboard_grant_id is not None:
+        raise ValueError('AI_POLICY_CONFLICT')
+    accounting_id = dashboard_grant_id if dashboard_grant_id is not None else manual_grant_id
     expires = None
-    if manual_grant_id is None:
+    if accounting_id is None:
         try:
             expires = datetime.fromisoformat(values.get('CHOREOGRAPH_AI_EXPIRES_AT', '').replace('Z', '+00:00'))
             if expires.tzinfo is None or expires.utcoffset() is None:
@@ -88,10 +92,11 @@ def parse_live_ai(values: Mapping[str, str], *, now: datetime | None = None,
         dimensions=_positive(values, 'CHOREOGRAPH_AI_EMBEDDING_DIMENSIONS'),
         chunker=chunker, tokenizer=embedding_tokenizer,
     )
-    if manual_grant_id is not None:
+    if accounting_id is not None:
         rates={name:_positive(values,'CHOREOGRAPH_AI_'+name.upper()) for name in
                ('response_input_rate','response_output_rate','embedding_input_rate')}
-        grant=ManualGrantSpec(manual_grant_id,response_model,embedding_model,**rates)
+        policy = DashboardGrantSpec if dashboard_grant_id is not None else ManualGrantSpec
+        grant=policy(accounting_id,response_model,embedding_model,**rates)
     else:
         limits = {name: _positive(values, 'CHOREOGRAPH_AI_' + name.upper())
                   for name in POSITIVE_GRANT_FIELDS}

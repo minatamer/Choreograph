@@ -93,6 +93,12 @@ class ManualGrantSpec:
 
 
 @dataclass(frozen=True)
+class DashboardGrantSpec(ManualGrantSpec):
+    """Hosted visitor accounting; the owner controls spending on the dashboard."""
+    policy: str = field(default='owner_dashboard_hosted', init=False)
+
+
+@dataclass(frozen=True)
 class AttemptScope:
     workspace_id: UUID | None
     generation: int
@@ -253,6 +259,8 @@ class Admission:
         now=self.clock()
         manual=isinstance(self.grant,ManualGrantSpec)
         if manual and self.scope.workspace_id is None:
+            if isinstance(self.grant,DashboardGrantSpec):
+                raise DomainError('AI_WORKSPACE_REQUIRED','Assistance requires an active demo.',403)
             raise DomainError('AI_MANUAL_WORKSPACE_REQUIRED','Manual assistance requires an active demo.',403)
         if self.grant.expires_at is not None and self.grant.expires_at<=now:
             raise DomainError('AI_BUDGET_EXPIRED','Live assistance is unavailable.',429)

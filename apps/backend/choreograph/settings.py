@@ -42,7 +42,9 @@ class Settings:
     @classmethod
     def parse(cls, values: Mapping[str, str], *, testing: bool = False,
               local_manual_grant_id: str | None = None,
-              local_manual_crm_grant_id: str | None = None) -> "Settings":
+              local_manual_crm_grant_id: str | None = None,
+              hosted_ai_grant_id: str | None = None,
+              hosted_crm_grant_id: str | None = None) -> "Settings":
         values=runtime_values(values)
         database_value=values.get('DATABASE_ENABLED','false')
         if database_value not in {'true','false'}:
@@ -83,6 +85,11 @@ class Settings:
         crm_provider=values.get('CHOREOGRAPH_CRM_PROVIDER','fake' if testing else 'disabled')
         if crm_provider not in {'fake','hubspot','disabled'}:raise ValueError('CRM_CONFIGURATION_INVALID')
         if testing and crm_provider=='hubspot':raise ValueError('TEST_PROVIDER_FORBIDDEN')
+        if hosted_ai_grant_id is not None or hosted_crm_grant_id is not None:
+            from .runtime_config import HOSTED_FRONTEND_ORIGIN
+            if (testing or database_enabled or origin != HOSTED_FRONTEND_ORIGIN or
+                    local_manual_grant_id is not None or local_manual_crm_grant_id is not None):
+                raise ValueError('HOSTED_POLICY_TARGET_INVALID')
         if (not database_enabled and (local_manual_grant_id or local_manual_crm_grant_id) and
                 origin not in {'http://localhost:45860','http://127.0.0.1:45860'}):
             raise ValueError('LOCAL_MANUAL_STORAGE_ONLY')
@@ -90,8 +97,10 @@ class Settings:
             require_local_manual_target(db,origin,'LOCAL_MANUAL_AI_ONLY')
         if database_enabled and local_manual_crm_grant_id is not None and crm_provider=='hubspot':
             require_local_manual_target(db,origin,'LOCAL_MANUAL_CRM_ONLY')
-        live_ai = parse_live_ai(values,manual_grant_id=local_manual_grant_id) if profile == 'live' else None
-        live_crm=parse_live_crm(values,origin,manual_grant_id=local_manual_crm_grant_id) if crm_provider=='hubspot' else None
+        live_ai = parse_live_ai(values,manual_grant_id=local_manual_grant_id,
+                               dashboard_grant_id=hosted_ai_grant_id) if profile == 'live' else None
+        live_crm=parse_live_crm(values,origin,manual_grant_id=local_manual_crm_grant_id,
+                               hosted_grant_id=hosted_crm_grant_id) if crm_provider=='hubspot' else None
         return cls(db, origin, secret, key, profile, testing, live_ai, crm_provider, live_crm,turnstile_configuration(values,origin),database_enabled)
 
 
@@ -117,5 +126,7 @@ def load_environment(values: Mapping[str, str] | None = None) -> Settings:
         values = os.environ
     from dataclasses import replace
 
-    from .runtime_config import configuration_values
-    return replace(Settings.parse(configuration_values(values)),object_backend='gcs')
+    from .runtime_config import configuration_values, container_policy_ids
+    ai_id,crm_id=container_policy_ids(values)
+    return replace(Settings.parse(configuration_values(values),hosted_ai_grant_id=ai_id,
+                                  hosted_crm_grant_id=crm_id),object_backend='gcs')

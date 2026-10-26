@@ -35,7 +35,8 @@ def test_oauth_app_manifest_matches_real_transport_and_contains_no_paid_feature_
     config=manifest['config'];auth=config['auth']
     assert config['distribution']=='marketplace' and auth['type']=='oauth'
     assert set(auth['requiredScopes'])==set(SCOPES)
-    assert auth['redirectUrls']==['http://localhost:45860/auth/hubspot/callback']
+    assert auth['redirectUrls']==['http://localhost:45860/auth/hubspot/callback',
+        'https://choreograph-frontend-ue3m7uxqdq-ew.a.run.app/auth/hubspot/callback']
     assert not auth['optionalScopes'] and not auth['conditionallyRequiredScopes']
     assert not any(term in scope for scope in auth['requiredScopes'] for term in ('marketing','payment','workflow','custom','currencies.write'))
     assert not any(key in json.dumps(manifest).lower() for key in ('clientsecret','client_secret','access_token','refresh_token'))

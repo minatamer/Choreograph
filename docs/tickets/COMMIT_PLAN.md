@@ -1182,3 +1182,43 @@ Latest direct owner authority: fix the Python Docker blocker directly; earlier s
 | `scripts/release-smoke.mjs` | Allow a finite45minute image build for the measured cold source build; preserve actual acceptance behavior. |
 
 Validation is recorded in the owning ticket: fake/injected no-SQL tests, relevant regressions and current release fingerprint. Freeze raw hashes/Git blob IDs after this plan; stage explicit literal paths, scan actual staged/committed bytes for known local private-value variants/private-key patterns, check whitespace/parent/path coverage, then require a clean worktree/index. Store actual commit identities in ignored `.runtime/sbs-040-checkpoint-result.json`; do not edit a tracked file afterward just to embed its own hash. Existing runtime/private env/state remain outside Git.
+
+
+## SBS-041 paid no-database deployment checkpoint —26 October2026
+Latest direct owner authority: stage/commit current work, deploy with paid access and verify; use authenticated gcloud and update HubSpot callback. The owner explicitly confirms provider-dashboard spending controls and asks to ignore app AI budget limits and document this so no cap/expiry is repeatedly requested. Distinct normal hosted policies implement that decision while retaining per-request/verification/source/session/consent/replay/unknown safeguards. Public paid no-database deployment and real RAG/quote/reviewed booking/refresh/reset plus Scheduler204 are verified. Five AI calls completed; disposable skipped-CRM test guest reset; no native visitor HubSpot export/consent fabricated.
+
+Baseline `5bad3cb7666724cf6395ab07df96aa1e1823510a`; empty index; one cohesive commit covering exactly27 current files. No database/Tasks/WorkerPool, owner local service/env/key/state change or Git push. Current source/image inputs are already tested and fingerprint-fresh; later doc/receipt edits change no deployed application bytes. AFK quality/security decisions remain provisional; optional native account/high-load/owner personal acceptance is unperformed.
+
+### Commit: SBS-041: deploy dashboard-controlled paid demo without a database
+
+| Exact file | Allocation |
+| --- | --- |
+| `AGENTS.md` | Persist latest paid no-database deployment and owner dashboard authority; no app AI cap/expiry questions; retain protected boundaries. |
+| `README.md` | Publish actual paid no-database URL, functional evidence and dashboard decision while preserving dated snapshots. |
+| `apps/backend/choreograph/ai_admission.py` | Label distinct dashboard-hosted durable accounting and reject unscoped operator admission; preserve per-request/replay/unknown safeguards. |
+| `apps/backend/choreograph/ai_config.py` | Explicitly parse hosted dashboard policy separately from local manual/finite policy without app aggregate/expiry fields. |
+| `apps/backend/choreograph/crm_admission.py` | Label normal hosted visitor accounting separately; preserve durable counters/app binding and bounded operations. |
+| `apps/backend/choreograph/crm_config.py` | Select explicit hosted visitor accounting without renewing finite automated allowances or local manual policy. |
+| `apps/backend/choreograph/readiness.py` | Report explicitly selected hosted policies without demanding obsolete aggregate fields or making provider calls. |
+| `apps/backend/choreograph/release.py` | Pass actual code-owned hosted policy identities into container readiness. |
+| `apps/backend/choreograph/runtime_config.py` | Bind distinct stable hosted policy identities to the actual no-database frontend origin without new env switches/model changes. |
+| `apps/backend/choreograph/settings.py` | Select hosted policies only through container loading with origin/storage/test/mixed-policy guards; local manual path unchanged. |
+| `apps/backend/tests/test_hosted_policy.py` | Prove hosted/finite/local separation, target/key/mode guards, persisted no-ceiling accounting, replay/operator denial and CRM app binding with isolated objects. |
+| `apps/backend/tests/test_hubspot_readiness.py` | Update existing exact callback contract for retained localhost plus deployed URL; scope/no-secret guards unchanged. |
+| `docs/CHOREOGRAPH.md` | Reconcile actual paid no-database status and canonical AFK build/quality/security/handoff ledger; no fictitious owner acceptance. |
+| `docs/CHOREOGRAPH_OVERVIEW.html` | Reflect completed paid no-database/Scheduler path and actual functional evidence in the existing offline overview. |
+| `docs/LESSONS_LEARNED.md` | Record owner dashboard supersession, distinct consent/evidence boundaries, reserved Cloud Run health path and bounded worker acceptance lesson. |
+| `docs/security/SECURITY_OVERVIEW.html` | Reflect scoped deployed public/private security and current packaged evidence without claiming native account/full audit acceptance. |
+| `docs/security/SECURITY_REVIEW.md` | Record dashboard authority and settled scoped policy/deployment delta verdict; preserve dated all-dependency audit limits. |
+| `docs/tickets/COMMIT_PLAN.md` | Own this exact file-level staging allocation and frozen-byte/private/whitespace/parent/path checks. |
+| `docs/tickets/README.md` | Mark SBS-039/041 completed with actual deployed checks and honest native visitor account limits. |
+| `docs/tickets/SBS-039-paid-deployment.md` | Own actual cloud/HubSpot callback/public/private/Scheduler actions and successful paid no-database acceptance; supersede dated policy blocker. |
+| `docs/tickets/SBS-041-hosted-provider-policy.md` | Own direct dashboard authority, prior file allocation, implementation/fixture findings, all actual tests/deployment evidence and scoped final review. |
+| `infra/README.md` | Reconcile current deployed operations, actual URL/index/provider policy and native acceptance limits; preserve labelled historical SQL/test records. |
+| `infra/deployment-preparation.json` | Record exact services/revisions/images/IAM/privacy/secret refs/HubSpot callback/Scheduler/public-browser/provider results and removed temporary jobs, with no secrets. |
+| `infra/hubspot/app-hsmeta.json` | Add only actual deployed callback beside localhost to the existing app; preserve UID/scopes/credentials. |
+| `infra/python-runtime-source.json` | Update actual verified source/image and150 packaged checks while retaining immutable signed runtime provenance. |
+| `infra/release-object-evidence.json` | Record current source-fresh private Linux images and six HTTP/13 encrypted-object acceptance scenarios. |
+| `scripts/object-linux-smoke.py` | Correct independently reproduced UUID-order fixture assumption with two bounded separate-process wakeups and exactly one export; worker remains one job/tick. |
+
+Validation:394 SQL-forbidden portable backend checks/162 SQL exclusions;150 network-disabled packaged checks/32 SQL exclusions; configured Ruff; Python3.11.18 native/pip/TLS/nonroot/compiler cleanup; source-fresh six-HTTP/13-object Linux acceptance; actual public/private/security-negative/browser/Scheduler checks. New relative links, HTML scripts/IDs, example parsing and known private-value scan pass. Prior165 Node checks remain the unchanged frontend-source baseline. Freeze raw hashes/Git blobs after this plan, stage exact literal paths, scan actual staged/committed bytes for private variants/key patterns, check whitespace/parent/path coverage, then require clean worktree/index. Actual commit identity belongs in ignored `.runtime/sbs041-checkpoint-result.json`; no tracked self-hash edit.

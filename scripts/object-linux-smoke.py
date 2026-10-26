@@ -103,8 +103,11 @@ engine.dispose()
         result=subprocess.run([sys.executable,'-c',child],input=json.dumps({'root':private,'values':values,'now':at.isoformat()}),
             text=True,capture_output=True,timeout=30,check=True,cwd=root/'apps/backend')
         return json.loads(result.stdout)
-    delivered=process(now)
-    assert delivered['calls'].count('upsert-contacts')==1 and delivered['calls'].count('upsert-deals')==1
+    # Booking and rescheduling leave two intents. A bounded sweep may retire
+    # the stale revision first; UUID ordering must not decide test success.
+    delivered=[]
+    for _ in range(2):delivered.extend(process(now)['calls'])
+    assert delivered.count('upsert-contacts')==1 and delivered.count('upsert-deals')==1
     restarted=ObjectEngine(FileObjects(private),key)
     with TestClient(create_app(settings,restarted,lambda:now,crm_provider=FakeHubSpot(restarted)),
                     cookies={'choreograph_guest':token}) as client:

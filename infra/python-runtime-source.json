@@ -29,8 +29,8 @@
     "tls_verification_enabled": true,
     "license_included": true
   },
-  "release_source_sha256": "d2f4f9314ab9c53fe9eacf8f6c65192b3d6b85845563a06f443735122442bc30",
-  "backend_image": "sha256:d0509343532ff443a5dcf53d62f2a55a72d029699b10c650e2f69094f33ebb03",
-  "packaged_backend_tests": 144,
+  "release_source_sha256": "076998a808af9c7ddee697cf990a4877bac9dffea6b1483dcdd8191983b2f5ac",
+  "backend_image": "sha256:f3a8476ec9c0d7bc12e39ade088eb223b4204b5bc0197d523564c267bce337ba",
+  "packaged_backend_tests": 150,
   "postgres_tests_excluded": 32
 }

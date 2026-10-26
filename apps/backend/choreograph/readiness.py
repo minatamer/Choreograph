@@ -104,7 +104,8 @@ def database_status(engine,spec):
         return {'ready':False,'code':'DATABASE_CHECK_FAILED'}
 
 
-def report(values,*,engine=None,local_manual_grant_id=None,local_manual_crm_grant_id=None):
+def report(values,*,engine=None,local_manual_grant_id=None,local_manual_crm_grant_id=None,
+           hosted_ai_grant_id=None,hosted_crm_grant_id=None):
     try:values=runtime_values(configuration_values(values))
     except ValueError as error:return {'mode':'read-only-readiness','provider_calls':0,'missing':[],
         'configuration':{'ready':False,'code':str(error)},'corpus':corpus_status(),
@@ -113,22 +114,26 @@ def report(values,*,engine=None,local_manual_grant_id=None,local_manual_crm_gran
     if values.get('FAKE_MODE','true')=='false':
         finite_fields={'CHOREOGRAPH_AI_GRANT_ID','CHOREOGRAPH_AI_EXPIRES_AT',
             *('CHOREOGRAPH_AI_'+name.upper() for name in POSITIVE_GRANT_FIELDS if not name.endswith('_rate'))}
-        required.extend(name for name in AI_FIELDS if local_manual_grant_id is None or name not in finite_fields)
+        required.extend(name for name in AI_FIELDS if
+                        (local_manual_grant_id is None and hosted_ai_grant_id is None) or name not in finite_fields)
     if values.get('CHOREOGRAPH_CRM_PROVIDER','fake')=='hubspot':
-        required.extend(name for name in CRM_FIELDS if local_manual_crm_grant_id is None or name not in CRM_FINITE_FIELDS)
+        required.extend(name for name in CRM_FIELDS if
+                        (local_manual_crm_grant_id is None and hosted_crm_grant_id is None) or name not in CRM_FINITE_FIELDS)
     missing=[name for name in required if not values.get(name)]
     result={'mode':'read-only-readiness','provider_calls':0,'missing':missing,'configuration':{'ready':False},
             'corpus':corpus_status(),'database':{'ready':False,'code':'DATABASE_NOT_CHECKED'}}
     try:settings=Settings.parse(values,local_manual_grant_id=local_manual_grant_id,
-                                local_manual_crm_grant_id=local_manual_crm_grant_id)
+                                local_manual_crm_grant_id=local_manual_crm_grant_id,
+                                hosted_ai_grant_id=hosted_ai_grant_id,hosted_crm_grant_id=hosted_crm_grant_id)
     except ValueError as error:
         result['configuration']['code']=str(error) if re.fullmatch(r'[A-Z][A-Z_]{2,79}',str(error)) else 'CONFIGURATION_INVALID'
         return result
     result['configuration']={'ready':True,'code':'CONFIGURATION_VALID','ai':settings.profile,'crm':settings.crm_provider}
     if settings.live_crm:
-        result['configuration']['crm_policy']='local_owner_manual' if local_manual_crm_grant_id is not None else 'finite'
+        result['configuration']['crm_policy']=('hosted_visitor' if hosted_crm_grant_id is not None else
+            'local_owner_manual' if local_manual_crm_grant_id is not None else 'finite')
     if settings.live_ai:
-        result['configuration']['ai_policy']='local_owner_manual' if local_manual_grant_id is not None else 'finite'
+        result['configuration']['ai_policy']=getattr(settings.live_ai.grant,'policy','finite')
     if settings.live_ai:
         from .tokenizers import RESPONSE_COUNTER, verified_bytes
         try:
