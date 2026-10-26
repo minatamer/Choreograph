@@ -1,0 +1,54 @@
+{
+  "status": "CANONICAL_ONLY_HOSTED_PROMOTION_VERIFIED",
+  "mode": "canonical-only-promotion",
+  "apply": true,
+  "provider_calls": 0,
+  "profile_id": "43374774b0d3a0b95aac6083cd3d2720ed3d4eb809e540c32af27eb9628fdd9b",
+  "sources": 6,
+  "chunks": 23,
+  "dimensions": 1536,
+  "snapshot_sha256": "8c68f1e7c821624a51024787ea297a253d05d1dc6f54d241c67e4f99745a4084",
+  "private_tables_exported": 0,
+  "source_hashes": {
+    "service": "c714fd41913179defba22244375b6eef4d5522ca496db4c13d77897851f04c94",
+    "preparation": "7a5a8140022290aab7cd103bef2c9d66a933025eb46bcaa77dfcd615fc40cc90",
+    "access": "1ab297d0b2c61433adb5c9f9c43553fbf5aa11b0a39d036a18aca4a03efa43ca",
+    "changes": "c2bd1d940a7d954667aac2b7bb0be722e37c26067abbbf3685e95c7716360c1d",
+    "safety": "22c5f3cb9a7d3fccdf341e3af7a319ce93e4e351cba54c21452c0386de88083d",
+    "questions": "b54909eacca52103497053a79eed8500c112a0473f51f1a170dc72a5d3c8c422"
+  },
+  "outcome": "promoted",
+  "bucket": "choreograph-512713-private-state",
+  "state_generation": "1793009495627025",
+  "canonical_sha256": "1b880f84c20e4c7642b38beb55bf58bcd20e92601c904b2880b104bfe3a42815",
+  "key_secret_version": "1",
+  "fresh_engine_readback": true,
+  "source_snapshot_writes": 0,
+  "tables": {
+    "embedding_profiles": 1,
+    "document_versions": 6,
+    "knowledge_chunks": 23
+  },
+  "cloudObjectMetadata": [
+    {
+      "name": "canonical/1b880f84c20e4c7642b38beb55bf58bcd20e92601c904b2880b104bfe3a42815",
+      "generation": "1793009495493973",
+      "size": "219064"
+    },
+    {
+      "name": "state/v1",
+      "generation": "1793009495627025",
+      "size": "460"
+    }
+  ],
+  "anonymousCanonicalHttpStatus": 401,
+  "applicationDeployed": false,
+  "databaseEnabled": false,
+  "limits": [
+    "Existing prepared vectors were reused; no new model/embedding call.",
+    "No workspace, session, consent, OAuth token, booking, account, outbox, grant or usage ledger was copied.",
+    "Only deployment CHOREOGRAPH_TOKEN_KEY version1 was read into memory to encrypt the new store.",
+    "No provider/bridge secret payload was read; no secret bytes were printed or saved.",
+    "Deployed application/provider acceptance and active hosted policy remain separate."
+  ]
+}

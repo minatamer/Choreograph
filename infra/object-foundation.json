@@ -1,0 +1,58 @@
+{
+  "status": "PRIVATE_BUCKET_AND_RUNTIME_IAM_CONFIGURED",
+  "permissions": [
+    "storage.buckets.get",
+    "storage.objects.get",
+    "storage.objects.create",
+    "storage.objects.delete"
+  ],
+  "project": "choreograph-512713",
+  "softDeleteSeconds": 0,
+  "versioning": false,
+  "private": true,
+  "uniformIam": true,
+  "userManagedKeys": 0,
+  "retentionPolicy": false,
+  "projectWideRuntimeBindings": 0,
+  "githubAccessConfigured": false,
+  "bucket": "choreograph-512713-private-state",
+  "objectsUploaded": 0,
+  "role": "projects/choreograph-512713/roles/choreographPrivateObjects",
+  "secretValuesAccessed": 0,
+  "applicationDeployed": false,
+  "region": "europe-west1",
+  "databaseEnabled": false,
+  "bucketBindingsVerified": true,
+  "completedAt": "2026-10-26T09:54:18.3002045Z",
+  "runtimeAccounts": [
+    "choreograph-api@choreograph-512713.iam.gserviceaccount.com",
+    "choreograph-worker@choreograph-512713.iam.gserviceaccount.com"
+  ],
+  "secretVersionMetadata": {
+    "CHOREOGRAPH_BRIDGE_SECRET": "1",
+    "CHOREOGRAPH_TOKEN_KEY": "1",
+    "OPENAI_API_KEY": "1",
+    "TURNSTILE_SITE_KEY": "1",
+    "TURNSTILE_SECRET_KEY": "1",
+    "CHOREOGRAPH_HUBSPOT_CLIENT_SECRET": "1"
+  },
+  "verification": {
+    "anonymousMetadataHttpStatus": 401,
+    "bucketEmpty": true,
+    "actualBucketPolicyReadback": true,
+    "exactRoleAndBucketBindingsReadback": true
+  },
+  "limits": [
+    "Cloud Run services are not deployed or attached to these identities yet.",
+    "No secret value was read; enabled version metadata does not validate secret contents.",
+    "Secret accessor bindings, Tasks/Scheduler identities and service invocation remain separate setup.",
+    "Canonical data has not been uploaded. No local guest/account/outbox/ledger state was transferred.",
+    "Bucket policy and IAM readback are not an impersonated or deployed runtime data-plane test.",
+    "No database, GitHub federation, user-managed key, paid provider call, image push or Git write."
+  ],
+  "subsequentSetup": {
+    "canonicalDataReceipt": "canonical-promotion.json",
+    "runtimeSecretAccessReceipt": "runtime-secret-access.json",
+    "note": "Empty-bucket/no-secret-accessor observations above are the original SBS-034 checkpoint; SBS-035 subsequently initialized canonical data and secret bindings."
+  }
+}
