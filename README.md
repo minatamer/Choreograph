@@ -4,7 +4,7 @@
 
 A portfolio demo of an AI front desk for service businesses. Explore **Juniper Cleaning**, a fictional home-cleaning company, through document-backed answers, exact quotes, reviewed bookings and a shared business calendar.
 
-**[Try the live demo](https://choreograph-frontend-ue3m7uxqdq-ew.a.run.app)** · [Architecture](docs/CHOREOGRAPH.md) · [Security review](docs/security/SECURITY_REVIEW.md)
+**[Try the live demo](https://trychoreograph.com)** · [Architecture](docs/CHOREOGRAPH.md) · [Security review](docs/security/SECURITY_REVIEW.md)
 
 ## Explore the demo
 
@@ -56,9 +56,9 @@ Setup creates ignored `apps/backend/.env.local` and `apps/frontend/.env.local` f
 
 ## Verification and current scope
 
-The hosted demo was deployed on **26 October 2026**. Actual acceptance covered human verification, a sourced answer and original PDF preview, a USD80 two-bedroom quote, explicit booking, refresh persistence, reset and authenticated Scheduler delivery. [Deployment evidence](docs/tickets/SBS-041-hosted-provider-policy.md) records the tested scope and limitations.
+The hosted demo was deployed on **26 October 2026** and moved to **trychoreograph.com on 4 November 2026**. Original hosted acceptance covered human verification, a sourced answer and original PDF preview, a USD80 two-bedroom quote, explicit booking, refresh persistence, reset and authenticated Scheduler delivery. [Deployment evidence](docs/tickets/SBS-041-hosted-provider-policy.md) records the tested scope and limitations.
 
-A local review on **4 November 2026** passed 394 portable backend tests with SQL connections forbidden (162 SQL cases excluded), 165 Node checks, frontend types, Ruff and dependency compatibility. The Windows launcher check was verified separately with process-inspection access. The current application fingerprint matches the verified Linux release; [release evidence](infra/release-object-evidence.json) records its images and acceptance checks.
+A baseline local review on **4 November 2026** passed 394 portable backend tests with SQL connections forbidden (162 SQL cases excluded). The [domain cutover](docs/tickets/SBS-042-custom-domain.md) adds 45 focused backend checks, 167 Node checks, frontend types, Ruff and fresh isolated Linux/packaged HTTP acceptance. The current application fingerprint matches the verified [Linux release](infra/release-object-evidence.json); [domain evidence](infra/domain-cutover.json) records the actual hosted rollout and its acceptance scope.
 
 The [quality review](docs/tickets/SBS-037-final-quality.md) and [security audit](docs/tickets/SBS-038-final-security.md) are committed. Both identified runtime security findings were resolved, including the [Python runtime fix](docs/tickets/SBS-040-python-security-runtime.md). Detailed findings and dated advisory coverage remain in the [security report](docs/security/SECURITY_REVIEW.md).
 

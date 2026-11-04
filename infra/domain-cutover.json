@@ -1,6 +1,6 @@
 {
   "ticket": "SBS-042",
-  "status": "prepared-waiting-for-certificate",
+  "status": "complete",
   "project_id": "choreograph-512713",
   "region": "europe-west1",
   "canonical_origin": "https://trychoreograph.com",
@@ -205,31 +205,19 @@
   ],
   "certificate_conditions": [
     {
-      "lastTransitionTime": "2026-11-04T12:01:22.371552Z",
-      "message": "Waiting for certificate provisioning. You must configure your DNS records for certificate issuance to begin.",
-      "reason": "CertificatePending",
-      "status": "Unknown",
+      "lastTransitionTime": "2026-11-04T12:57:48.421155Z",
+      "status": "True",
       "type": "Ready"
     },
     {
-      "lastTransitionTime": "2026-11-04T12:02:22.631025Z",
-      "message": "Certificate issuance pending.",
-      "reason": "CertificatePending",
-      "status": "Unknown",
+      "lastTransitionTime": "2026-11-04T12:57:48.421155Z",
+      "status": "True",
       "type": "CertificateProvisioned"
     },
     {
       "lastTransitionTime": "2026-11-04T12:01:22.371552Z",
       "status": "True",
       "type": "DomainRoutable"
-    },
-    {
-      "lastTransitionTime": "2026-11-04T12:17:46.864805Z",
-      "message": "System will retry after 05:00 from lastTransitionTime for polling interval",
-      "reason": "WaitingForOperation",
-      "severity": "Info",
-      "status": "True",
-      "type": "Retry"
     }
   ],
   "turnstile_hostname_added": "owner-confirmed",
@@ -238,7 +226,7 @@
   "visitor_hubspot_calls": 0,
   "accounting_ids_preserved": true,
   "database_or_tasks_created": false,
-  "verified_at": "2026-11-04T12:22:12.431462+00:00",
+  "verified_at": "2026-11-04T13:09:46.575279+00:00",
   "uploaded_images": {
     "backend": {
       "tag": "europe-west1-docker.pkg.dev/choreograph-512713/choreograph/backend:sbs042-2bd2321debb8",
@@ -282,5 +270,278 @@
     "redirect_uri": "https://trychoreograph.com/auth/hubspot/callback",
     "identity_and_scopes_preserved": true,
     "native_visitor_acceptance": false
-  }
+  },
+  "after": {
+    "worker": {
+      "revision": "choreograph-worker-00003-pf5",
+      "url": "https://choreograph-worker-ue3m7uxqdq-ew.a.run.app",
+      "image": "europe-west1-docker.pkg.dev/choreograph-512713/choreograph/backend@sha256:4c8974361bec3783a89bb91ffb21da83baac88b01d4adddee8f489781b195c46",
+      "identity": "choreograph-worker@choreograph-512713.iam.gserviceaccount.com",
+      "env": {
+        "DATABASE_ENABLED": "false",
+        "FAKE_MODE": "true",
+        "PAID_DEMO_ENABLED": "false",
+        "CHOREOGRAPH_ORIGIN": "https://trychoreograph.com",
+        "CHOREOGRAPH_BRIDGE_SECRET": {
+          "secret_reference": {
+            "key": "1",
+            "name": "CHOREOGRAPH_BRIDGE_SECRET"
+          }
+        },
+        "CHOREOGRAPH_TOKEN_KEY": {
+          "secret_reference": {
+            "key": "1",
+            "name": "CHOREOGRAPH_TOKEN_KEY"
+          }
+        },
+        "CHOREOGRAPH_WORKER_AUDIENCE": "https://choreograph-worker-ue3m7uxqdq-ew.a.run.app",
+        "CHOREOGRAPH_MAINTENANCE_SERVICE_EMAIL": "choreograph-scheduler@choreograph-512713.iam.gserviceaccount.com",
+        "CHOREOGRAPH_HUBSPOT_CLIENT_SECRET": {
+          "secret_reference": {
+            "key": "1",
+            "name": "CHOREOGRAPH_HUBSPOT_CLIENT_SECRET"
+          }
+        }
+      },
+      "service_annotations": {
+        "run.googleapis.com/ingress": "all",
+        "run.googleapis.com/maxScale": "1"
+      },
+      "revision_annotations": {
+        "run.googleapis.com/execution-environment": "gen2"
+      },
+      "invokers": [
+        {
+          "members": [
+            "serviceAccount:choreograph-scheduler@choreograph-512713.iam.gserviceaccount.com"
+          ],
+          "role": "roles/run.invoker"
+        }
+      ]
+    },
+    "api": {
+      "revision": "choreograph-api-00003-p89",
+      "url": "https://choreograph-api-ue3m7uxqdq-ew.a.run.app",
+      "image": "europe-west1-docker.pkg.dev/choreograph-512713/choreograph/backend@sha256:4c8974361bec3783a89bb91ffb21da83baac88b01d4adddee8f489781b195c46",
+      "identity": "choreograph-api@choreograph-512713.iam.gserviceaccount.com",
+      "env": {
+        "DATABASE_ENABLED": "false",
+        "FAKE_MODE": "false",
+        "PAID_DEMO_ENABLED": "true",
+        "CHOREOGRAPH_ORIGIN": "https://trychoreograph.com",
+        "CHOREOGRAPH_BRIDGE_SECRET": {
+          "secret_reference": {
+            "key": "1",
+            "name": "CHOREOGRAPH_BRIDGE_SECRET"
+          }
+        },
+        "CHOREOGRAPH_TOKEN_KEY": {
+          "secret_reference": {
+            "key": "1",
+            "name": "CHOREOGRAPH_TOKEN_KEY"
+          }
+        },
+        "OPENAI_API_KEY": {
+          "secret_reference": {
+            "key": "1",
+            "name": "OPENAI_API_KEY"
+          }
+        },
+        "TURNSTILE_SITE_KEY": {
+          "secret_reference": {
+            "key": "1",
+            "name": "TURNSTILE_SITE_KEY"
+          }
+        },
+        "TURNSTILE_SECRET_KEY": {
+          "secret_reference": {
+            "key": "1",
+            "name": "TURNSTILE_SECRET_KEY"
+          }
+        },
+        "CHOREOGRAPH_HUBSPOT_CLIENT_SECRET": {
+          "secret_reference": {
+            "key": "1",
+            "name": "CHOREOGRAPH_HUBSPOT_CLIENT_SECRET"
+          }
+        }
+      },
+      "service_annotations": {
+        "run.googleapis.com/ingress": "all",
+        "run.googleapis.com/maxScale": "2"
+      },
+      "revision_annotations": {
+        "autoscaling.knative.dev/maxScale": "20",
+        "run.googleapis.com/execution-environment": "gen2"
+      },
+      "invokers": [
+        {
+          "members": [
+            "serviceAccount:choreograph-frontend@choreograph-512713.iam.gserviceaccount.com"
+          ],
+          "role": "roles/run.invoker"
+        }
+      ]
+    },
+    "frontend": {
+      "revision": "choreograph-frontend-00003-rgg",
+      "url": "https://choreograph-frontend-ue3m7uxqdq-ew.a.run.app",
+      "image": "europe-west1-docker.pkg.dev/choreograph-512713/choreograph/frontend@sha256:703cf85a5a1aba8c82a0ba9010717e028fb6bd1809f4c07d8fac224ef412bd25",
+      "identity": "choreograph-frontend@choreograph-512713.iam.gserviceaccount.com",
+      "env": {
+        "NEXT_TELEMETRY_DISABLED": "1",
+        "CHOREOGRAPH_ORIGIN": "https://trychoreograph.com",
+        "CHOREOGRAPH_API_URL": "https://choreograph-api-ue3m7uxqdq-ew.a.run.app",
+        "CHOREOGRAPH_API_AUTH": "google",
+        "CHOREOGRAPH_API_AUDIENCE": "https://choreograph-api-ue3m7uxqdq-ew.a.run.app",
+        "CHOREOGRAPH_BRIDGE_SECRET": {
+          "secret_reference": {
+            "key": "1",
+            "name": "CHOREOGRAPH_BRIDGE_SECRET"
+          }
+        }
+      },
+      "service_annotations": {
+        "run.googleapis.com/ingress": "all",
+        "run.googleapis.com/maxScale": "2"
+      },
+      "revision_annotations": {
+        "run.googleapis.com/execution-environment": "gen2"
+      },
+      "invokers": [
+        {
+          "members": [
+            "allUsers"
+          ],
+          "role": "roles/run.invoker"
+        }
+      ]
+    }
+  },
+  "public_http_checks": {
+    "/": {
+      "status": 200,
+      "tls_verified": true,
+      "security_headers": true
+    },
+    "/demo": {
+      "status": 200,
+      "tls_verified": true,
+      "security_headers": true
+    },
+    "/demo/workspace": {
+      "status": 200,
+      "tls_verified": true,
+      "security_headers": true
+    },
+    "/vendor/pdfjs/pdf.worker.min.mjs": {
+      "status": 200,
+      "tls_verified": true,
+      "security_headers": true
+    },
+    "/fonts/OFL.txt": {
+      "status": 200,
+      "tls_verified": true,
+      "security_headers": true
+    },
+    "/favicon.ico": {
+      "status": 200,
+      "tls_verified": true,
+      "security_headers": true
+    },
+    "old-host/": {
+      "status": 308,
+      "canonical_location": true,
+      "sets_cookie": false
+    },
+    "old-host/?from=portfolio": {
+      "status": 308,
+      "canonical_location": true,
+      "sets_cookie": false
+    },
+    "old-host/demo": {
+      "status": 308,
+      "canonical_location": true,
+      "sets_cookie": false
+    },
+    "old-host/demo/workspace?view=business": {
+      "status": 308,
+      "canonical_location": true,
+      "sets_cookie": false
+    },
+    "old-host-protected-route": {
+      "status": 404,
+      "redirected": false
+    },
+    "verification": {
+      "status": 200,
+      "enabled": true,
+      "required": true,
+      "site_key_present": true
+    },
+    "session-missing-origin": {
+      "status": 403,
+      "code": "ORIGIN_REQUIRED"
+    },
+    "session-wrong-origin": {
+      "status": 403,
+      "code": "ORIGIN_REQUIRED"
+    },
+    "session-correct-origin-no-proof": {
+      "status": 403,
+      "code": "VERIFICATION_REQUIRED"
+    },
+    "api-anonymous": {
+      "status": 403
+    },
+    "api-authenticated-health": {
+      "status": 200,
+      "health": {
+        "status": "ok",
+        "profile": "live"
+      }
+    },
+    "worker-anonymous": {
+      "status": 403
+    },
+    "worker-authenticated-health": {
+      "status": 200,
+      "health": {
+        "status": "ok"
+      }
+    }
+  },
+  "scheduler": {
+    "state": "ENABLED",
+    "schedule": "* * * * *",
+    "internal_audience_preserved": true,
+    "last_attempt": "2026-11-04T13:03:06.953845Z",
+    "status": {},
+    "successful_execution_verified": true,
+    "completion_at": "2026-11-04T13:05:25.480828086Z",
+    "completion_status": "OK",
+    "debug_info": "URL_CRAWLED. Original HTTP response code number = 204",
+    "post_rollout_execution_verified": true
+  },
+  "browser_acceptance": {
+    "entry_verified": true,
+    "new_domain": "https://trychoreograph.com",
+    "path": "Continue without HubSpot",
+    "normal_human_verification_completed": true,
+    "challenge_solving": false,
+    "default_tour_and_skip_welcome": true,
+    "live_guide_question": "What cleaning supplies do you use?",
+    "sourced_answer": true,
+    "source": "Service Guide, page 2, v1.1",
+    "original_pdf_and_yellow_highlight": true,
+    "refresh_preserved_conversation_and_citation": true,
+    "tour_did_not_repeat_on_refresh": true,
+    "reviewed_booking_or_crm_export": false,
+    "native_hubspot_account_acceptance": false,
+    "provider_request_count_collected": false,
+    "cleanup": "Only a synthetic no-CRM question was created; no booking or external records. The scoped guest follows the existing automatic expiry/cleanup policy.",
+    "source_preview_screenshot": ".runtime/sbs042-live-source.jpg"
+  },
+  "provider_counter_scope": "Agent-driven cutover verification only; normal scheduled delivery is not included in provider-call counts.",
+  "rollout_completed_at": "2026-11-04T13:02:40.192130Z"
 }
