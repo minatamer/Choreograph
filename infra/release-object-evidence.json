@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "verifiedAt": "2026-10-26T15:35:15.642Z",
+  "verifiedAt": "2026-11-04T12:14:06.058Z",
   "profile": "local-isolated-linux-objects-fake",
   "source": {
-    "sha256": "076998a808af9c7ddee697cf990a4877bac9dffea6b1483dcdd8191983b2f5ac",
+    "sha256": "2bd2321debb84d6a8cf78fd7baa92c8da0a4758a80b152dd7d25b97a2860adaa",
     "files": {
       ".dockerignore": "08021c3b3d792b7052e38eabc3796ec030ebc21dcd6cff1119f5a01b129e7d25",
       "apps/backend/alembic.ini": "e7955a0ffb9c32a9c5067d7885ee9197328f17a4a12fb4a5bb556c2b85763aa2",
@@ -43,7 +43,7 @@
       "apps/backend/choreograph/readiness.py": "84a316bbe665641bc274c1a5389556c451cdcb0601ff55a03e287e7a5c941f95",
       "apps/backend/choreograph/release.py": "47c98d487cab35c9c5e999113849af61d4420086da6fd28fc3815161809782e9",
       "apps/backend/choreograph/runner.py": "e44deaa8b63d75d630a77a4d8c0519f0e5eca574cfbb203e0efb58b4c295d46d",
-      "apps/backend/choreograph/runtime_config.py": "c93f312b5acf23205660f92b610ae9d4d4bbd1e66455fd06ce7cc15e162e9ba7",
+      "apps/backend/choreograph/runtime_config.py": "7d3cb1c8d8a1ee8f90ca3270b92cba2aa592546310c9f6852230f5467b0953e5",
       "apps/backend/choreograph/server.py": "8c90600e81e4259e11b2163ab95a98b3bffb382b69cf0fde1f0d835116053f8e",
       "apps/backend/choreograph/service.py": "7210f2a92911011fd6fe34a14c2604bdd70d84273397eae62fa2ee8f8a146015",
       "apps/backend/choreograph/sessions.py": "9f743cd47f507e3b74541d6631dc1418595cb724303ab02282d63f0fa0079693",
@@ -165,7 +165,7 @@
       "apps/frontend/lib/turnstile.ts": "1b6ab5dc71dca2a88a8fb515d6712df684200ab92248ac1e6c2af872e092a08d",
       "apps/frontend/lib/workspace-navigation.ts": "0ffe201ddf56babffca9241ee4340b2d1776594643fa12fa5d3723f18a64e716",
       "apps/frontend/next-env.d.ts": "0f70629890b72a0a82e91972cc032c04b658b26c265373cb711cf576bfbf8fcc",
-      "apps/frontend/next.config.ts": "7d952a6c1ba7afae7db9344f2017a4f879c89ffbb35a3f354cd0a986d0b9ecbb",
+      "apps/frontend/next.config.ts": "b9bb3abb2513f859342f9020bcec2fc00946f3c87b1a81fecc34a0b717d0595e",
       "apps/frontend/package.json": "dbddd82998276abdca264bdf4876b920061dd8102eb032151859486e89921778",
       "apps/frontend/public/apple-touch-icon.png": "42cda55467efb03c5f12236a740da77ac80d9db700572ee93fdd1eae0e830a30",
       "apps/frontend/public/brand/hubspot-logo.svg": "883ba903494b9eb6ae8886f05362eb3914ce1c97a9d347aa50d1fd3464f35893",
@@ -210,15 +210,15 @@
   },
   "images": {
     "frontend": {
-      "tag": "choreograph-frontend:choreograph-release-36d5d3e8-15ac-4bb6-8de9-57d274c0daad",
-      "id": "sha256:e62915cf2800945d41d2d2e13ac5780de8a5c6a2931bd5f31fd6c22dcf2e42df",
+      "tag": "choreograph-frontend:choreograph-release-69efd50d-170a-43da-ac83-ae2af9087c15",
+      "id": "sha256:703cf85a5a1aba8c82a0ba9010717e028fb6bd1809f4c07d8fac224ef412bd25",
       "os": "linux",
       "architecture": "amd64",
       "user": "node"
     },
     "backend": {
-      "tag": "choreograph-api:choreograph-release-36d5d3e8-15ac-4bb6-8de9-57d274c0daad",
-      "id": "sha256:f3a8476ec9c0d7bc12e39ade088eb223b4204b5bc0197d523564c267bce337ba",
+      "tag": "choreograph-api:choreograph-release-69efd50d-170a-43da-ac83-ae2af9087c15",
+      "id": "sha256:4c8974361bec3783a89bb91ffb21da83baac88b01d4adddee8f489781b195c46",
       "os": "linux",
       "architecture": "amd64",
       "user": "10001:10001"

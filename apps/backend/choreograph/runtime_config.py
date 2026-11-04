@@ -26,7 +26,9 @@ LOCAL_MANUAL_CRM_GRANT_ID = 'owner-manual-hubspot-local-20261025'
 # Owner26 October2026: normal hosted AI spending is controlled on the provider
 # dashboard. These stable accounting identities have no app aggregate budget or
 # expiry; historical finite test grants below are not renewed or repurposed.
-HOSTED_FRONTEND_ORIGIN = 'https://choreograph-frontend-ue3m7uxqdq-ew.a.run.app'
+# Owner4 November2026: canonical custom domain; retired run.app is not an
+# alternate provider-policy origin. Durable accounting identities stay unchanged.
+HOSTED_FRONTEND_ORIGIN = 'https://trychoreograph.com'
 HOSTED_DASHBOARD_AI_GRANT_ID = 'owner-dashboard-hosted-20261026'
 HOSTED_VISITOR_CRM_GRANT_ID = 'visitor-hubspot-hosted-20261026'
 

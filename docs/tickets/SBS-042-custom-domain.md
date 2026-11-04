@@ -1,0 +1,38 @@
+# SBS-042 — Connect the purchased portfolio domain
+
+Status: Code/release/callback prepared; waiting for Google-managed HTTPS before traffic cutover — 4 November 2026. Baseline `74f1045`.
+
+## Authority and scope
+
+The owner purchased `trychoreograph.com`, completed Google ownership verification, added the exact Cloud Run A/AAAA records, and confirmed the hostname was added to the existing Turnstile widget. They authorize the explained domain cutover, validation, deployment, local staging/commit and Git push. The existing public frontend mapping was created and read back; all eight DNS records resolve correctly. HTTPS was initially certificate-pending.
+
+Use `https://trychoreograph.com` as the exact canonical hosted origin. Keep the three existing Cloud Run services, private API/worker invocation, stable internal run.app audiences, numeric secret versions, encrypted GCS store/prepared index, Scheduler and durable accounting IDs. Preserve local services/env/keys/state, all mode choices, human checks, source/session/CSRF/revision/consent/retry/unknown protections and the README thumbnail. No database, Tasks, new account, visitor CRM consent/export, secret payload read, CAPTCHA solving or repository visibility change.
+
+## File allocation and implementation
+
+- `apps/backend/choreograph/runtime_config.py`: replace the one fixed hosted origin; retain exact matching and existing hosted/local/finite accounting identities.
+- `apps/backend/tests/test_hosted_policy.py`, `apps/backend/tests/test_hubspot_readiness.py`: explicitly reject the retired run.app origin while exercising the new domain through the existing hosted settings/accounting checks; update the exact callback-list invariant while preserving existing identities/scopes.
+- `apps/frontend/next.config.ts`, `scripts/entry-origin.test.mjs`: redirect only the retired frontend host's landing/demo pages to the canonical domain, preserving path/query, keeping API/callback routes and local development behavior intact; use the existing Next redirects facility and its response test helper.
+- `infra/hubspot/app-hsmeta.json`: add the exact new HTTPS callback to the existing app; preserve localhost, old callback, app identity and scopes. Validate/upload/deploy the existing HubSpot developer project through its installed CLI. This is developer metadata, not visitor authorization.
+- `infra/release-object-evidence.json`, new `infra/domain-cutover.json`: record actual source-fresh isolated Linux acceptance and nonsecret deployed image/revision/DNS/TLS/callback/HTTP evidence. Keep dated October deployment receipts historical.
+- `README.md`, `AGENTS.md`, `docs/CHOREOGRAPH.md`, `docs/tickets/README.md`, `infra/README.md`: update current domain/status and link the owning evidence. Preserve historical results and the README cover. No new parallel main document.
+
+## Validation and acceptance
+
+1. Run the focused hosted-origin/settings/verification checks using synthetic settings and no SQL/provider calls; run the existing relevant Node redirect/bridge/callback checks and frontend types. Review the settled diff read-only against this ticket and repair material issues only.
+2. Build the existing pinned production images and run `node scripts/release-smoke.mjs --objects-only` with only isolated resources, no host ports, SQL or paid providers. Verify the current source fingerprint and reuse the patched runtime/dependency layers.
+3. Upload verified immutable images privately using temporary Docker authentication; do not expose registry credentials or read secret payloads. Capture current service metadata/rollback revisions without copying plain credential values.
+4. Once TLS is valid and callback registration is deployed, update only the necessary existing Cloud Run images and `CHOREOGRAPH_ORIGIN` settings. Keep frontend IAM/public status, private API/worker roles/audiences, min/max instances, secrets, state and Scheduler topology unchanged.
+5. Verify certificate-validated root/demo/workspace/assets, old-host landing/demo redirects, unchanged protected routes, real bridge verification configuration, correct Origin/proof rejection and anonymous API/worker denial. Inspect the normal new-domain browser entry/human-check flow; never solve a challenge or invent native HubSpot acceptance. Any minimal real AI check uses the existing owner-dashboard hosted policy, retains accounting and is reported separately from injected tests.
+6. Record actual outcomes and unresolved external conditions. Stage only ticket-owned paths, review staged privacy/whitespace/thumbnail/source evidence, commit with `SBS-042` and push the authorized branch to its existing origin. Verify remote commit identity. No visibility change or unrelated Git operation.
+
+## Results
+
+- Exact hosted policy now selects only `https://trychoreograph.com`; retired run.app is explicitly rejected. Durable AI/CRM accounting IDs and all other provider/storage/session rules are unchanged. The existing Next redirects facility moves only old-host landing/demo pages, preserving path/query; API/callback routes, untrusted hosts and local setup are excluded.
+- 45 focused backend checks pass with all SQL connections trapped; 10 SQL cases excluded. The initial run caught the old exact callback-list expectation, which was updated to require the new callback plus both existing entries. 167 Node checks, frontend types and full configured Ruff pass. No new dependency or broad audit was introduced.
+- Fresh object-only Linux release passes six production HTTP checks and 13 object lifecycle scenarios, with non-root images, no SQL/provider calls/host ports and owned-resource cleanup. Source `2bd2321debb84d6a8cf78fd7baa92c8da0a4758a80b152dd7d25b97a2860adaa` matches the 201-input receipt. Separate network-disabled packaged checks verify the actual backend's hosted origin/Turnstile/callback policy, four real production HTTP redirects and a protected API route that is not redirected; their owned container was removed.
+- Both exact images were uploaded/read back in the existing private registry; anonymous manifests are denied and temporary Docker authentication was removed. Existing revisions, secret references, identities, origins and private invokers are captured as nonsecret rollback evidence in `infra/domain-cutover.json`.
+- HubSpot project345312604/app58593051 was confirmed still deployed at build3. That build's download returned only project configuration, so the exact original uploaded manifest was recovered from its recorded SHA256 and independently matched to the committed manifest, with unchanged remote build/app identity. Only the new callback differs. Validation has no errors/warnings; build4 was uploaded with auto-deploy deferred, then deployed/read back under the same app identity/scopes. No visitor account or CRM record was touched.
+- Public Cloudflare and Google DNS resolve all four A/four AAAA records to Google's supplied values; no CAA restriction was returned. HTTP routes to HTTPS. Google currently reports `CertificatePending`, so the existing working application has not been switched to the new origin yet. HTTPS, new revisions and live new-domain acceptance remain unverified until issuance.
+
+Read-only pre-deployment validation: **Meets the implemented local scope; no actionable findings.** Checked exact-origin/retired-host rejection, preserved accounting/consent/native app identity, route/query/protected-path behavior and current production-source evidence. The validated preparation belongs to the authorized Git checkpoint; hosted cutover/acceptance remains pending. This review does not claim a repeated dependency audit or native visitor HubSpot acceptance.

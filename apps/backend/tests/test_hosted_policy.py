@@ -66,6 +66,7 @@ def test_container_uses_distinct_hosted_policies_without_renewing_finite_or_loca
 
 
 @pytest.mark.parametrize('changes',[
+    {'CHOREOGRAPH_ORIGIN':'https://choreograph-frontend-ue3m7uxqdq-ew.a.run.app'},
     {'CHOREOGRAPH_ORIGIN':'https://another.example'},
     {'CHOREOGRAPH_ORIGIN':'http://localhost:45860'},
     {'DATABASE_ENABLED':'true','CHOREOGRAPH_DATABASE_URL':

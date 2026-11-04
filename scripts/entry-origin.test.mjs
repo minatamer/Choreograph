@@ -52,6 +52,28 @@ test('host redirects are limited to the configured local OAuth setup',async()=>{
  }
 });
 
+test('retired hosted page links preserve their path and query on the custom domain',async()=>{
+ for(const suffix of ['/','/?from=portfolio','/demo','/demo/workspace?view=business']){
+  const response=await pageResponse('https://choreograph-frontend-ue3m7uxqdq-ew.a.run.app'+suffix,'https://trychoreograph.com');
+  assert.equal(response.status,308);
+  assert.equal(response.headers.get('location'),'https://trychoreograph.com'+suffix);
+  assert.equal(response.headers.has('set-cookie'),false);
+ }
+});
+
+test('hosted redirects leave canonical pages, other hosts and protected routes alone',async()=>{
+ for(const address of ['https://trychoreograph.com/demo',
+  'https://untrusted.example/demo',
+  'https://choreograph-frontend-ue3m7uxqdq-ew.a.run.app.attacker.example/demo',
+  'https://choreograph-frontend-ue3m7uxqdq-ew.a.run.app/api/demo/session',
+  'https://choreograph-frontend-ue3m7uxqdq-ew.a.run.app/auth/hubspot/callback?code=synthetic',
+  'https://choreograph-frontend-ue3m7uxqdq-ew.a.run.app/healthz']){
+  const response=await pageResponse(address,'https://trychoreograph.com');
+  assert.equal(response.status,200);
+  assert.equal(response.headers.has('location'),false);
+ }
+});
+
 const bridgeFactory=new Function('approvedRoute','boundedBody','configuredAPI','authorizeAPI','fetch','process',
  compile('../apps/frontend/app/api/demo/[...path]/route.ts')+'\nreturn bridge;');
 function bridge(fetcher){

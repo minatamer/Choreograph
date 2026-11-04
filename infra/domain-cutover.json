@@ -1,0 +1,286 @@
+{
+  "ticket": "SBS-042",
+  "status": "prepared-waiting-for-certificate",
+  "project_id": "choreograph-512713",
+  "region": "europe-west1",
+  "canonical_origin": "https://trychoreograph.com",
+  "previous_origin": "https://choreograph-frontend-ue3m7uxqdq-ew.a.run.app",
+  "source_sha256": "2bd2321debb84d6a8cf78fd7baa92c8da0a4758a80b152dd7d25b97a2860adaa",
+  "local_images": {
+    "frontend": {
+      "tag": "choreograph-frontend:choreograph-release-69efd50d-170a-43da-ac83-ae2af9087c15",
+      "id": "sha256:703cf85a5a1aba8c82a0ba9010717e028fb6bd1809f4c07d8fac224ef412bd25",
+      "os": "linux",
+      "architecture": "amd64",
+      "user": "node"
+    },
+    "backend": {
+      "tag": "choreograph-api:choreograph-release-69efd50d-170a-43da-ac83-ae2af9087c15",
+      "id": "sha256:4c8974361bec3783a89bb91ffb21da83baac88b01d4adddee8f489781b195c46",
+      "os": "linux",
+      "architecture": "amd64",
+      "user": "10001:10001"
+    }
+  },
+  "before": {
+    "frontend": {
+      "revision": "choreograph-frontend-00002-4zx",
+      "url": "https://choreograph-frontend-ue3m7uxqdq-ew.a.run.app",
+      "image": "europe-west1-docker.pkg.dev/choreograph-512713/choreograph/frontend@sha256:e62915cf2800945d41d2d2e13ac5780de8a5c6a2931bd5f31fd6c22dcf2e42df",
+      "identity": "choreograph-frontend@choreograph-512713.iam.gserviceaccount.com",
+      "env": {
+        "NEXT_TELEMETRY_DISABLED": "1",
+        "CHOREOGRAPH_ORIGIN": "https://choreograph-frontend-ue3m7uxqdq-ew.a.run.app",
+        "CHOREOGRAPH_API_URL": "https://choreograph-api-ue3m7uxqdq-ew.a.run.app",
+        "CHOREOGRAPH_API_AUTH": "google",
+        "CHOREOGRAPH_API_AUDIENCE": "https://choreograph-api-ue3m7uxqdq-ew.a.run.app",
+        "CHOREOGRAPH_BRIDGE_SECRET": {
+          "secret_reference": {
+            "key": "1",
+            "name": "CHOREOGRAPH_BRIDGE_SECRET"
+          }
+        }
+      },
+      "service_annotations": {
+        "run.googleapis.com/ingress": "all",
+        "run.googleapis.com/maxScale": "2"
+      },
+      "revision_annotations": {
+        "run.googleapis.com/execution-environment": "gen2"
+      },
+      "invokers": [
+        {
+          "members": [
+            "allUsers"
+          ],
+          "role": "roles/run.invoker"
+        }
+      ]
+    },
+    "api": {
+      "revision": "choreograph-api-00002-tgh",
+      "url": "https://choreograph-api-ue3m7uxqdq-ew.a.run.app",
+      "image": "europe-west1-docker.pkg.dev/choreograph-512713/choreograph/backend@sha256:f3a8476ec9c0d7bc12e39ade088eb223b4204b5bc0197d523564c267bce337ba",
+      "identity": "choreograph-api@choreograph-512713.iam.gserviceaccount.com",
+      "env": {
+        "DATABASE_ENABLED": "false",
+        "FAKE_MODE": "false",
+        "PAID_DEMO_ENABLED": "true",
+        "CHOREOGRAPH_ORIGIN": "https://choreograph-frontend-ue3m7uxqdq-ew.a.run.app",
+        "CHOREOGRAPH_BRIDGE_SECRET": {
+          "secret_reference": {
+            "key": "1",
+            "name": "CHOREOGRAPH_BRIDGE_SECRET"
+          }
+        },
+        "CHOREOGRAPH_TOKEN_KEY": {
+          "secret_reference": {
+            "key": "1",
+            "name": "CHOREOGRAPH_TOKEN_KEY"
+          }
+        },
+        "OPENAI_API_KEY": {
+          "secret_reference": {
+            "key": "1",
+            "name": "OPENAI_API_KEY"
+          }
+        },
+        "TURNSTILE_SITE_KEY": {
+          "secret_reference": {
+            "key": "1",
+            "name": "TURNSTILE_SITE_KEY"
+          }
+        },
+        "TURNSTILE_SECRET_KEY": {
+          "secret_reference": {
+            "key": "1",
+            "name": "TURNSTILE_SECRET_KEY"
+          }
+        },
+        "CHOREOGRAPH_HUBSPOT_CLIENT_SECRET": {
+          "secret_reference": {
+            "key": "1",
+            "name": "CHOREOGRAPH_HUBSPOT_CLIENT_SECRET"
+          }
+        }
+      },
+      "service_annotations": {
+        "run.googleapis.com/ingress": "all",
+        "run.googleapis.com/maxScale": "2"
+      },
+      "revision_annotations": {
+        "autoscaling.knative.dev/maxScale": "20",
+        "run.googleapis.com/execution-environment": "gen2"
+      },
+      "invokers": [
+        {
+          "members": [
+            "serviceAccount:choreograph-frontend@choreograph-512713.iam.gserviceaccount.com"
+          ],
+          "role": "roles/run.invoker"
+        }
+      ]
+    },
+    "worker": {
+      "revision": "choreograph-worker-00002-4tw",
+      "url": "https://choreograph-worker-ue3m7uxqdq-ew.a.run.app",
+      "image": "europe-west1-docker.pkg.dev/choreograph-512713/choreograph/backend@sha256:f3a8476ec9c0d7bc12e39ade088eb223b4204b5bc0197d523564c267bce337ba",
+      "identity": "choreograph-worker@choreograph-512713.iam.gserviceaccount.com",
+      "env": {
+        "DATABASE_ENABLED": "false",
+        "FAKE_MODE": "true",
+        "PAID_DEMO_ENABLED": "false",
+        "CHOREOGRAPH_ORIGIN": "https://choreograph-frontend-ue3m7uxqdq-ew.a.run.app",
+        "CHOREOGRAPH_BRIDGE_SECRET": {
+          "secret_reference": {
+            "key": "1",
+            "name": "CHOREOGRAPH_BRIDGE_SECRET"
+          }
+        },
+        "CHOREOGRAPH_TOKEN_KEY": {
+          "secret_reference": {
+            "key": "1",
+            "name": "CHOREOGRAPH_TOKEN_KEY"
+          }
+        },
+        "CHOREOGRAPH_WORKER_AUDIENCE": "https://choreograph-worker-ue3m7uxqdq-ew.a.run.app",
+        "CHOREOGRAPH_MAINTENANCE_SERVICE_EMAIL": "choreograph-scheduler@choreograph-512713.iam.gserviceaccount.com",
+        "CHOREOGRAPH_HUBSPOT_CLIENT_SECRET": {
+          "secret_reference": {
+            "key": "1",
+            "name": "CHOREOGRAPH_HUBSPOT_CLIENT_SECRET"
+          }
+        }
+      },
+      "service_annotations": {
+        "run.googleapis.com/ingress": "all",
+        "run.googleapis.com/maxScale": "1"
+      },
+      "revision_annotations": {
+        "run.googleapis.com/execution-environment": "gen2"
+      },
+      "invokers": [
+        {
+          "members": [
+            "serviceAccount:choreograph-scheduler@choreograph-512713.iam.gserviceaccount.com"
+          ],
+          "role": "roles/run.invoker"
+        }
+      ]
+    }
+  },
+  "dns_records": [
+    {
+      "rrdata": "216.239.32.21",
+      "type": "A"
+    },
+    {
+      "rrdata": "216.239.34.21",
+      "type": "A"
+    },
+    {
+      "rrdata": "216.239.36.21",
+      "type": "A"
+    },
+    {
+      "rrdata": "216.239.38.21",
+      "type": "A"
+    },
+    {
+      "rrdata": "2001:4860:4802:32::15",
+      "type": "AAAA"
+    },
+    {
+      "rrdata": "2001:4860:4802:34::15",
+      "type": "AAAA"
+    },
+    {
+      "rrdata": "2001:4860:4802:36::15",
+      "type": "AAAA"
+    },
+    {
+      "rrdata": "2001:4860:4802:38::15",
+      "type": "AAAA"
+    }
+  ],
+  "certificate_conditions": [
+    {
+      "lastTransitionTime": "2026-11-04T12:01:22.371552Z",
+      "message": "Waiting for certificate provisioning. You must configure your DNS records for certificate issuance to begin.",
+      "reason": "CertificatePending",
+      "status": "Unknown",
+      "type": "Ready"
+    },
+    {
+      "lastTransitionTime": "2026-11-04T12:02:22.631025Z",
+      "message": "Certificate issuance pending.",
+      "reason": "CertificatePending",
+      "status": "Unknown",
+      "type": "CertificateProvisioned"
+    },
+    {
+      "lastTransitionTime": "2026-11-04T12:01:22.371552Z",
+      "status": "True",
+      "type": "DomainRoutable"
+    },
+    {
+      "lastTransitionTime": "2026-11-04T12:17:46.864805Z",
+      "message": "System will retry after 05:00 from lastTransitionTime for polling interval",
+      "reason": "WaitingForOperation",
+      "severity": "Info",
+      "status": "True",
+      "type": "Retry"
+    }
+  ],
+  "turnstile_hostname_added": "owner-confirmed",
+  "secret_payload_reads": 0,
+  "local_env_or_state_changes": false,
+  "visitor_hubspot_calls": 0,
+  "accounting_ids_preserved": true,
+  "database_or_tasks_created": false,
+  "verified_at": "2026-11-04T12:22:12.431462+00:00",
+  "uploaded_images": {
+    "backend": {
+      "tag": "europe-west1-docker.pkg.dev/choreograph-512713/choreograph/backend:sbs042-2bd2321debb8",
+      "digest": "sha256:4c8974361bec3783a89bb91ffb21da83baac88b01d4adddee8f489781b195c46",
+      "immutable_image": "europe-west1-docker.pkg.dev/choreograph-512713/choreograph/backend@sha256:4c8974361bec3783a89bb91ffb21da83baac88b01d4adddee8f489781b195c46",
+      "anonymous_manifest_status": 401
+    },
+    "frontend": {
+      "tag": "europe-west1-docker.pkg.dev/choreograph-512713/choreograph/frontend:sbs042-2bd2321debb8",
+      "digest": "sha256:703cf85a5a1aba8c82a0ba9010717e028fb6bd1809f4c07d8fac224ef412bd25",
+      "immutable_image": "europe-west1-docker.pkg.dev/choreograph-512713/choreograph/frontend@sha256:703cf85a5a1aba8c82a0ba9010717e028fb6bd1809f4c07d8fac224ef412bd25",
+      "anonymous_manifest_status": 401
+    }
+  },
+  "temporary_registry_auth_removed": true,
+  "local_checks": {
+    "focused_backend_passed": 45,
+    "sql_excluded": 10,
+    "node_passed": 167,
+    "frontend_types": true,
+    "ruff": true,
+    "source_fingerprint_verified": true,
+    "packaged": {
+      "packaged_hosted_origin": true,
+      "turnstile_hostname": true,
+      "callback": true,
+      "retired_origin_rejected": true,
+      "actual_http_redirects": 4,
+      "protected_api_not_redirected": true,
+      "network": "none",
+      "host_ports": 0,
+      "owner_settings": false,
+      "real_provider_calls": 0,
+      "owned_container_removed": true
+    }
+  },
+  "hubspot_callback": {
+    "app_id": 58593051,
+    "project_id": 345312604,
+    "deployed_build": 4,
+    "redirect_uri": "https://trychoreograph.com/auth/hubspot/callback",
+    "identity_and_scopes_preserved": true,
+    "native_visitor_acceptance": false
+  }
+}
